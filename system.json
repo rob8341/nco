@@ -34,7 +34,7 @@
   "url": "",
   "manifest": "",
   "download": "",
-  "background": "systems/NCO/assets/background.webp",
+  "background": "",
   "primaryTokenAttribute": "hits",
   "gridDistance": 1,
   "gridUnits": "m"
