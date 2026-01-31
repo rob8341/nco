@@ -1,0 +1,1206 @@
+/* ==========================================
+   NEON CITY OVERDRIVE - FoundryVTT v13
+   Character Sheet Styles
+   ========================================== */
+
+/* Import cyberpunk fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+/* ==========================================
+   Variables
+   ========================================== */
+:root {
+  --nco-bg-dark: #0a0a0f;
+  --nco-bg-medium: #12121a;
+  --nco-bg-light: #1a1a25;
+  --nco-cyan: #00f5ff;
+  --nco-pink: #ff00aa;
+  --nco-purple: #9d4edd;
+  --nco-yellow: #ffd000;
+  --nco-red: #ff3366;
+  --nco-green: #00ff88;
+  --nco-text: #e0e0e0;
+  --nco-text-dim: #888;
+  --nco-border: #333;
+}
+
+/* ==========================================
+   Main Sheet Container
+   ========================================== */
+.nco-sheet {
+  font-family: 'Rajdhani', sans-serif;
+  background: linear-gradient(180deg, var(--nco-bg-dark) 0%, var(--nco-bg-medium) 100%);
+  color: var(--nco-text);
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.nco-sheet * {
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   Header
+   ========================================== */
+.nco-sheet .sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(90deg, var(--nco-purple) 0%, var(--nco-pink) 50%, var(--nco-cyan) 100%);
+  border-bottom: 3px solid var(--nco-cyan);
+}
+
+.nco-sheet .name-section {
+  flex: 1;
+}
+
+.nco-sheet .name-section input {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: white;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255,255,255,0.5);
+  width: 100%;
+  max-width: 400px;
+  padding: 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.nco-sheet .name-section input:focus {
+  outline: none;
+  border-bottom-color: white;
+}
+
+.nco-sheet .name-section input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+.nco-sheet .roll-button {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--nco-bg-dark);
+  color: var(--nco-cyan);
+  border: 2px solid var(--nco-cyan);
+  padding: 10px 25px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+}
+
+.nco-sheet .roll-button:hover {
+  background: var(--nco-cyan);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 20px var(--nco-cyan);
+}
+
+.nco-sheet .roll-button i {
+  margin-right: 8px;
+}
+
+/* ==========================================
+   Sheet Body - Two Column Layout
+   ========================================== */
+.nco-sheet .sheet-body {
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  gap: 20px;
+}
+
+.nco-sheet .column-left {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nco-sheet .column-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ==========================================
+   Section Titles
+   ========================================== */
+.nco-sheet .section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--nco-cyan);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 8px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.nco-sheet .column-left > .section-title {
+  font-size: 15px;
+  color: var(--nco-pink);
+  border-bottom: 2px solid var(--nco-pink);
+  margin-bottom: 12px;
+}
+
+/* ==========================================
+   Trademark Blocks
+   ========================================== */
+.nco-sheet .trademark-block {
+  background: var(--nco-bg-light);
+  border: 1px solid var(--nco-border);
+  border-left: 3px solid var(--nco-purple);
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.nco-sheet .trademark-input {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--nco-cyan);
+  color: var(--nco-cyan);
+  padding: 5px 0;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.nco-sheet .trademark-input:focus {
+  outline: none;
+  border-bottom-color: var(--nco-cyan);
+}
+
+.nco-sheet .trademark-input::placeholder {
+  color: var(--nco-text-dim);
+  font-weight: 400;
+}
+
+.nco-sheet .edges-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 15px;
+  border-left: 1px solid var(--nco-border);
+}
+
+.nco-sheet .edge-input {
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dotted var(--nco-border);
+  color: var(--nco-yellow);
+  padding: 3px 0;
+}
+
+.nco-sheet .edge-input:focus {
+  outline: none;
+  border-bottom-color: var(--nco-yellow);
+}
+
+.nco-sheet .edge-input::placeholder {
+  color: var(--nco-text-dim);
+}
+
+/* ==========================================
+   Sections in Right Column
+   ========================================== */
+.nco-sheet .section {
+  background: var(--nco-bg-light);
+  border: 1px solid var(--nco-border);
+  padding: 10px;
+}
+
+/* ==========================================
+   Checkboxes
+   ========================================== */
+.nco-sheet .checkbox-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nco-sheet .checkbox {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--nco-border);
+  background: var(--nco-bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.nco-sheet .checkbox:hover {
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.3);
+}
+
+/* Hits - use X marks, red when checked */
+.nco-sheet .hits-checkbox.checked {
+  background: var(--nco-red);
+  border-color: var(--nco-red);
+  color: white;
+}
+
+/* Stunt/Stash/Experience - use checkmarks, green when checked */
+.nco-sheet .stunt-checkbox.checked,
+.nco-sheet .stash-checkbox.checked,
+.nco-sheet .exp-checkbox.checked {
+  background: var(--nco-green);
+  border-color: var(--nco-green);
+  color: var(--nco-bg-dark);
+}
+
+/* Drive tri-state */
+.nco-sheet .drive-checkbox.state-tick {
+  background: var(--nco-green);
+  border-color: var(--nco-green);
+  color: var(--nco-bg-dark);
+}
+
+.nco-sheet .drive-checkbox.state-cross {
+  background: var(--nco-red);
+  border-color: var(--nco-red);
+  color: white;
+}
+
+.nco-sheet .drive-row {
+  flex-wrap: nowrap;
+}
+
+/* ==========================================
+   Conditions Grid
+   ========================================== */
+.nco-sheet .conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+.nco-sheet .condition-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  transition: all 0.2s ease;
+}
+
+.nco-sheet .condition-item:hover {
+  border-color: var(--nco-yellow);
+}
+
+.nco-sheet .condition-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.nco-sheet .condition-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--nco-text-dim);
+}
+
+.nco-sheet .condition-item:has(.condition-checkbox:checked) {
+  background: rgba(255, 208, 0, 0.2);
+  border-color: var(--nco-yellow);
+}
+
+.nco-sheet .condition-item:has(.condition-checkbox:checked) .condition-label {
+  color: var(--nco-yellow);
+  font-weight: 600;
+}
+
+/* ==========================================
+   Input Columns (Traumas, Flaws, Special Gear)
+   ========================================== */
+.nco-sheet .input-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nco-sheet .input-column input {
+  font-size: 12px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  color: var(--nco-text);
+  padding: 6px 10px;
+}
+
+.nco-sheet .input-column input:focus {
+  outline: none;
+  border-color: var(--nco-cyan);
+}
+
+.nco-sheet .input-column input::placeholder {
+  color: var(--nco-text-dim);
+}
+
+/* Traumas - Red */
+.nco-sheet .traumas-section .input-column input {
+  color: var(--nco-red);
+}
+
+.nco-sheet .traumas-section .input-column input:focus {
+  border-color: var(--nco-red);
+}
+
+/* Flaws - Orange */
+.nco-sheet .flaws-section .input-column input {
+  color: #ff8c00;
+}
+
+.nco-sheet .flaws-section .input-column input:focus {
+  border-color: #ff8c00;
+}
+
+/* Special Gear - Light Grey */
+.nco-sheet .special-gear-section .input-column input {
+  color: #cccccc;
+}
+
+.nco-sheet .special-gear-section .input-column input:focus {
+  border-color: #cccccc;
+}
+
+/* ==========================================
+   Gear Textarea
+   ========================================== */
+.nco-sheet textarea {
+  width: 100%;
+  min-height: 60px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  color: #cccccc;
+  padding: 8px;
+  resize: vertical;
+}
+
+.nco-sheet textarea:focus {
+  outline: none;
+  border-color: #cccccc;
+}
+
+/* ==========================================
+   Experience Blocks
+   ========================================== */
+.nco-sheet .experience-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.nco-sheet .exp-block {
+  display: flex;
+  flex: 1;
+  justify-content: space-evenly;
+  gap: 4px;
+  padding: 5px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+}
+
+.nco-sheet .exp-block .checkbox {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+}
+
+/* ==========================================
+   Hints
+   ========================================== */
+.nco-sheet .hint {
+  font-size: 10px;
+  color: var(--nco-text-dim);
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* ==========================================
+   Footer
+   ========================================== */
+.nco-sheet .sheet-footer {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px;
+  text-align: center;
+  padding: 10px;
+  color: var(--nco-text-dim);
+  background: var(--nco-bg-dark);
+  border-top: 1px solid var(--nco-border);
+  letter-spacing: 2px;
+}
+
+/* ==========================================
+   Chat Message Styles
+   ========================================== */
+.nco-roll-message {
+  font-family: 'Rajdhani', sans-serif;
+  background: linear-gradient(180deg, #1a1a25 0%, #0a0a0f 100%);
+  border: 2px solid #00f5ff;
+  border-radius: 0;
+  padding: 10px;
+  color: #e0e0e0;
+}
+
+.nco-roll-message .roll-header {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  color: #ff00aa;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.nco-roll-message .dice-section {
+  margin-bottom: 10px;
+}
+
+.nco-roll-message .action-roll,
+.nco-roll-message .danger-roll {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.nco-roll-message .label {
+  font-weight: 700;
+  min-width: 70px;
+}
+
+.nco-roll-message .action-roll .label {
+  color: #00f5ff;
+}
+
+.nco-roll-message .danger-roll .label {
+  color: #ff3366;
+}
+
+.nco-roll-message .dice {
+  font-family: monospace;
+  color: #888;
+}
+
+.nco-roll-message .max {
+  font-weight: 700;
+  color: #ffd000;
+}
+
+.nco-roll-message .roll-result {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+
+.nco-roll-message .roll-result.success {
+  background: rgba(0, 255, 136, 0.2);
+  border: 1px solid #00ff88;
+  color: #00ff88;
+}
+
+.nco-roll-message .roll-result.partial {
+  background: rgba(255, 208, 0, 0.2);
+  border: 1px solid #ffd000;
+  color: #ffd000;
+}
+
+.nco-roll-message .roll-result.failure {
+  background: rgba(255, 51, 102, 0.2);
+  border: 1px solid #ff3366;
+  color: #ff3366;
+}
+
+/* ==========================================
+   Scrollbar Styling
+   ========================================== */
+.nco-sheet .sheet-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.nco-sheet .sheet-body::-webkit-scrollbar-track {
+  background: var(--nco-bg-dark);
+}
+
+.nco-sheet .sheet-body::-webkit-scrollbar-thumb {
+  background: var(--nco-purple);
+  border-radius: 0;
+}
+
+.nco-sheet .sheet-body::-webkit-scrollbar-thumb:hover {
+  background: var(--nco-pink);
+}
+
+/* ==========================================
+   FOUNDRY DEFAULT ELEMENTS OVERRIDE
+   Consistent cyberpunk styling
+   ========================================== */
+
+/* ==========================================
+   Application Window Frame
+   ========================================== */
+.app.window-app.nco-sheet {
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-cyan);
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.3), 0 0 60px rgba(157, 78, 221, 0.2);
+  border-radius: 0;
+}
+
+.app.window-app.nco-sheet .window-header {
+  background: linear-gradient(90deg, var(--nco-bg-dark) 0%, var(--nco-bg-medium) 100%);
+  border-bottom: 2px solid var(--nco-purple);
+  padding: 0 10px;
+}
+
+.app.window-app.nco-sheet .window-header .window-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--nco-cyan);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px var(--nco-cyan);
+}
+
+.app.window-app.nco-sheet .window-header .header-button,
+.app.window-app.nco-sheet .window-header a {
+  color: var(--nco-text-dim);
+  transition: all 0.2s ease;
+}
+
+.app.window-app.nco-sheet .window-header .header-button:hover,
+.app.window-app.nco-sheet .window-header a:hover {
+  color: var(--nco-cyan);
+  text-shadow: 0 0 10px var(--nco-cyan);
+}
+
+.app.window-app.nco-sheet .window-header .close {
+  color: var(--nco-text-dim);
+}
+
+.app.window-app.nco-sheet .window-header .close:hover {
+  color: var(--nco-red);
+  text-shadow: 0 0 10px var(--nco-red);
+}
+
+.app.window-app.nco-sheet .window-content {
+  background: transparent;
+  padding: 0;
+}
+
+/* ==========================================
+   Dialog Windows (Roll, etc.)
+   ========================================== */
+.app.dialog {
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-cyan);
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.3), 0 0 60px rgba(157, 78, 221, 0.2);
+  border-radius: 0;
+}
+
+.app.dialog .window-header {
+  background: linear-gradient(90deg, var(--nco-bg-dark) 0%, var(--nco-bg-medium) 100%);
+  border-bottom: 2px solid var(--nco-purple);
+}
+
+.app.dialog .window-header .window-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--nco-cyan);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px var(--nco-cyan);
+}
+
+.app.dialog .window-header .header-button,
+.app.dialog .window-header a {
+  color: var(--nco-text-dim);
+}
+
+.app.dialog .window-header .header-button:hover,
+.app.dialog .window-header a:hover {
+  color: var(--nco-cyan);
+}
+
+.app.dialog .window-header .close:hover {
+  color: var(--nco-red);
+}
+
+.app.dialog .window-content {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--nco-bg-medium);
+  color: var(--nco-text);
+  padding: 15px;
+}
+
+.app.dialog .dialog-content {
+  color: var(--nco-text);
+}
+
+.app.dialog .dialog-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--nco-border);
+}
+
+/* ==========================================
+   Buttons - All Types
+   ========================================== */
+.app.dialog button,
+.app.dialog .dialog-button,
+.app button,
+button.default,
+button.dialog-button {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--nco-bg-dark);
+  color: var(--nco-cyan);
+  border: 2px solid var(--nco-cyan);
+  padding: 8px 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  border-radius: 0;
+  flex: 1;
+}
+
+.app.dialog button:hover,
+.app.dialog .dialog-button:hover,
+.app button:hover,
+button.default:hover,
+button.dialog-button:hover {
+  background: var(--nco-cyan);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 15px var(--nco-cyan);
+}
+
+.app.dialog button i,
+.app.dialog .dialog-button i,
+.app button i {
+  margin-right: 6px;
+}
+
+/* Cancel/Close Buttons */
+.app.dialog button[data-button="cancel"],
+.app.dialog button[data-button="close"],
+.app.dialog button[data-button="no"] {
+  border-color: var(--nco-red);
+  color: var(--nco-red);
+}
+
+.app.dialog button[data-button="cancel"]:hover,
+.app.dialog button[data-button="close"]:hover,
+.app.dialog button[data-button="no"]:hover {
+  background: var(--nco-red);
+  color: white;
+  box-shadow: 0 0 15px var(--nco-red);
+}
+
+/* ==========================================
+   Form Elements
+   ========================================== */
+.app input[type="text"],
+.app input[type="number"],
+.app input[type="password"],
+.app select,
+.app textarea,
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select,
+textarea {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  background: var(--nco-bg-dark);
+  color: var(--nco-text);
+  border: 1px solid var(--nco-border);
+  padding: 8px 12px;
+  border-radius: 0;
+  transition: all 0.2s ease;
+}
+
+.app input[type="text"]:focus,
+.app input[type="number"]:focus,
+.app input[type="password"]:focus,
+.app select:focus,
+.app textarea:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
+}
+
+.app input[type="text"]::placeholder,
+.app input[type="number"]::placeholder,
+.app textarea::placeholder {
+  color: var(--nco-text-dim);
+}
+
+/* Select Dropdowns */
+.app select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300f5ff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+.app select option {
+  background: var(--nco-bg-dark);
+  color: var(--nco-text);
+}
+
+/* Checkboxes and Radio buttons */
+.app input[type="checkbox"],
+.app input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.app input[type="checkbox"]:hover,
+.app input[type="radio"]:hover {
+  border-color: var(--nco-cyan);
+}
+
+.app input[type="checkbox"]:checked {
+  background: var(--nco-cyan);
+  border-color: var(--nco-cyan);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%230a0a0f' viewBox='0 0 16 16'%3E%3Cpath d='M13.485 3.929l-7.778 7.778L2 8.014l1.414-1.414 2.293 2.293 6.364-6.364z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.app input[type="radio"] {
+  border-radius: 50%;
+}
+
+.app input[type="radio"]:checked {
+  background: var(--nco-cyan);
+  border-color: var(--nco-cyan);
+  box-shadow: inset 0 0 0 3px var(--nco-bg-dark);
+}
+
+/* Range Inputs */
+.app input[type="range"] {
+  appearance: none;
+  background: var(--nco-border);
+  height: 6px;
+  border-radius: 0;
+}
+
+.app input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--nco-cyan);
+  border: none;
+  cursor: pointer;
+}
+
+.app input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 10px var(--nco-cyan);
+}
+
+/* ==========================================
+   Labels
+   ========================================== */
+.app label,
+label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nco-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ==========================================
+   Tabs
+   ========================================== */
+.app .tabs,
+.sheet-tabs {
+  display: flex;
+  background: var(--nco-bg-dark);
+  border-bottom: 2px solid var(--nco-border);
+}
+
+.app .tabs .item,
+.sheet-tabs .item {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--nco-text-dim);
+  padding: 10px 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s ease;
+}
+
+.app .tabs .item:hover,
+.sheet-tabs .item:hover {
+  color: var(--nco-text);
+  background: rgba(0, 245, 255, 0.1);
+}
+
+.app .tabs .item.active,
+.sheet-tabs .item.active {
+  color: var(--nco-cyan);
+  border-bottom-color: var(--nco-cyan);
+  text-shadow: 0 0 10px var(--nco-cyan);
+}
+
+/* ==========================================
+   Notifications / Tooltips
+   ========================================== */
+#notifications .notification {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-border);
+  color: var(--nco-text);
+  border-radius: 0;
+}
+
+#notifications .notification.info {
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+}
+
+#notifications .notification.warning {
+  border-color: var(--nco-yellow);
+  box-shadow: 0 0 15px rgba(255, 208, 0, 0.3);
+}
+
+#notifications .notification.error {
+  border-color: var(--nco-red);
+  box-shadow: 0 0 15px rgba(255, 51, 102, 0.3);
+}
+
+/* Tooltips */
+.tooltip {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-cyan);
+  color: var(--nco-text);
+  border-radius: 0;
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+}
+
+/* ==========================================
+   Context Menus
+   ========================================== */
+#context-menu {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-cyan);
+  border-radius: 0;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+}
+
+#context-menu li {
+  color: var(--nco-text);
+  transition: all 0.2s ease;
+}
+
+#context-menu li:hover {
+  background: var(--nco-cyan);
+  color: var(--nco-bg-dark);
+}
+
+#context-menu li i {
+  color: var(--nco-cyan);
+}
+
+#context-menu li:hover i {
+  color: var(--nco-bg-dark);
+}
+
+/* ==========================================
+   Scrollbars - Global
+   ========================================== */
+.app::-webkit-scrollbar,
+.window-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.app::-webkit-scrollbar-track,
+.window-content::-webkit-scrollbar-track {
+  background: var(--nco-bg-dark);
+}
+
+.app::-webkit-scrollbar-thumb,
+.window-content::-webkit-scrollbar-thumb {
+  background: var(--nco-purple);
+  border-radius: 0;
+}
+
+.app::-webkit-scrollbar-thumb:hover,
+.window-content::-webkit-scrollbar-thumb:hover {
+  background: var(--nco-pink);
+}
+
+.app::-webkit-scrollbar-corner,
+.window-content::-webkit-scrollbar-corner {
+  background: var(--nco-bg-dark);
+}
+
+/* ==========================================
+   Prosemirror Editor (Rich Text)
+   ========================================== */
+.app .editor-content {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--nco-bg-dark);
+  color: var(--nco-text);
+  border: 1px solid var(--nco-border);
+}
+
+.app .editor-content:focus {
+  border-color: var(--nco-cyan);
+}
+
+.app .editor-menu {
+  background: var(--nco-bg-medium);
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.app .editor-menu button {
+  color: var(--nco-text-dim);
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+}
+
+.app .editor-menu button:hover {
+  color: var(--nco-cyan);
+  background: transparent;
+  box-shadow: none;
+}
+
+.app .editor-menu button.active {
+  color: var(--nco-cyan);
+}
+
+/* ==========================================
+   Chat Messages
+   ========================================== */
+#chat-log .chat-message {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--nco-bg-medium);
+  border: 1px solid var(--nco-border);
+  color: var(--nco-text);
+  border-radius: 0;
+}
+
+#chat-log .chat-message .message-header {
+  color: var(--nco-cyan);
+  border-bottom: 1px solid var(--nco-border);
+}
+
+#chat-log .chat-message .message-sender {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#chat-log .chat-message .message-content {
+  color: var(--nco-text);
+}
+
+/* NCO specific chat message styling */
+#chat-log .chat-message .nco-roll-output {
+  font-family: 'Rajdhani', sans-serif;
+  background: linear-gradient(180deg, var(--nco-bg-medium) 0%, var(--nco-bg-dark) 100%);
+  padding: 10px;
+  border: 1px solid var(--nco-border);
+}
+
+#chat-log .chat-message .nco-roll-output .roll-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  color: var(--nco-pink);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px var(--nco-pink);
+}
+
+/* ==========================================
+   Filepicker
+   ========================================== */
+.app.filepicker {
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-cyan);
+}
+
+.app.filepicker .window-header {
+  background: linear-gradient(90deg, var(--nco-bg-dark) 0%, var(--nco-bg-medium) 100%);
+  border-bottom: 2px solid var(--nco-purple);
+}
+
+.app.filepicker .window-header .window-title {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--nco-cyan);
+}
+
+.app.filepicker .filepicker-body {
+  background: var(--nco-bg-medium);
+}
+
+.app.filepicker .directory {
+  color: var(--nco-cyan);
+}
+
+.app.filepicker .file {
+  color: var(--nco-text);
+}
+
+.app.filepicker .directory:hover,
+.app.filepicker .file:hover {
+  background: rgba(0, 245, 255, 0.1);
+}
+
+/* ==========================================
+   Sidebar Elements
+   ========================================== */
+#sidebar {
+  font-family: 'Rajdhani', sans-serif;
+}
+
+#sidebar .directory-header {
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* ==========================================
+   Roll Tables and Dice
+   ========================================== */
+.dice-roll {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.dice-roll .dice-total {
+  color: var(--nco-cyan);
+  text-shadow: 0 0 10px var(--nco-cyan);
+}
+
+/* ==========================================
+   Forms General
+   ========================================== */
+.app form {
+  color: var(--nco-text);
+}
+
+.app form .form-group {
+  margin-bottom: 10px;
+}
+
+.app form .form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.app form .notes,
+.app form .hint {
+  font-size: 11px;
+  color: var(--nco-text-dim);
+  font-style: italic;
+}
+
+/* ==========================================
+   Tables
+   ========================================== */
+.app table {
+  font-family: 'Rajdhani', sans-serif;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.app table th {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--nco-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: var(--nco-bg-dark);
+  border-bottom: 2px solid var(--nco-cyan);
+  padding: 8px;
+  text-align: left;
+}
+
+.app table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--nco-border);
+  color: var(--nco-text);
+}
+
+.app table tr:hover td {
+  background: rgba(0, 245, 255, 0.05);
+}
+
+/* ==========================================
+   Loading Spinner
+   ========================================== */
+.app .loading-bar {
+  background: var(--nco-bg-dark);
+}
+
+.app .loading-bar .bar {
+  background: linear-gradient(90deg, var(--nco-cyan) 0%, var(--nco-pink) 50%, var(--nco-purple) 100%);
+}
+
+/* ==========================================
+   Resize Handle
+   ========================================== */
+.app .window-resizable-handle {
+  border-color: var(--nco-cyan);
+}
+
+.app .window-resizable-handle:hover {
+  border-color: var(--nco-pink);
+}

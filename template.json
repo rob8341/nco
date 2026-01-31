@@ -1,0 +1,68 @@
+{
+  "Actor": {
+    "types": ["character"],
+    "character": {
+      "trademarks": [
+        {
+          "name": "",
+          "edges": ["", "", "", "", ""]
+        },
+        {
+          "name": "",
+          "edges": ["", "", "", "", ""]
+        },
+        {
+          "name": "",
+          "edges": ["", "", "", "", ""]
+        },
+        {
+          "name": "",
+          "edges": ["", "", "", "", ""]
+        },
+        {
+          "name": "",
+          "edges": ["", "", "", "", ""]
+        }
+      ],
+      "hits": {
+        "value": 0,
+        "max": 3
+      },
+      "conditions": {
+        "angry": false,
+        "dazed": false,
+        "exhausted": false,
+        "restrained": false,
+        "scared": false,
+        "weakened": false
+      },
+      "traumas": ["", "", "", ""],
+      "flaws": ["", ""],
+      "stuntPoints": {
+        "value": 0,
+        "max": 3
+      },
+      "gear": "",
+      "specialGear": ["", "", "", ""],
+      "stash": {
+        "value": 0,
+        "max": 5
+      },
+      "drive": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "experience": {
+        "value": 0,
+        "max": 15
+      }
+    }
+  },
+  "Item": {
+    "types": ["gear", "trademark"],
+    "gear": {
+      "description": "",
+      "special": false
+    },
+    "trademark": {
+      "edges": ["", "", "", "", ""]
+    }
+  }
+}

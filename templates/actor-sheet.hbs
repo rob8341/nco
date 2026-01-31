@@ -1,0 +1,162 @@
+<form class="nco-sheet" autocomplete="off">
+  {{!-- Header --}}
+  <header class="sheet-header">
+    <div class="name-section">
+      <input type="text" name="name" value="{{actor.name}}" placeholder="Character Name" />
+    </div>
+    <div class="roll-section">
+      <button type="button" class="roll-button">
+        <i class="fas fa-dice-d6"></i> ROLL
+      </button>
+    </div>
+  </header>
+
+  <div class="sheet-body">
+    {{!-- Left Column: Trademarks & Edges --}}
+    <div class="column-left">
+      <h2 class="section-title">TRADEMARKS & EDGES</h2>
+      
+      {{#each system.trademarks}}
+      <div class="trademark-block">
+        <input type="text" 
+               class="trademark-input" 
+               name="system.trademarks.{{@index}}.name" 
+               value="{{this.name}}" 
+               placeholder="Trademark {{add @index 1}}" />
+        <div class="edges-container">
+          {{#each this.edges}}
+          <input type="text" 
+                 class="edge-input" 
+                 name="system.trademarks.{{@../index}}.edges.{{@index}}" 
+                 value="{{this}}" 
+                 placeholder="Edge {{add @index 1}}" />
+          {{/each}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    {{!-- Right Column --}}
+    <div class="column-right">
+      {{!-- Hits --}}
+      <div class="section">
+        <h3 class="section-title">HITS</h3>
+        <div class="checkbox-row">
+          {{#each hitsArray}}
+          <div class="checkbox hits-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+            {{#if this.checked}}<i class="fas fa-times"></i>{{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+
+      {{!-- Conditions --}}
+      <div class="section">
+        <h3 class="section-title">CONDITIONS</h3>
+        <div class="conditions-grid">
+          {{#each conditionsList}}
+          <label class="condition-item">
+            <input type="checkbox" class="condition-checkbox" data-condition="{{this.key}}" {{#if this.checked}}checked{{/if}} />
+            <span class="condition-label">{{this.label}}</span>
+          </label>
+          {{/each}}
+        </div>
+      </div>
+
+      {{!-- Traumas --}}
+      <div class="section">
+        <h3 class="section-title">TRAUMAS</h3>
+        <div class="input-column">
+          {{#each system.traumas}}
+          <input type="text" name="system.traumas.{{@index}}" value="{{this}}" placeholder="Trauma {{add @index 1}}" />
+          {{/each}}
+        </div>
+      </div>
+
+      {{!-- Flaws --}}
+      <div class="section">
+        <h3 class="section-title">FLAWS</h3>
+        <div class="input-column">
+          {{#each system.flaws}}
+          <input type="text" name="system.flaws.{{@index}}" value="{{this}}" placeholder="Flaw {{add @index 1}}" />
+          {{/each}}
+        </div>
+      </div>
+
+      {{!-- Stunt Points --}}
+      <div class="section">
+        <h3 class="section-title">STUNT POINTS</h3>
+        <div class="checkbox-row">
+          {{#each stuntArray}}
+          <div class="checkbox stunt-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+            {{#if this.checked}}<i class="fas fa-check"></i>{{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+
+      {{!-- Gear --}}
+      <div class="section">
+        <h3 class="section-title">GEAR</h3>
+        <textarea name="system.gear" placeholder="Equipment list...">{{system.gear}}</textarea>
+      </div>
+
+      {{!-- Special Gear --}}
+      <div class="section">
+        <h3 class="section-title">SPECIAL GEAR</h3>
+        <div class="input-column">
+          {{#each system.specialGear}}
+          <input type="text" name="system.specialGear.{{@index}}" value="{{this}}" placeholder="Special Gear {{add @index 1}}" />
+          {{/each}}
+        </div>
+      </div>
+
+      {{!-- Stash --}}
+      <div class="section">
+        <h3 class="section-title">STASH</h3>
+        <div class="checkbox-row">
+          {{#each stashArray}}
+          <div class="checkbox stash-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+            {{#if this.checked}}<i class="fas fa-check"></i>{{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+
+      {{!-- Drive --}}
+      <div class="section">
+        <h3 class="section-title">DRIVE</h3>
+        <div class="checkbox-row drive-row">
+          {{#each driveArray}}
+          <div class="checkbox tristate drive-checkbox state-{{tristate this.state}}" data-index="{{this.index}}">
+            {{#if (eq this.state 1)}}<i class="fas fa-check"></i>{{/if}}
+            {{#if (eq this.state 2)}}<i class="fas fa-times"></i>{{/if}}
+          </div>
+          {{/each}}
+        </div>
+        <div class="hint">(Click to cycle: ○ → ✓ → ✗)</div>
+      </div>
+
+      {{!-- Experience --}}
+      <div class="section">
+        <h3 class="section-title">EXPERIENCE</h3>
+        <div class="experience-container">
+          {{#each expBlocks}}
+          <div class="exp-block">
+            {{#each this.checkboxes}}
+            <div class="checkbox exp-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+              {{#if this.checked}}<i class="fas fa-check"></i>{{/if}}
+            </div>
+            {{/each}}
+          </div>
+          {{/each}}
+        </div>
+        <div class="hint">(3 blocks × 5 XP)</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="sheet-footer">
+    NEON CITY OVERDRIVE • FoundryVTT v13
+  </footer>
+</form>

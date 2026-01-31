@@ -1,0 +1,41 @@
+{
+  "id": "NCO",
+  "title": "Neon City Overdrive",
+  "description": "An unofficial FoundryVTT system for Neon City Overdrive, a rules-light cyberpunk RPG.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13",
+    "maximum": "13"
+  },
+  "authors": [
+    {
+      "name": "FoundryVTT Community",
+      "url": ""
+    }
+  ],
+  "esmodules": ["module/nco.mjs"],
+  "styles": ["styles/nco.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "character": {
+        "htmlFields": ["system.gear"]
+      }
+    }
+  },
+  "socket": false,
+  "url": "",
+  "manifest": "",
+  "download": "",
+  "background": "systems/NCO/assets/background.webp",
+  "primaryTokenAttribute": "hits",
+  "gridDistance": 1,
+  "gridUnits": "m"
+}
