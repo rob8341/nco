@@ -2285,3 +2285,703 @@ textarea#chat-message:focus,
   color: var(--nco-bg-dark);
   box-shadow: 0 0 10px #ff00ff;
 }
+
+/* ==========================================
+   ITEM SHEETS - GEAR
+   ========================================== */
+
+/* Base Gear Sheet */
+.nco-gear-sheet,
+.nco-special-gear-sheet {
+  font-family: 'Rajdhani', sans-serif;
+  background: linear-gradient(180deg, var(--nco-bg-dark) 0%, var(--nco-bg-medium) 100%);
+  color: var(--nco-text);
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.nco-gear-sheet *,
+.nco-special-gear-sheet * {
+  box-sizing: border-box;
+}
+
+/* Gear Header */
+.nco-gear-sheet .sheet-header,
+.nco-special-gear-sheet .sheet-header {
+  display: flex;
+  padding: 15px;
+  background: linear-gradient(90deg, var(--nco-bg-medium) 0%, var(--nco-bg-light) 100%);
+  border-bottom: 3px solid var(--nco-cyan);
+}
+
+.nco-special-gear-sheet .sheet-header {
+  border-bottom-color: var(--nco-yellow);
+}
+
+.nco-gear-sheet .header-content,
+.nco-special-gear-sheet .header-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+/* Gear Icon */
+.nco-gear-sheet .icon-container,
+.nco-special-gear-sheet .icon-container {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border: 2px solid var(--nco-cyan);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--nco-bg-dark);
+  overflow: hidden;
+}
+
+.nco-special-gear-sheet .icon-container {
+  border-color: var(--nco-yellow);
+}
+
+.nco-gear-sheet .icon-container:hover {
+  border-color: var(--nco-pink);
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+}
+
+.nco-special-gear-sheet .icon-container:hover {
+  border-color: var(--nco-pink);
+  box-shadow: 0 0 15px rgba(255, 208, 0, 0.5);
+}
+
+.nco-gear-sheet .item-icon,
+.nco-special-gear-sheet .item-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Gear Name */
+.nco-gear-sheet .name-container,
+.nco-special-gear-sheet .name-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.nco-gear-sheet .gear-name,
+.nco-special-gear-sheet .gear-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--nco-cyan);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--nco-cyan);
+  width: 100%;
+  padding: 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.nco-special-gear-sheet .gear-name {
+  color: var(--nco-yellow);
+  border-bottom-color: var(--nco-yellow);
+}
+
+.nco-gear-sheet .gear-name:focus,
+.nco-special-gear-sheet .gear-name:focus {
+  outline: none;
+}
+
+.nco-gear-sheet .gear-name::placeholder,
+.nco-special-gear-sheet .gear-name::placeholder {
+  color: var(--nco-text-dim);
+}
+
+/* Item Type Label */
+.nco-gear-sheet .item-type,
+.nco-special-gear-sheet .item-type {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--nco-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nco-special-gear-sheet .item-type.special {
+  color: var(--nco-yellow);
+}
+
+/* Gear Body */
+.nco-gear-sheet .sheet-body,
+.nco-special-gear-sheet .sheet-body {
+  flex: 1;
+  overflow: hidden;
+  padding: 15px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Gear Sections */
+.nco-gear-sheet .section,
+.nco-special-gear-sheet .section {
+  background: var(--nco-bg-light);
+  border: 1px solid var(--nco-border);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.nco-gear-sheet .description-section {
+  flex: 1;
+}
+
+.nco-special-gear-sheet .description-section {
+  flex: 0 0 auto;
+}
+
+.nco-gear-sheet .description-section {
+  border-left: 3px solid var(--nco-cyan);
+}
+
+.nco-special-gear-sheet .description-section {
+  border-left: 3px solid var(--nco-yellow);
+}
+
+.nco-special-gear-sheet .tags-section {
+  border-left: 3px solid var(--nco-purple);
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Gear Section Titles */
+.nco-gear-sheet .section-title,
+.nco-special-gear-sheet .section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nco-cyan);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 10px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.nco-special-gear-sheet .description-section .section-title {
+  color: var(--nco-yellow);
+}
+
+.nco-special-gear-sheet .tags-section .section-title {
+  color: var(--nco-purple);
+}
+
+/* Gear Textarea */
+.nco-gear-sheet textarea,
+.nco-special-gear-sheet textarea {
+  width: 100%;
+  min-height: 80px;
+  flex: 1;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  color: var(--nco-text);
+  padding: 10px;
+  resize: none;
+}
+
+.nco-gear-sheet textarea:focus {
+  outline: none;
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.2);
+}
+
+.nco-special-gear-sheet textarea:focus {
+  outline: none;
+  border-color: var(--nco-yellow);
+  box-shadow: 0 0 8px rgba(255, 208, 0, 0.2);
+}
+
+.nco-gear-sheet textarea::placeholder,
+.nco-special-gear-sheet textarea::placeholder {
+  color: var(--nco-text-dim);
+  font-style: italic;
+}
+
+/* Tags Grid (Special Gear only) */
+.nco-special-gear-sheet .tags-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.nco-special-gear-sheet .tag-input {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  color: var(--nco-purple);
+  padding: 8px 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nco-special-gear-sheet .tag-input:focus {
+  outline: none;
+  border-color: var(--nco-purple);
+  box-shadow: 0 0 8px rgba(157, 78, 221, 0.3);
+}
+
+.nco-special-gear-sheet .tag-input::placeholder {
+  color: var(--nco-text-dim);
+  font-weight: 400;
+  text-transform: none;
+}
+
+/* Gear Scrollbar */
+.nco-gear-sheet .sheet-body::-webkit-scrollbar,
+.nco-special-gear-sheet .sheet-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nco-gear-sheet .sheet-body::-webkit-scrollbar-track,
+.nco-special-gear-sheet .sheet-body::-webkit-scrollbar-track {
+  background: var(--nco-bg-dark);
+}
+
+.nco-gear-sheet .sheet-body::-webkit-scrollbar-thumb,
+.nco-special-gear-sheet .sheet-body::-webkit-scrollbar-thumb {
+  background: var(--nco-purple);
+}
+
+/* Window Frame - Gear */
+.app.window-app.gear,
+.app.window-app.special-gear {
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-cyan);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+  border-radius: 0;
+}
+
+.app.window-app.special-gear {
+  border-color: var(--nco-yellow);
+  box-shadow: 0 0 20px rgba(255, 208, 0, 0.3);
+}
+
+.app.window-app.gear .window-header,
+.app.window-app.special-gear .window-header {
+  background: linear-gradient(90deg, var(--nco-bg-dark) 0%, var(--nco-bg-medium) 100%);
+  border-bottom: 2px solid var(--nco-purple);
+  padding: 0 10px;
+}
+
+.app.window-app.gear .window-header .window-title,
+.app.window-app.special-gear .window-header .window-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--nco-cyan);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px var(--nco-cyan);
+}
+
+.app.window-app.special-gear .window-header .window-title {
+  color: var(--nco-yellow);
+  text-shadow: 0 0 10px var(--nco-yellow);
+}
+
+.app.window-app.gear .window-header .header-button:hover,
+.app.window-app.special-gear .window-header .header-button:hover {
+  color: var(--nco-cyan);
+  text-shadow: 0 0 10px var(--nco-cyan);
+}
+
+.app.window-app.gear .window-content,
+.app.window-app.special-gear .window-content {
+  background: transparent;
+  padding: 0;
+}
+
+/* ==========================================
+   GEAR LIST ON CHARACTER SHEET
+   ========================================== */
+
+/* Gear Section Header */
+.nco-sheet .gear-section .section-header-row,
+.nco-sheet .special-gear-section .section-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.nco-sheet .gear-section .section-header-row .section-title,
+.nco-sheet .special-gear-section .section-header-row .section-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* Gear List - Compact horizontal layout */
+.nco-sheet .gear-list.compact {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Gear List - Normal (for special gear) */
+.nco-sheet .special-gear-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Compact Gear Item with frame around icon + name + X */
+.nco-sheet .gear-item-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-cyan);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.nco-sheet .gear-item-compact:hover {
+  border-color: var(--nco-pink);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.3);
+}
+
+/* Compact Gear Icon - clicking writes description to chat */
+.nco-sheet .gear-icon-compact {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border: 1px solid var(--nco-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--nco-bg-medium);
+  flex-shrink: 0;
+}
+
+.nco-sheet .gear-icon-compact:hover {
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.5);
+}
+
+/* Compact Gear Name - clicking opens item sheet */
+.nco-sheet .gear-name-compact {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--nco-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nco-sheet .gear-name-compact:hover {
+  color: var(--nco-cyan);
+  text-shadow: 0 0 6px rgba(0, 245, 255, 0.5);
+}
+
+/* Remove button for compact gear - X next to name */
+.nco-sheet .remove-gear-btn-compact {
+  all: unset;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  max-width: 14px;
+  min-height: 14px;
+  max-height: 14px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 1px solid var(--nco-red);
+  border-radius: 0;
+  color: var(--nco-red);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  line-height: 1;
+  text-align: center;
+}
+
+.nco-sheet .remove-gear-btn-compact i {
+  font-size: 8px;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.nco-sheet .gear-item-compact:hover .remove-gear-btn-compact {
+  opacity: 1;
+}
+
+.nco-sheet .remove-gear-btn-compact:hover {
+  background: var(--nco-red);
+  color: white;
+  box-shadow: 0 0 8px var(--nco-red);
+}
+
+/* Gear Item Row (for special gear) */
+.nco-sheet .gear-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nco-sheet .gear-item:hover {
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.2);
+}
+
+.nco-sheet .gear-item.special:hover {
+  border-color: var(--nco-yellow);
+  box-shadow: 0 0 8px rgba(255, 208, 0, 0.2);
+}
+
+/* Gear Icon (for special gear) */
+.nco-sheet .gear-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 1px solid var(--nco-border);
+}
+
+/* Gear Name (for special gear) */
+.nco-sheet .gear-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nco-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nco-sheet .gear-item.special .gear-name {
+  color: var(--nco-yellow);
+}
+
+/* Remove Gear Button (for special gear) */
+.nco-sheet .remove-gear-btn {
+  color: var(--nco-red);
+  border-color: var(--nco-red);
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.nco-sheet .gear-item:hover .remove-gear-btn {
+  opacity: 1;
+}
+
+.nco-sheet .remove-gear-btn:hover {
+  background: var(--nco-red);
+  color: white;
+  box-shadow: 0 0 10px var(--nco-red);
+  opacity: 1;
+}
+
+/* Add Gear Button */
+.nco-sheet .add-gear-btn {
+  color: var(--nco-green);
+  border-color: var(--nco-green);
+}
+
+.nco-sheet .add-gear-btn:hover:not(.disabled) {
+  background: var(--nco-green);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-green);
+}
+
+/* Disabled Add Button (max items reached) */
+.nco-sheet .add-gear-btn.disabled {
+  color: #555;
+  border-color: #444;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nco-sheet .add-gear-btn.disabled:hover {
+  background: transparent;
+  color: #555;
+  box-shadow: none;
+}
+
+/* No Items Message */
+.nco-sheet .no-items {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--nco-text-dim);
+  text-align: center;
+  padding: 10px;
+}
+
+/* ==========================================
+   SPECIAL GEAR - COMPACT ITEMS
+   ========================================== */
+
+/* Special Gear Item Compact */
+.nco-sheet .special-gear-item-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-yellow);
+  transition: all 0.2s ease;
+}
+
+.nco-sheet .special-gear-item-compact:hover {
+  border-color: var(--nco-pink);
+  box-shadow: 0 0 8px rgba(255, 208, 0, 0.3);
+}
+
+/* Special Gear Icon - clicking writes description & tags to chat */
+.nco-sheet .special-gear-icon-compact {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border: 1px solid var(--nco-yellow);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--nco-bg-medium);
+  flex-shrink: 0;
+}
+
+.nco-sheet .special-gear-icon-compact:hover {
+  border-color: var(--nco-pink);
+  box-shadow: 0 0 8px rgba(255, 208, 0, 0.5);
+}
+
+/* Special Gear Name - clicking opens item sheet */
+.nco-sheet .special-gear-name-compact {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--nco-yellow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nco-sheet .special-gear-name-compact:hover {
+  color: var(--nco-pink);
+  text-shadow: 0 0 6px rgba(255, 208, 0, 0.5);
+}
+
+/* Special Gear Tags - each tag in its own bracket, larger grey font */
+.nco-sheet .special-gear-tags-compact {
+  font-size: 12px;
+  font-weight: 500;
+  color: #aaaaaa;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+/* Spacer to push X button to the right */
+.nco-sheet .special-gear-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+
+/* Tags display - limit width so it doesn't stretch the sheet */
+.nco-sheet .special-gear-tags-compact {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 1;
+}
+
+/* Gear Roll Counter */
+.nco-sheet .gear-roll-counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+
+.nco-sheet .gear-roll-label {
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.nco-sheet .gear-roll-checkbox {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+  min-height: 16px !important;
+  max-height: 16px !important;
+  border-color: #ffd000;
+  font-size: 8px;
+}
+
+.nco-sheet .gear-roll-checkbox.checked {
+  background: var(--nco-bg-dark);
+  color: #ffd000;
+}
+
+.nco-sheet .gear-roll-checkbox i {
+  font-size: 8px;
+}
+
+/* Gear Roll Button */
+.nco-sheet .gear-roll-btn {
+  color: #ffd000;
+  border-color: #ffd000;
+}
+
+.nco-sheet .gear-roll-btn:hover {
+  background: #ffd000;
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px #ffd000;
+}
+
+/* Reset Gear Roll Button */
+.nco-sheet .reset-gear-roll-btn {
+  color: var(--nco-cyan);
+  border-color: var(--nco-cyan);
+}
+
+.nco-sheet .reset-gear-roll-btn:hover {
+  background: var(--nco-cyan);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-cyan);
+}

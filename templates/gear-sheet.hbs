@@ -1,0 +1,20 @@
+<form class="nco-gear-sheet" autocomplete="off">
+  <header class="sheet-header">
+    <div class="header-content">
+      <div class="icon-container">
+        <img src="{{item.img}}" title="{{item.name}}" class="item-icon"/>
+      </div>
+      <div class="name-container">
+        <input type="text" name="name" value="{{item.name}}" placeholder="Gear Name..." class="gear-name"/>
+        <span class="item-type">Basic Gear</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="sheet-body">
+    <div class="section description-section">
+      <h3 class="section-title">DESCRIPTION</h3>
+      <textarea name="system.description" placeholder="Short description...">{{system.description}}</textarea>
+    </div>
+  </section>
+</form>

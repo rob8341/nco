@@ -30,10 +30,25 @@ Hooks.once("init", async function() {
     label: "NCO.ThreatSheet"
   });
 
+  // Register item sheet classes
+  Items.unregisterSheet("core", ItemSheet);
+  Items.registerSheet("NCO", NCOGearSheet, {
+    types: ["gear"],
+    makeDefault: true,
+    label: "NCO.GearSheet"
+  });
+  Items.registerSheet("NCO", NCOSpecialGearSheet, {
+    types: ["special-gear"],
+    makeDefault: true,
+    label: "NCO.SpecialGearSheet"
+  });
+
   // Preload Handlebars templates
   await loadTemplates([
     "systems/NCO/templates/actor-sheet.hbs",
-    "systems/NCO/templates/threat-sheet.hbs"
+    "systems/NCO/templates/threat-sheet.hbs",
+    "systems/NCO/templates/gear-sheet.hbs",
+    "systems/NCO/templates/special-gear-sheet.hbs"
   ]);
 
   console.log("NCO | System Initialization Complete");
@@ -195,6 +210,44 @@ class NCOActorSheet extends ActorSheet {
     context.conditionDice = conditionDice;
     context.traumaDice = traumaDice;
 
+    // Prepare gear items
+    context.gearItems = this.actor.items.filter(i => i.type === "gear");
+    
+    // Prepare special gear items with filled tags - each tag in its own bracket
+    context.specialGearItems = this.actor.items.filter(i => i.type === "special-gear").map(item => {
+      const itemData = item.toObject(false);
+      // Get tags and filter to only filled ones
+      const tagsData = itemData.system?.tags;
+      let tags = [];
+      if (Array.isArray(tagsData)) {
+        tags = tagsData;
+      } else if (tagsData && typeof tagsData === 'object') {
+        tags = Object.values(tagsData);
+      }
+      const filledTags = tags.filter(t => t && typeof t === 'string' && t.trim() !== '');
+      // Each tag in its own bracket: [tag1] [tag2] [tag3]
+      itemData.filledTags = filledTags.map(t => `[${t.trim()}]`).join(' ');
+      itemData._id = item._id;
+      itemData.img = item.img;
+      itemData.name = item.name;
+      return itemData;
+    });
+    
+    // Can only add special gear if less than 4
+    context.canAddSpecialGear = context.specialGearItems.length < 4;
+    
+    // Can only add basic gear if less than 20
+    context.canAddGear = context.gearItems.length < 20;
+    
+    // Prepare gear roll counter
+    const gearRolls = context.system.gearRolls || { value: 4, max: 4 };
+    const gearRollsValue = parseInt(gearRolls.value) || 0;
+    const gearRollsMax = parseInt(gearRolls.max) || 4;
+    context.gearRollArray = [];
+    for (let i = 0; i < gearRollsMax; i++) {
+      context.gearRollArray.push({ index: i, checked: i < gearRollsValue });
+    }
+
     return context;
   }
 
@@ -243,6 +296,20 @@ class NCOActorSheet extends ActorSheet {
 
     // Retire button
     html.find(".retire-btn").click(this._onRetire.bind(this));
+
+    // Gear management
+    html.find(".add-gear-btn").click(this._onAddGear.bind(this));
+    html.find(".remove-gear-btn-compact").click(this._onRemoveGear.bind(this));
+    html.find(".gear-icon-compact").click(this._onGearDescriptionToChat.bind(this));
+    html.find(".gear-name-compact").click(this._onOpenGear.bind(this));
+    
+    // Special gear management
+    html.find(".special-gear-icon-compact").click(this._onSpecialGearDescriptionToChat.bind(this));
+    html.find(".special-gear-name-compact").click(this._onOpenGear.bind(this));
+    
+    // Gear roll system
+    html.find(".gear-roll-btn").click(this._onGearRoll.bind(this));
+    html.find(".reset-gear-roll-btn").click(this._onResetGearRoll.bind(this));
   }
 
   async _onRoll(event) {
@@ -562,10 +629,6 @@ for (let i = 0; i < traumas.length; i++) {
               <i class="fas fa-dumbbell" style="margin-right:8px;color:#ffd000"></i><strong>TRAIN</strong><br>
               <span style="font-size:0.85em;color:#888">Improve yourself in some small way. Mark +1 experience points.</span>
             </button>
-            <button type="button" class="spend-option" data-action="gear" style="padding:10px;background:#0a1a1a;border:1px solid #ff3366;border-radius:4px;color:#ff3366;cursor:pointer;text-align:left;font-family:'Rajdhani',sans-serif">
-              <i class="fas fa-tools" style="margin-right:8px;color:#ff3366"></i><strong>GET GEAR</strong><br>
-              <span style="font-size:0.85em;color:#888">Get specialised gear granting +1 bonus to a roll per point spent.</span>
-            </button>
           </div>
         </div>
       `,
@@ -629,12 +692,6 @@ for (let i = 0; i < traumas.length; i++) {
         if (currentExp < maxExp) {
           await this.actor.update({ "system.experience.value": currentExp + 1 });
         }
-        break;
-      case "gear":
-        actionTitle = "GET GEAR";
-        actionIcon = "fa-tools";
-        actionColor = "#ff3366";
-        actionDesc = "obtains specialised gear granting +1 bonus to a roll.";
         break;
     }
     
@@ -1398,6 +1455,508 @@ for (let i = 0; i < traumas.length; i++) {
 
     await ChatMessage.create({ user: game.user.id, speaker, content: html });
   }
+
+  async _onAddGear(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const type = event.currentTarget.dataset.type;
+    
+    // Check basic gear limit (max 20)
+    if (type === "gear") {
+      const gearCount = this.actor.items.filter(i => i.type === "gear").length;
+      if (gearCount >= 20) {
+        ui.notifications.warn("Maximum 20 basic gear items allowed!");
+        return;
+      }
+    }
+    
+    // Check special gear limit (max 4)
+    if (type === "special-gear") {
+      const specialGearCount = this.actor.items.filter(i => i.type === "special-gear").length;
+      if (specialGearCount >= 4) {
+        ui.notifications.warn("Maximum 4 special gear items allowed!");
+        return;
+      }
+    }
+    
+    const itemData = {
+      name: type === "gear" ? "New Gear" : "New Special Gear",
+      type: type,
+      img: "icons/svg/item-bag.svg"
+    };
+    
+    const created = await Item.create(itemData, { parent: this.actor });
+    if (created) {
+      created.sheet.render(true);
+    }
+  }
+
+  async _onRemoveGear(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const itemId = event.currentTarget.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    
+    if (!item) return;
+    
+    // Confirmation dialog
+    new Dialog({
+      title: "Remove Item",
+      content: `
+        <div style="background:linear-gradient(135deg,#1a0a10 0%,#0d0d1a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+          <div style="color:#ff3366;font-weight:bold;text-align:center;margin-bottom:10px">
+            <i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>CONFIRM REMOVAL
+          </div>
+          <div style="color:#e0e0e0;text-align:center">
+            Remove <span style="color:#00f5ff;font-weight:bold">${item.name}</span>?
+          </div>
+        </div>
+      `,
+      buttons: {
+        confirm: {
+          icon: '<i class="fas fa-trash"></i>',
+          label: "Remove",
+          callback: async () => {
+            await item.delete();
+          }
+        },
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: "Cancel"
+        }
+      },
+      default: "cancel"
+    }).render(true);
+  }
+
+  async _onOpenGear(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const itemId = event.currentTarget.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    
+    if (item) {
+      item.sheet.render(true);
+    }
+  }
+
+  async _onGearDescriptionToChat(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const itemId = event.currentTarget.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    
+    if (!item) return;
+    
+    const description = item.system.description || "No description.";
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+    
+    const html = `
+      <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0d0d1a 0%,#1a1a25 100%);border:2px solid #00f5ff;border-radius:8px;padding:12px;box-shadow:0 0 15px rgba(0,245,255,0.3)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #333">
+          <img src="${item.img}" style="width:36px;height:36px;border:2px solid #00f5ff;object-fit:cover"/>
+          <div>
+            <div style="font-size:1em;font-weight:bold;color:#00f5ff;text-shadow:0 0 10px #00f5ff;text-transform:uppercase;letter-spacing:2px">
+              ${item.name}
+            </div>
+            <div style="font-size:0.75em;color:#888;text-transform:uppercase">Gear</div>
+          </div>
+        </div>
+        <div style="color:#e0e0e0;font-family:'Rajdhani',sans-serif;font-size:0.95em;line-height:1.5">
+          ${description}
+        </div>
+        <div style="color:#666;font-size:0.8em;margin-top:8px;font-style:italic">
+          — ${this.actor.name}
+        </div>
+      </div>
+    `;
+    
+    await ChatMessage.create({ user: game.user.id, speaker, content: html });
+  }
+
+  async _onSpecialGearDescriptionToChat(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const itemId = event.currentTarget.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    
+    if (!item) return;
+    
+    const description = item.system.description || "No description.";
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+    
+    // Get filled tags
+    const tagsData = item.system.tags;
+    let tags = [];
+    if (Array.isArray(tagsData)) {
+      tags = tagsData;
+    } else if (tagsData && typeof tagsData === 'object') {
+      tags = Object.values(tagsData);
+    }
+    const filledTags = tags.filter(t => t && typeof t === 'string' && t.trim() !== '');
+    
+    // Build tags display
+    let tagsHtml = '';
+    if (filledTags.length > 0) {
+      tagsHtml = `
+        <div style="margin-top:10px;padding-top:8px;border-top:1px solid #333">
+          <div style="color:#9900ff;font-size:0.8em;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Tags</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            ${filledTags.map(tag => `<span style="display:inline-block;padding:3px 8px;background:#1a0a20;border:1px solid #9900ff;border-radius:4px;color:#cc66ff;font-size:0.85em">${tag}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+    
+    const html = `
+      <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);border:2px solid #ffd000;border-radius:8px;padding:12px;box-shadow:0 0 15px rgba(255,208,0,0.3)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #333">
+          <img src="${item.img}" style="width:36px;height:36px;border:2px solid #ffd000;object-fit:cover"/>
+          <div>
+            <div style="font-size:1em;font-weight:bold;color:#ffd000;text-shadow:0 0 10px #ffd000;text-transform:uppercase;letter-spacing:2px">
+              ${item.name}
+            </div>
+            <div style="font-size:0.75em;color:#888;text-transform:uppercase">Special Gear</div>
+          </div>
+        </div>
+        <div style="color:#e0e0e0;font-family:'Rajdhani',sans-serif;font-size:0.95em;line-height:1.5">
+          ${description}
+        </div>
+        ${tagsHtml}
+        <div style="color:#666;font-size:0.8em;margin-top:8px;font-style:italic">
+          — ${this.actor.name}
+        </div>
+      </div>
+    `;
+    
+    await ChatMessage.create({ user: game.user.id, speaker, content: html });
+  }
+
+  async _onGearRoll(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const currentRolls = parseInt(this.actor.system.gearRolls?.value) || 0;
+    const currentStash = parseInt(this.actor.system.stash?.value) || 0;
+    
+    if (currentRolls < 1) {
+      ui.notifications.warn("No gear rolls remaining! Reset the counter first.");
+      return;
+    }
+    
+    // Build tags selection buttons (1-6)
+    let tagsButtonsHtml = '';
+    for (let i = 1; i <= 6; i++) {
+      tagsButtonsHtml += `
+        <button type="button" class="tag-choice" data-tags="${i}" style="width:36px;height:36px;padding:4px;background:#1a0a20;border:2px solid #ffd000;border-radius:6px;color:#ffd000;cursor:pointer;font-size:1.1em;font-weight:bold;font-family:'Orbitron',sans-serif">
+          ${i}
+        </button>
+      `;
+    }
+    
+    new Dialog({
+      title: "Gear Roll",
+      content: `
+        <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:12px;border-radius:8px;font-family:'Orbitron',sans-serif">
+          <div style="color:#ffd000;font-weight:bold;font-size:1em;text-align:center;margin-bottom:8px;text-shadow:0 0 10px #ffd000">
+            <i class="fas fa-dice-d6" style="margin-right:8px"></i>GEAR ROLL
+          </div>
+          <div style="color:#e0e0e0;text-align:center;margin-bottom:8px;font-size:0.9em">
+            Gear Rolls Remaining: <span style="color:#00f5ff;font-weight:bold">${currentRolls}</span>
+          </div>
+          
+          <div style="color:#888;font-size:0.85em;text-align:center;margin-bottom:6px">
+            Choose target tags (roll target):
+          </div>
+          <div style="display:flex;justify-content:center;gap:6px;margin-bottom:10px">
+            ${tagsButtonsHtml}
+          </div>
+          
+          <div style="color:#00f5ff;font-weight:bold;margin-bottom:8px;text-align:center;font-size:0.9em">
+            Selected Target: <span id="gear-roll-target" style="font-size:1.2em">-</span>
+          </div>
+          
+          <div style="background:#1a0505;border:1px solid #ff3366;border-radius:4px;padding:6px;margin-bottom:8px">
+            <div style="color:#ff3366;font-size:0.8em;text-align:center">
+              <i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>
+              <strong>WARNING:</strong> Each +1 modifier uses 1 extra gear roll!
+            </div>
+          </div>
+          
+          <div id="gear-roll-cost-warning" style="background:#1a1a0d;border:1px solid #ffd000;border-radius:4px;padding:6px;margin-bottom:8px">
+            <div style="color:#ffd000;font-size:0.85em;text-align:center">
+              <i class="fas fa-info-circle" style="margin-right:4px"></i>
+              Total Cost: <span id="total-cost">1</span> gear roll(s)
+            </div>
+          </div>
+          
+          <div style="display:flex;justify-content:center;align-items:flex-start;gap:20px;margin-bottom:10px">
+            <div style="text-align:center">
+              <label style="color:#ff6666;font-size:0.8em;display:block;margin-bottom:4px;font-weight:bold">Modifier (costs rolls)</label>
+              <div style="display:flex;align-items:center;gap:4px">
+                <button type="button" id="mod-minus" style="width:28px;height:28px;background:#1a0a10;border:2px solid #ff3366;border-radius:4px;color:#ff3366;cursor:pointer;font-size:1em;font-weight:bold">−</button>
+                <input type="number" id="gear-roll-mod" value="0" readonly style="width:45px;padding:4px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1em;font-weight:bold;text-align:center"/>
+                <button type="button" id="mod-plus" style="width:28px;height:28px;background:#0a1a10;border:2px solid #00ff88;border-radius:4px;color:#00ff88;cursor:pointer;font-size:1em;font-weight:bold">+</button>
+              </div>
+            </div>
+            <div style="text-align:center">
+              <label style="color:#ffd000;font-size:0.8em;display:block;margin-bottom:4px;font-weight:bold">Stash Bonus (free)</label>
+              <input type="number" id="gear-roll-leverage" value="0" min="0" max="${currentStash}" style="width:45px;padding:4px;background:#1a1a0d;border:2px solid #ffd000;border-radius:4px;color:#ffd000;font-size:1em;font-weight:bold;text-align:center"/>
+              <div style="color:#888;font-size:0.65em;margin-top:2px">Available: ${currentStash}</div>
+            </div>
+          </div>
+          
+          <div style="text-align:center;margin-top:10px">
+            <button type="button" id="gear-roll-execute" disabled style="padding:8px 24px;background:#333;border:2px solid #666;border-radius:6px;color:#666;cursor:not-allowed;font-family:'Orbitron',sans-serif;font-weight:bold;font-size:0.9em">
+              <i class="fas fa-dice-d6" style="margin-right:6px"></i>SELECT TARGET FIRST
+            </button>
+          </div>
+        </div>
+      `,
+      buttons: {
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: "Cancel"
+        }
+      },
+      render: (html) => {
+        let selectedTags = 0;
+        const maxModifier = currentRolls - 1; // Reserve 1 for the base roll
+        
+        const updateCostWarning = () => {
+          const mod = Math.abs(parseInt(html.find("#gear-roll-mod").val()) || 0);
+          const totalCost = 1 + mod;
+          const currentRollsNow = parseInt(this.actor.system.gearRolls?.value) || 0;
+          
+          // Always show cost warning (show initial cost of 1)
+          html.find("#total-cost").text(totalCost);
+          
+          if (totalCost > currentRollsNow) {
+            html.find("#gear-roll-cost-warning").css({ "border-color": "#ff3366", "background": "#1a0505" });
+            html.find("#total-cost").css("color", "#ff3366");
+          } else {
+            html.find("#gear-roll-cost-warning").css({ "border-color": "#ffd000", "background": "#1a1a0d" });
+            html.find("#total-cost").css("color", "#ffd000");
+          }
+          
+          // Update modifier button states (only modifier is limited by gear rolls)
+          const currentMod = parseInt(html.find("#gear-roll-mod").val()) || 0;
+          if (currentMod >= maxModifier) {
+            html.find("#mod-plus").css({ "opacity": "0.3", "cursor": "not-allowed" });
+          } else {
+            html.find("#mod-plus").css({ "opacity": "1", "cursor": "pointer" });
+          }
+          if (currentMod <= 0) {
+            html.find("#mod-minus").css({ "opacity": "0.3", "cursor": "not-allowed" });
+          } else {
+            html.find("#mod-minus").css({ "opacity": "1", "cursor": "pointer" });
+          }
+        };
+        
+        const updateRollButton = () => {
+          const btn = html.find("#gear-roll-execute");
+          if (selectedTags > 0) {
+            btn.prop("disabled", false);
+            btn.css({ "background": "#0a1a10", "border-color": "#00ff88", "color": "#00ff88", "cursor": "pointer" });
+            btn.html('<i class="fas fa-dice-d6" style="margin-right:8px"></i>ROLL');
+          } else {
+            btn.prop("disabled", true);
+            btn.css({ "background": "#333", "border-color": "#666", "color": "#666", "cursor": "not-allowed" });
+            btn.html('<i class="fas fa-dice-d6" style="margin-right:8px"></i>SELECT TARGET FIRST');
+          }
+        };
+        
+        // Initialize button states
+        updateCostWarning();
+        updateRollButton();
+        
+        // Tag choice buttons
+        html.find(".tag-choice").click((ev) => {
+          selectedTags = parseInt(ev.currentTarget.dataset.tags);
+          html.find(".tag-choice").css({ "background": "#1a0a20", "box-shadow": "none" });
+          $(ev.currentTarget).css({ "background": "#2a1a30", "box-shadow": "0 0 10px #ffd000" });
+          html.find("#gear-roll-target").text(selectedTags);
+          updateRollButton();
+        });
+        
+        // Modifier +/- buttons with limits (only modifier uses gear rolls, not leverage)
+        html.find("#mod-minus").click(() => {
+          const input = html.find("#gear-roll-mod");
+          const currentVal = parseInt(input.val()) || 0;
+          if (currentVal > 0) {
+            input.val(currentVal - 1);
+            updateCostWarning();
+          }
+        });
+        html.find("#mod-plus").click(() => {
+          const input = html.find("#gear-roll-mod");
+          const currentVal = parseInt(input.val()) || 0;
+          if (currentVal < maxModifier) {
+            input.val(currentVal + 1);
+            updateCostWarning();
+          } else {
+            ui.notifications.warn(`Cannot add more modifiers! Only ${currentRolls} gear roll(s) remaining.`);
+          }
+        });
+        
+        // Execute roll button
+        html.find("#gear-roll-execute").click(async () => {
+          if (selectedTags <= 0) {
+            ui.notifications.warn("Please select a target first!");
+            return;
+          }
+          const modifier = parseInt(html.find("#gear-roll-mod").val()) || 0;
+          const leverage = parseInt(html.find("#gear-roll-leverage").val()) || 0;
+          await this._executeGearRoll(selectedTags, modifier, leverage);
+          html.closest(".app").find(".header-button.close").click();
+        });
+      },
+      default: "cancel"
+    }).render(true);
+  }
+
+  async _executeGearRoll(targetTags, modifier, leverageSpent) {
+    const currentRolls = parseInt(this.actor.system.gearRolls?.value) || 0;
+    const maxRolls = parseInt(this.actor.system.gearRolls?.max) || 4;
+    const currentStash = parseInt(this.actor.system.stash?.value) || 0;
+    
+    // Calculate total gear roll cost (1 base + modifier cost)
+    const modifierCost = Math.abs(modifier);
+    const totalGearRollCost = 1 + modifierCost;
+    
+    if (currentRolls < totalGearRollCost) {
+      ui.notifications.warn(`Not enough gear rolls! Need ${totalGearRollCost}, have ${currentRolls}.`);
+      return;
+    }
+    
+    // Check if enough leverage
+    if (leverageSpent > currentStash) {
+      ui.notifications.warn(`Not enough leverage! Have ${currentStash}, trying to spend ${leverageSpent}.`);
+      return;
+    }
+    
+    // Deduct gear rolls (1 base + modifier cost)
+    await this.actor.update({ "system.gearRolls.value": currentRolls - totalGearRollCost });
+    
+    // Deduct leverage if spent
+    if (leverageSpent > 0) {
+      await this.actor.update({ "system.stash.value": currentStash - leverageSpent });
+    }
+    
+    // Roll the d6
+    const roll = await (new Roll("1d6")).evaluate({ allowInteractive: false });
+    const dieResult = roll.dice[0].results[0].result;
+    const totalResult = dieResult + modifier + leverageSpent;
+    
+    // Dice So Nice animation
+    if (game.dice3d) {
+      roll.dice.forEach(die => {
+        die.options.colorset = "nco-action";
+        die.options.material = "chrome";
+      });
+      await game.dice3d.showForRoll(roll, game.user, true);
+    }
+    
+    const success = totalResult >= targetTags;
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+    const newRollsRemaining = currentRolls - totalGearRollCost;
+    
+    let modifierText = '';
+    if (modifier !== 0 || leverageSpent > 0) {
+      const parts = [];
+      if (modifier !== 0) parts.push(`${modifier >= 0 ? '+' : ''}${modifier} mod (cost: ${modifierCost} roll${modifierCost > 1 ? 's' : ''})`);
+      if (leverageSpent > 0) parts.push(`+${leverageSpent} stash bonus`);
+      modifierText = ` (${parts.join(', ')})`;
+    }
+    
+    let html;
+    if (success) {
+      html = `
+        <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0a1a10 0%,#0d200d 100%);border:2px solid #00ff88;border-radius:8px;padding:15px;box-shadow:0 0 25px rgba(0,255,136,0.5)">
+          <div style="font-size:1.2em;font-weight:bold;color:#00ff88;text-shadow:0 0 15px #00ff88;text-align:center">
+            <i class="fas fa-tools" style="margin-right:8px"></i>GEAR ROLL
+          </div>
+          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
+            ${this.actor.name}
+          </div>
+          <div style="text-align:center;margin-top:15px">
+            <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #00ff88;background:#0a1a10;color:#00ff88;box-shadow:0 0 15px #00ff88">${dieResult}</span>
+            ${(modifier !== 0 || leverageSpent > 0) ? `<span style="color:#888;margin:0 8px">+${modifier + leverageSpent} =</span><span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #00ff88;background:#0a1a10;color:#00ff88">${totalResult}</span>` : ''}
+          </div>
+          <div style="color:#888;text-align:center;margin-top:8px;font-size:0.9em">
+            Target: ${targetTags}${modifierText}
+          </div>
+          <div style="color:#00ff88;text-align:center;margin-top:15px;font-size:1.3em;font-weight:bold;text-shadow:0 0 15px #00ff88">
+            ✓ SUCCESS!
+          </div>
+          <div style="color:#88ffaa;text-align:center;margin-top:8px">
+            ${this.actor.name} acquired specialised gear with <span style="color:#ffd000;font-weight:bold">${targetTags}</span> tag${targetTags > 1 ? 's' : ''}!
+          </div>
+          <div style="color:#888;text-align:center;margin-top:10px;font-size:0.85em;padding:8px;background:#111;border-radius:4px">
+            Gear Rolls Spent: ${totalGearRollCost} • Remaining: ${newRollsRemaining}/${maxRolls}
+            ${leverageSpent > 0 ? ` • Stash Bonus: ${leverageSpent}` : ''}
+          </div>
+        </div>
+      `;
+    } else {
+      html = `
+        <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#1a0a10 0%,#200a0a 100%);border:2px solid #ff3366;border-radius:8px;padding:15px;box-shadow:0 0 20px rgba(255,51,102,0.4)">
+          <div style="font-size:1.2em;font-weight:bold;color:#ff3366;text-shadow:0 0 10px #ff3366;text-align:center">
+            <i class="fas fa-tools" style="margin-right:8px"></i>GEAR ROLL
+          </div>
+          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
+            ${this.actor.name}
+          </div>
+          <div style="text-align:center;margin-top:15px">
+            <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #ff3366;background:#1a0a10;color:#ff3366">${dieResult}</span>
+            ${(modifier !== 0 || leverageSpent > 0) ? `<span style="color:#888;margin:0 8px">+${modifier + leverageSpent} =</span><span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #ff3366;background:#1a0a10;color:#ff3366">${totalResult}</span>` : ''}
+          </div>
+          <div style="color:#888;text-align:center;margin-top:8px;font-size:0.9em">
+            Target: ${targetTags}${modifierText}
+          </div>
+          <div style="color:#ff3366;text-align:center;margin-top:15px;font-size:1.3em;font-weight:bold;text-shadow:0 0 10px #ff3366">
+            ✗ FAILED
+          </div>
+          <div style="color:#ff9999;text-align:center;margin-top:8px">
+            ${this.actor.name} wasted ${totalGearRollCost} gear roll${totalGearRollCost > 1 ? 's' : ''} trying to acquire specialised gear.
+          </div>
+          <div style="color:#888;text-align:center;margin-top:10px;font-size:0.85em;padding:8px;background:#111;border-radius:4px">
+            Gear Rolls Spent: ${totalGearRollCost} • Remaining: ${newRollsRemaining}/${maxRolls}
+            ${leverageSpent > 0 ? ` • Stash Bonus: ${leverageSpent} (wasted)` : ''}
+          </div>
+        </div>
+      `;
+    }
+    
+    await ChatMessage.create({ user: game.user.id, speaker, content: html });
+  }
+
+  async _onResetGearRoll(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const max = parseInt(this.actor.system.gearRolls?.max) || 4;
+    await this.actor.update({ "system.gearRolls.value": max });
+    
+    // Send chat message
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+    const html = `
+      <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);border:2px solid #00f5ff;border-radius:8px;padding:12px;box-shadow:0 0 20px rgba(0,245,255,0.3)">
+        <div style="font-size:1em;font-weight:bold;color:#00f5ff;text-shadow:0 0 10px #00f5ff;text-align:center">
+          <i class="fas fa-redo" style="margin-right:8px"></i>GEAR ROLLS RESET
+        </div>
+        <div style="color:#00ff88;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00ff88">
+          ${this.actor.name} reset their gear rolls to ${max}!
+        </div>
+      </div>
+    `;
+    await ChatMessage.create({ user: game.user.id, speaker, content: html });
+  }
 }
 
 /* -------------------------------------------- */
@@ -1438,6 +1997,104 @@ class NCOThreatSheet extends ActorSheet {
         type: "image",
         current: this.actor.img,
         callback: path => this.actor.update({ img: path })
+      });
+      fp.browse();
+    });
+  }
+}
+
+/* -------------------------------------------- */
+/*  Item Sheets                                 */
+/* -------------------------------------------- */
+
+class NCOGearSheet extends ItemSheet {
+  
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      classes: ["nco", "sheet", "item", "gear"],
+      template: "systems/NCO/templates/gear-sheet.hbs",
+      width: 400,
+      height: 300,
+      resizable: false,
+      tabs: []
+    });
+  }
+
+  async getData(options) {
+    const context = await super.getData(options);
+    const itemData = this.item.toObject(false);
+    
+    context.system = itemData.system;
+    context.flags = itemData.flags;
+
+    return context;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    if (!this.isEditable) return;
+
+    // Icon click to change image
+    html.find('.icon-container').click(ev => {
+      const fp = new FilePicker({
+        type: "image",
+        current: this.item.img,
+        callback: path => this.item.update({ img: path })
+      });
+      fp.browse();
+    });
+  }
+}
+
+class NCOSpecialGearSheet extends ItemSheet {
+  
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      classes: ["nco", "sheet", "item", "special-gear"],
+      template: "systems/NCO/templates/special-gear-sheet.hbs",
+      width: 450,
+      height: 480,
+      resizable: false,
+      tabs: []
+    });
+  }
+
+  async getData(options) {
+    const context = await super.getData(options);
+    const itemData = this.item.toObject(false);
+    
+    context.system = itemData.system;
+    context.flags = itemData.flags;
+
+    // Prepare tags array
+    const tagsData = context.system.tags;
+    let tags = [];
+    if (Array.isArray(tagsData)) {
+      tags = tagsData;
+    } else if (tagsData && typeof tagsData === 'object') {
+      tags = Object.values(tagsData);
+    } else {
+      tags = ["", "", "", "", "", ""];
+    }
+    
+    context.tagsArray = [];
+    for (let i = 0; i < 6; i++) {
+      context.tagsArray.push({ index: i, value: tags[i] || "" });
+    }
+
+    return context;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    if (!this.isEditable) return;
+
+    // Icon click to change image
+    html.find('.icon-container').click(ev => {
+      const fp = new FilePicker({
+        type: "image",
+        current: this.item.img,
+        callback: path => this.item.update({ img: path })
       });
       fp.browse();
     });

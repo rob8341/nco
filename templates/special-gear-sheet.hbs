@@ -1,0 +1,29 @@
+<form class="nco-special-gear-sheet" autocomplete="off">
+  <header class="sheet-header">
+    <div class="header-content">
+      <div class="icon-container">
+        <img src="{{item.img}}" title="{{item.name}}" class="item-icon"/>
+      </div>
+      <div class="name-container">
+        <input type="text" name="name" value="{{item.name}}" placeholder="Special Gear Name..." class="gear-name"/>
+        <span class="item-type special">Special Gear</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="sheet-body">
+    <div class="section description-section">
+      <h3 class="section-title">DESCRIPTION</h3>
+      <textarea name="system.description" placeholder="Short description...">{{system.description}}</textarea>
+    </div>
+
+    <div class="section tags-section">
+      <h3 class="section-title">TAGS</h3>
+      <div class="tags-grid">
+        {{#each tagsArray}}
+        <input type="text" name="system.tags.{{this.index}}" value="{{this.value}}" placeholder="Tag {{add this.index 1}}..." class="tag-input"/>
+        {{/each}}
+      </div>
+    </div>
+  </section>
+</form>

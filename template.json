@@ -37,6 +37,10 @@
         "value": 0,
         "max": 5
       },
+      "gearRolls": {
+        "value": 4,
+        "max": 4
+      },
       "drive": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       "driveNote": "",
       "experience": {
@@ -57,10 +61,13 @@
     }
   },
   "Item": {
-    "types": ["gear"],
+    "types": ["gear", "special-gear"],
     "gear": {
+      "description": ""
+    },
+    "special-gear": {
       "description": "",
-      "special": false
+      "tags": ["", "", "", "", "", ""]
     }
   }
 }

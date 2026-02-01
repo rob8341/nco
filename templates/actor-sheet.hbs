@@ -152,18 +152,85 @@
       </div>
 
       {{!-- Gear --}}
-      <div class="section">
-        <h3 class="section-title">GEAR</h3>
-        <textarea name="system.gear" placeholder="Equipment list...">{{system.gear}}</textarea>
+      <div class="section gear-section">
+        <div class="section-header-row">
+          <h3 class="section-title">GEAR</h3>
+          <div class="row-spacer"></div>
+          <div class="button-group">
+            {{#if canAddGear}}
+            <button type="button" class="icon-btn add-gear-btn" title="Add Gear" data-type="gear">
+              <i class="fas fa-plus"></i>
+            </button>
+            {{else}}
+            <button type="button" class="icon-btn add-gear-btn disabled" title="Maximum 20 Gear" disabled>
+              <i class="fas fa-plus"></i>
+            </button>
+            {{/if}}
+          </div>
+        </div>
+        <div class="gear-list compact">
+          {{#each gearItems}}
+          <div class="gear-item-compact" data-item-id="{{this._id}}">
+            <img src="{{this.img}}" class="gear-icon-compact" data-item-id="{{this._id}}" title="Click to show description" />
+            <span class="gear-name-compact" data-item-id="{{this._id}}" title="Click to edit">{{this.name}}</span>
+            <button type="button" class="remove-gear-btn-compact" data-item-id="{{this._id}}" title="Remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          {{/each}}
+          {{#unless gearItems.length}}
+          <div class="no-items">No gear</div>
+          {{/unless}}
+        </div>
       </div>
 
-      {{!-- Special Gear --}}
+      {{!-- Special Gear (max 4) --}}
       <div class="section special-gear-section">
-        <h3 class="section-title">SPECIAL GEAR</h3>
-        <div class="input-column">
-          {{#each system.specialGear}}
-          <input type="text" name="system.specialGear.{{@index}}" value="{{this}}" placeholder="Special Gear {{add @index 1}}" />
+        <div class="section-header-row">
+          <h3 class="section-title">SPECIAL GEAR</h3>
+          <div class="gear-roll-counter">
+            <span class="gear-roll-label">Rolls:</span>
+            {{#each gearRollArray}}
+            <div class="checkbox gear-roll-checkbox {{#if this.checked}}checked{{/if}} display-only" data-index="{{this.index}}">
+              {{#if this.checked}}<i class="fas fa-dice"></i>{{/if}}
+            </div>
+            {{/each}}
+          </div>
+          <div class="row-spacer"></div>
+          <div class="button-group">
+            <button type="button" class="icon-btn gear-roll-btn" title="Gear Roll">
+              <i class="fas fa-dice-d6"></i>
+            </button>
+            <button type="button" class="icon-btn reset-gear-roll-btn" title="Reset Gear Rolls">
+              <i class="fas fa-redo"></i>
+            </button>
+            {{#if canAddSpecialGear}}
+            <button type="button" class="icon-btn add-gear-btn" title="Add Special Gear" data-type="special-gear">
+              <i class="fas fa-plus"></i>
+            </button>
+            {{else}}
+            <button type="button" class="icon-btn add-gear-btn disabled" title="Maximum 4 Special Gear" disabled>
+              <i class="fas fa-plus"></i>
+            </button>
+            {{/if}}
+          </div>
+        </div>
+        <div class="special-gear-list">
+          {{#each specialGearItems}}
+          <div class="special-gear-item-compact" data-item-id="{{this._id}}">
+            <img src="{{this.img}}" class="special-gear-icon-compact" data-item-id="{{this._id}}" title="Click to show description & tags" />
+            <span class="special-gear-name-compact" data-item-id="{{this._id}}" title="Click to edit">{{this.name}}</span>
+            {{#if this.filledTags}}
+            <span class="special-gear-tags-compact" title="{{this.filledTags}}">{{this.filledTags}}</span>
+            {{/if}}
+            <button type="button" class="remove-gear-btn-compact" data-item-id="{{this._id}}" title="Remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           {{/each}}
+          {{#unless specialGearItems.length}}
+          <div class="no-items">No special gear</div>
+          {{/unless}}
         </div>
       </div>
 
