@@ -1,0 +1,53 @@
+<form class="nco-sheet nco-threat-sheet" autocomplete="off">
+  <header class="sheet-header">
+    <div class="header-left">
+      <div class="portrait-container">
+        <img src="{{actor.img}}" alt="{{actor.name}}" data-edit="img" />
+      </div>
+      <div class="name-bio-container">
+        <input type="text" name="name" class="name-input" value="{{actor.name}}" placeholder="Threat Name" />
+        <input type="text" name="system.bio" class="bio-input" value="{{system.bio}}" placeholder="Short description..." />
+      </div>
+    </div>
+  </header>
+
+  <section class="sheet-body">
+    <div class="threat-content">
+      
+      <!-- Top Row: Hits (left) and Tags (right) -->
+      <div class="threat-top-row">
+        <!-- Hits Section -->
+        <div class="section hits-section">
+          <label class="section-title">Hits</label>
+          <div class="hits-numeric">
+            <input type="number" name="system.hits.value" class="hits-value" value="{{system.hits.value}}" min="0" max="{{system.hits.max}}" />
+            <span class="hits-separator">/</span>
+            <input type="number" name="system.hits.max" class="hits-max" value="{{system.hits.max}}" min="1" max="10" />
+          </div>
+        </div>
+
+        <!-- Tags Section -->
+        <div class="section tags-section">
+          <label class="section-title">Tags</label>
+          <textarea name="system.tags" class="threat-textarea" placeholder="Descriptive tags, abilities, traits...">{{system.tags}}</textarea>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Actions (left) and Drive (right) -->
+      <div class="threat-bottom-row">
+        <!-- Actions Section -->
+        <div class="section actions-section">
+          <label class="section-title">Actions</label>
+          <textarea name="system.actions" class="threat-textarea actions-textarea" placeholder="Special actions, attacks, moves...">{{system.actions}}</textarea>
+        </div>
+
+        <!-- Drive Section -->
+        <div class="section drive-section">
+          <label class="section-title">Drive</label>
+          <textarea name="system.drive" class="threat-textarea" placeholder="What motivates this threat...">{{system.drive}}</textarea>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</form>

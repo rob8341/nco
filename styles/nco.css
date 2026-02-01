@@ -51,34 +51,89 @@
   padding: 15px 20px;
   background: linear-gradient(90deg, var(--nco-purple) 0%, var(--nco-pink) 50%, var(--nco-cyan) 100%);
   border-bottom: 3px solid var(--nco-cyan);
+  gap: 15px;
 }
 
-.nco-sheet .name-section {
+.nco-sheet .header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
   flex: 1;
 }
 
-.nco-sheet .name-section input {
+.nco-sheet .portrait-section {
+  flex-shrink: 0;
+}
+
+.nco-sheet .profile-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--nco-bg-dark);
+}
+
+.nco-sheet .profile-img:hover {
+  border-color: white;
+  box-shadow: 0 0 20px rgba(255,255,255,0.5);
+}
+
+.nco-sheet .name-bio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.nco-sheet .character-name {
   font-family: 'Orbitron', sans-serif;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   color: white;
   background: transparent;
   border: none;
   border-bottom: 2px solid rgba(255,255,255,0.5);
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   padding: 5px 0;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.nco-sheet .name-section input:focus {
+.nco-sheet .character-name:focus {
   outline: none;
   border-bottom-color: white;
 }
 
-.nco-sheet .name-section input::placeholder {
+.nco-sheet .character-name::placeholder {
   color: rgba(255,255,255,0.5);
+}
+
+.nco-sheet .character-bio {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  width: 100%;
+  max-width: 450px;
+  padding: 3px 0;
+  font-style: italic;
+}
+
+.nco-sheet .character-bio:focus {
+  outline: none;
+  border-bottom-color: rgba(255,255,255,0.6);
+}
+
+.nco-sheet .character-bio::placeholder {
+  color: rgba(255,255,255,0.4);
 }
 
 .nco-sheet .roll-button {
@@ -222,18 +277,206 @@
   padding: 10px;
 }
 
+/* Hits & Stunt Points Row */
+.nco-sheet .hits-stunt-row {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+.nco-sheet .hits-stunt-row .section {
+  flex: 1;
+}
+
+.nco-sheet .hits-stunt-row .stunt-section {
+  text-align: left;
+}
+
+.nco-sheet .hits-stunt-row .stunt-section .checkbox-row {
+  justify-content: flex-start;
+}
+
+/* Hits & Stunts Section Header Rows */
+.nco-sheet .hits-section .section-header-row,
+.nco-sheet .stunt-section .section-header-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.nco-sheet .hits-section .section-header-row .section-title,
+.nco-sheet .stunt-section .section-header-row .section-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+  flex: 0 0 auto;
+}
+
+.nco-sheet .hits-section .section-header-row .row-spacer,
+.nco-sheet .stunt-section .section-header-row .row-spacer {
+  flex: 1;
+  min-width: 10px;
+}
+
+/* Hits Row (checkboxes only now) */
+.nco-sheet .hits-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Stunt Row (checkboxes only now) */
+.nco-sheet .stunt-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Spacer to push button to right (fills remaining space) */
+.nco-sheet .row-spacer {
+  flex: 1;
+  min-height: 16px;
+}
+
+/* Double spacer for stunt row */
+.nco-sheet .row-spacer.double {
+  flex: 1;
+  min-height: 16px;
+}
+
+/* Button Group - Even Spacing */
+.nco-sheet .button-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Common Small Icon Button Base */
+.nco-sheet .icon-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  min-height: 18px;
+  max-height: 18px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  line-height: 1;
+  text-align: center;
+  background: var(--nco-bg-dark);
+  border: 1px solid;
+}
+
+.nco-sheet .icon-btn i {
+  margin: 0;
+  padding: 0;
+  font-size: 9px;
+  line-height: 1;
+  display: block;
+}
+
+/* Rest Button - Cyan */
+.nco-sheet .rest-btn {
+  color: var(--nco-cyan);
+  border-color: var(--nco-cyan);
+}
+
+.nco-sheet .rest-btn:hover {
+  background: var(--nco-cyan);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-cyan);
+}
+
+/* Stunt Points - additional styling */
+
+/* Refresh Stunt Button - Green */
+.nco-sheet .refresh-stunt-btn {
+  color: var(--nco-green);
+  border-color: var(--nco-green);
+}
+
+.nco-sheet .refresh-stunt-btn:hover {
+  background: var(--nco-green);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-green);
+}
+
+/* Bonus Stunt Button - Yellow */
+.nco-sheet .bonus-stunt-btn {
+  color: var(--nco-yellow);
+  border-color: var(--nco-yellow);
+}
+
+.nco-sheet .bonus-stunt-btn:hover {
+  background: var(--nco-yellow);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-yellow);
+}
+
+/* Disabled state for stunt checkboxes (can only use, not add) */
+.nco-sheet .stunt-checkbox:not(.checked) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nco-sheet .stunt-checkbox:not(.checked):hover {
+  border-color: var(--nco-border);
+  box-shadow: none;
+}
+
+/* Hits checkboxes - can only check, not uncheck */
+.nco-sheet .hits-checkbox.checked {
+  cursor: not-allowed;
+}
+
+.nco-sheet .hits-checkbox.checked:hover {
+  border-color: var(--nco-red);
+  box-shadow: none;
+}
+
+/* Disabled/Locked checkboxes (upgrade required) */
+.nco-sheet .checkbox.disabled.locked {
+  background: #222222;
+  border: 2px solid #444444;
+  color: #555555;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.nco-sheet .checkbox.disabled.locked:hover {
+  border-color: #444444;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.nco-sheet .checkbox.disabled.locked i {
+  font-size: 8px;
+  color: #555555;
+}
+
 /* ==========================================
    Checkboxes
    ========================================== */
 .nco-sheet .checkbox-row {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
 .nco-sheet .checkbox {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   border: 2px solid var(--nco-border);
   background: var(--nco-bg-dark);
   display: flex;
@@ -241,7 +484,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 14px;
+  font-size: 11px;
 }
 
 .nco-sheet .checkbox:hover {
@@ -280,6 +523,27 @@
 
 .nco-sheet .drive-row {
   flex-wrap: nowrap;
+}
+
+/* Drive Note */
+.nco-sheet .drive-note {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 12px;
+  font-style: italic;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  color: var(--nco-text);
+  padding: 6px 10px;
+}
+
+.nco-sheet .drive-note:focus {
+  outline: none;
+  border-color: var(--nco-purple);
+}
+
+.nco-sheet .drive-note::placeholder {
+  color: var(--nco-text-dim);
 }
 
 /* ==========================================
@@ -329,6 +593,34 @@
   font-weight: 600;
 }
 
+/* Custom Condition (7th) */
+.nco-sheet .custom-condition {
+  grid-column: 1 / -1;
+}
+
+.nco-sheet .custom-condition-input {
+  flex: 1;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dotted var(--nco-border);
+  color: var(--nco-text-dim);
+  padding: 2px 5px;
+}
+
+.nco-sheet .custom-condition-input:focus {
+  outline: none;
+  border-bottom-color: var(--nco-yellow);
+  color: var(--nco-yellow);
+}
+
+.nco-sheet .custom-condition:has(.condition-checkbox:checked) .custom-condition-input {
+  color: var(--nco-yellow);
+  font-weight: 600;
+}
+
 /* ==========================================
    Input Columns (Traumas, Flaws, Special Gear)
    ========================================== */
@@ -362,6 +654,46 @@
 
 .nco-sheet .traumas-section .input-column input:focus {
   border-color: var(--nco-red);
+}
+
+/* Section Header Row with Button */
+.nco-sheet .section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.nco-sheet .section-header-row .section-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* Recovery Roll Button - Green (Heart) */
+.nco-sheet .recovery-roll-btn {
+  color: var(--nco-green);
+  border-color: var(--nco-green);
+}
+
+.nco-sheet .recovery-roll-btn:hover {
+  background: var(--nco-green);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-green);
+}
+
+/* Trauma Roll Button - Red */
+.nco-sheet .trauma-roll-btn {
+  color: var(--nco-red);
+  border-color: var(--nco-red);
+}
+
+.nco-sheet .trauma-roll-btn:hover {
+  background: var(--nco-red);
+  color: white;
+  box-shadow: 0 0 10px var(--nco-red);
 }
 
 /* Flaws - Orange */
@@ -669,6 +1001,21 @@
   margin-top: 15px;
   padding-top: 15px;
   border-top: 1px solid var(--nco-border);
+}
+
+.app.dialog .dialog-buttons button {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  height: 40px !important;
+  max-height: 40px !important;
+  min-height: 40px !important;
+  padding: 8px 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+  margin: 0 !important;
 }
 
 /* ==========================================
@@ -1025,30 +1372,100 @@ label {
 }
 
 /* ==========================================
-   Chat Messages
+   Chat Background & Messages
    ========================================== */
-#chat-log .chat-message {
-  font-family: 'Rajdhani', sans-serif;
-  background: var(--nco-bg-medium);
-  border: 1px solid var(--nco-border);
-  color: var(--nco-text);
-  border-radius: 0;
+#sidebar .sidebar-tab[data-tab="chat"],
+#sidebar #chat,
+section#chat,
+.sidebar-tab#chat {
+  background: #000000 !important;
 }
 
-#chat-log .chat-message .message-header {
-  color: var(--nco-cyan);
-  border-bottom: 1px solid var(--nco-border);
+#sidebar #chat-log,
+#chat-log,
+section#chat #chat-log {
+  background: #000000 !important;
 }
 
-#chat-log .chat-message .message-sender {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+#sidebar #chat-form,
+#chat-form,
+section#chat #chat-form {
+  background: #000000 !important;
 }
 
-#chat-log .chat-message .message-content {
-  color: var(--nco-text);
+#sidebar #chat-controls,
+#chat-controls,
+section#chat #chat-controls {
+  background: #000000 !important;
+}
+
+#sidebar #chat-controls .control-buttons,
+#chat-controls .control-buttons {
+  background: #000000 !important;
+}
+
+#sidebar #chat-controls select,
+#chat-controls select,
+#chat-controls .roll-type-select {
+  background: #111111 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+}
+
+#sidebar textarea#chat-message,
+textarea#chat-message,
+#chat-message {
+  font-family: 'Rajdhani', sans-serif !important;
+  background: #111111 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+}
+
+#sidebar textarea#chat-message:focus,
+textarea#chat-message:focus,
+#chat-message:focus {
+  border-color: var(--nco-cyan) !important;
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.3) !important;
+}
+
+#sidebar #chat-log .chat-message,
+#chat-log .chat-message,
+.chat-message {
+  font-family: 'Rajdhani', sans-serif !important;
+  background: #111111 !important;
+  border: 1px solid #333 !important;
+  color: #e0e0e0 !important;
+  border-radius: 0 !important;
+}
+
+#sidebar #chat-log .chat-message .message-header,
+#chat-log .chat-message .message-header,
+.chat-message .message-header {
+  color: var(--nco-cyan) !important;
+  border-bottom: 1px solid var(--nco-border) !important;
+  background: transparent !important;
+}
+
+#sidebar #chat-log .chat-message .message-sender,
+#chat-log .chat-message .message-sender,
+.chat-message .message-sender {
+  font-family: 'Orbitron', sans-serif !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  color: var(--nco-cyan) !important;
+}
+
+#sidebar #chat-log .chat-message .message-content,
+#chat-log .chat-message .message-content,
+.chat-message .message-content {
+  color: #e0e0e0 !important;
+}
+
+#sidebar #chat-log .chat-message .message-timestamp,
+#chat-log .chat-message .message-timestamp,
+.chat-message .message-timestamp {
+  color: #666 !important;
 }
 
 /* NCO specific chat message styling */
@@ -1203,4 +1620,668 @@ label {
 
 .app .window-resizable-handle:hover {
   border-color: var(--nco-pink);
+}
+
+/* ==========================================
+   Pause Screen - Neon Cyberpunk Style
+   ========================================== */
+#pause {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(5px);
+}
+
+#pause figcaption,
+#pause h3,
+#pause .paused-text {
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 48px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 15px !important;
+  color: var(--nco-cyan) !important;
+  text-shadow: 
+    0 0 10px var(--nco-cyan),
+    0 0 20px var(--nco-cyan),
+    0 0 40px var(--nco-cyan),
+    0 0 80px var(--nco-pink),
+    0 0 120px var(--nco-purple) !important;
+  animation: nco-pause-glow 2s ease-in-out infinite alternate, nco-pause-flicker 0.1s infinite !important;
+}
+
+#pause img,
+#pause figure img {
+  display: none !important;
+}
+
+#pause::before {
+  content: "⏸" !important;
+  display: block !important;
+  font-size: 80px !important;
+  margin-bottom: 20px !important;
+  color: var(--nco-pink) !important;
+  text-shadow: 
+    0 0 10px var(--nco-pink),
+    0 0 30px var(--nco-pink),
+    0 0 60px var(--nco-purple) !important;
+  animation: nco-pause-pulse 1.5s ease-in-out infinite !important;
+}
+
+#pause figure,
+#pause > * {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Pause screen border glow effect */
+#pause::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 600px !important;
+  height: 200px !important;
+  border: 3px solid transparent !important;
+  border-image: linear-gradient(90deg, var(--nco-cyan), var(--nco-pink), var(--nco-purple), var(--nco-cyan)) 1 !important;
+  pointer-events: none !important;
+  animation: nco-border-rotate 4s linear infinite !important;
+  opacity: 0.5 !important;
+}
+
+/* Scanline effect on pause */
+#pause {
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 245, 255, 0.03) 2px,
+      rgba(0, 245, 255, 0.03) 4px
+    ) !important;
+}
+
+/* Keyframe animations for pause screen */
+@keyframes nco-pause-glow {
+  0% {
+    text-shadow: 
+      0 0 10px var(--nco-cyan),
+      0 0 20px var(--nco-cyan),
+      0 0 40px var(--nco-cyan),
+      0 0 80px var(--nco-pink);
+  }
+  100% {
+    text-shadow: 
+      0 0 15px var(--nco-pink),
+      0 0 30px var(--nco-pink),
+      0 0 60px var(--nco-pink),
+      0 0 100px var(--nco-cyan);
+  }
+}
+
+@keyframes nco-pause-flicker {
+  0%, 95%, 100% { opacity: 1; }
+  96% { opacity: 0.8; }
+  97% { opacity: 1; }
+  98% { opacity: 0.9; }
+}
+
+@keyframes nco-pause-pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.8;
+  }
+}
+
+@keyframes nco-border-rotate {
+  0% {
+    border-image: linear-gradient(0deg, var(--nco-cyan), var(--nco-pink), var(--nco-purple), var(--nco-cyan)) 1;
+  }
+  25% {
+    border-image: linear-gradient(90deg, var(--nco-cyan), var(--nco-pink), var(--nco-purple), var(--nco-cyan)) 1;
+  }
+  50% {
+    border-image: linear-gradient(180deg, var(--nco-cyan), var(--nco-pink), var(--nco-purple), var(--nco-cyan)) 1;
+  }
+  75% {
+    border-image: linear-gradient(270deg, var(--nco-cyan), var(--nco-pink), var(--nco-purple), var(--nco-cyan)) 1;
+  }
+  100% {
+    border-image: linear-gradient(360deg, var(--nco-cyan), var(--nco-pink), var(--nco-purple), var(--nco-cyan)) 1;
+  }
+}
+
+/* ==========================================
+   THREAT SHEET STYLES
+   ========================================== */
+
+.nco-threat-sheet {
+  font-family: 'Rajdhani', sans-serif;
+  background: linear-gradient(180deg, #1a0a10 0%, #0a0a0f 100%);
+  color: var(--nco-text);
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.nco-threat-sheet * {
+  box-sizing: border-box;
+}
+
+/* Threat Header - Red/Pink theme */
+.nco-threat-sheet .sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(90deg, #4a0a20 0%, #2a0a15 50%, #1a0a10 100%);
+  border-bottom: 3px solid var(--nco-red);
+  gap: 15px;
+}
+
+.nco-threat-sheet .header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.nco-threat-sheet .portrait-container {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border: 3px solid var(--nco-red);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--nco-bg-dark);
+  overflow: hidden;
+}
+
+.nco-threat-sheet .portrait-container:hover {
+  border-color: var(--nco-pink);
+  box-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+}
+
+.nco-threat-sheet .portrait-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nco-threat-sheet .name-bio-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.nco-threat-sheet .name-input {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: white;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255, 51, 102, 0.5);
+  width: 100%;
+  padding: 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+}
+
+.nco-threat-sheet .name-input:focus {
+  outline: none;
+  border-bottom-color: var(--nco-red);
+}
+
+.nco-threat-sheet .name-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.nco-threat-sheet .bio-input {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  width: 100%;
+  padding: 3px 0;
+  font-style: italic;
+}
+
+.nco-threat-sheet .bio-input:focus {
+  outline: none;
+  border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+
+.nco-threat-sheet .bio-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Threat Roll Button */
+.nco-threat-sheet .roll-button {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--nco-bg-dark);
+  color: var(--nco-red);
+  border: 2px solid var(--nco-red);
+  padding: 10px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+}
+
+.nco-threat-sheet .roll-button:hover {
+  background: var(--nco-red);
+  color: white;
+  box-shadow: 0 0 20px var(--nco-red);
+}
+
+.nco-threat-sheet .roll-button i {
+  margin-right: 8px;
+}
+
+/* Threat Sheet Body */
+.nco-threat-sheet .sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.nco-threat-sheet .threat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Threat Two-Column Layout */
+.nco-threat-sheet .threat-top-row,
+.nco-threat-sheet .threat-bottom-row {
+  display: flex;
+  gap: 15px;
+}
+
+.nco-threat-sheet .threat-top-row .hits-section {
+  flex: 0 0 auto;
+  min-width: 200px;
+}
+
+.nco-threat-sheet .threat-top-row .tags-section {
+  flex: 1;
+}
+
+.nco-threat-sheet .threat-bottom-row .actions-section {
+  flex: 1;
+}
+
+.nco-threat-sheet .threat-bottom-row .drive-section {
+  flex: 1;
+}
+
+/* Threat Sections */
+.nco-threat-sheet .section {
+  background: var(--nco-bg-light);
+  border: 1px solid var(--nco-border);
+  border-left: 3px solid var(--nco-red);
+  padding: 12px;
+}
+
+.nco-threat-sheet .section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--nco-red);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+/* Threat Hits - Numeric Display */
+.nco-threat-sheet .hits-numeric {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nco-threat-sheet .hits-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  width: 60px;
+  text-align: center;
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-red);
+  color: var(--nco-red);
+  padding: 8px;
+}
+
+.nco-threat-sheet .hits-value:focus {
+  outline: none;
+  box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+}
+
+.nco-threat-sheet .hits-separator {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--nco-text-dim);
+}
+
+.nco-threat-sheet .hits-max {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  width: 60px;
+  text-align: center;
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-border);
+  color: var(--nco-text);
+  padding: 8px;
+}
+
+.nco-threat-sheet .hits-max:focus {
+  outline: none;
+  border-color: var(--nco-red);
+  box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+}
+
+/* Threat Textareas */
+.nco-threat-sheet .threat-textarea {
+  width: 100%;
+  min-height: 60px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  color: var(--nco-text);
+  padding: 10px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.nco-threat-sheet .threat-textarea:focus {
+  outline: none;
+  border-color: var(--nco-red);
+  box-shadow: 0 0 8px rgba(255, 51, 102, 0.2);
+}
+
+.nco-threat-sheet .threat-textarea::placeholder {
+  color: var(--nco-text-dim);
+  font-style: italic;
+}
+
+/* Drive Section - Purple accent */
+.nco-threat-sheet .drive-section {
+  border-left-color: var(--nco-purple);
+}
+
+.nco-threat-sheet .drive-section .section-title {
+  color: var(--nco-purple);
+}
+
+.nco-threat-sheet .drive-section .threat-textarea:focus {
+  border-color: var(--nco-purple);
+  box-shadow: 0 0 8px rgba(157, 78, 221, 0.2);
+}
+
+/* Tags Section - Cyan accent */
+.nco-threat-sheet .tags-section {
+  border-left-color: var(--nco-cyan);
+}
+
+.nco-threat-sheet .tags-section .section-title {
+  color: var(--nco-cyan);
+}
+
+.nco-threat-sheet .tags-section .threat-textarea:focus {
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.2);
+}
+
+/* Actions Section - Yellow/Orange accent */
+.nco-threat-sheet .actions-section {
+  border-left-color: var(--nco-yellow);
+}
+
+.nco-threat-sheet .actions-section .section-title {
+  color: var(--nco-yellow);
+}
+
+.nco-threat-sheet .actions-section .threat-textarea {
+  min-height: 100px;
+}
+
+.nco-threat-sheet .actions-section .threat-textarea:focus {
+  border-color: var(--nco-yellow);
+  box-shadow: 0 0 8px rgba(255, 208, 0, 0.2);
+}
+
+/* Threat Scrollbar */
+.nco-threat-sheet .sheet-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.nco-threat-sheet .sheet-body::-webkit-scrollbar-track {
+  background: var(--nco-bg-dark);
+}
+
+.nco-threat-sheet .sheet-body::-webkit-scrollbar-thumb {
+  background: var(--nco-red);
+  border-radius: 0;
+}
+
+.nco-threat-sheet .sheet-body::-webkit-scrollbar-thumb:hover {
+  background: var(--nco-pink);
+}
+
+/* Threat Window Frame */
+.app.window-app.nco-threat-sheet {
+  background: var(--nco-bg-dark);
+  border: 2px solid var(--nco-red);
+  box-shadow: 0 0 30px rgba(255, 51, 102, 0.3), 0 0 60px rgba(157, 78, 221, 0.2);
+  border-radius: 0;
+}
+
+.app.window-app.nco-threat-sheet .window-header {
+  background: linear-gradient(90deg, #1a0a10 0%, #2a0a15 100%);
+  border-bottom: 2px solid var(--nco-red);
+  padding: 0 10px;
+}
+
+.app.window-app.nco-threat-sheet .window-header .window-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--nco-red);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px var(--nco-red);
+}
+
+.app.window-app.nco-threat-sheet .window-header .header-button,
+.app.window-app.nco-threat-sheet .window-header a {
+  color: var(--nco-text-dim);
+  transition: all 0.2s ease;
+}
+
+.app.window-app.nco-threat-sheet .window-header .header-button:hover,
+.app.window-app.nco-threat-sheet .window-header a:hover {
+  color: var(--nco-red);
+  text-shadow: 0 0 10px var(--nco-red);
+}
+
+.app.window-app.nco-threat-sheet .window-header .close:hover {
+  color: var(--nco-pink);
+  text-shadow: 0 0 10px var(--nco-pink);
+}
+
+.app.window-app.nco-threat-sheet .window-content {
+  background: transparent;
+  padding: 0;
+}
+
+/* ==========================================
+   Drive Header Row with Retire Button
+   ========================================== */
+.nco-sheet .drive-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nco-sheet .drive-header .section-title {
+  flex: 0 0 auto;
+}
+
+.nco-sheet .drive-header .row-spacer {
+  flex: 1;
+}
+
+/* Retire Button - Purple */
+.nco-sheet .retire-btn {
+  color: #9900ff;
+  border-color: #9900ff;
+}
+
+.nco-sheet .retire-btn:hover {
+  background: #9900ff;
+  color: white;
+  box-shadow: 0 0 10px #9900ff;
+}
+
+/* ==========================================
+   Stash Section with Leverage Buttons
+   ========================================== */
+.nco-sheet .stash-section .section-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.nco-sheet .stash-section .section-header-row .section-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.nco-sheet .stash-header {
+  display: flex;
+  align-items: center;
+}
+
+.nco-sheet .stash-header .row-spacer {
+  flex: 1;
+}
+
+/* Stash Row */
+.nco-sheet .stash-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Display-only stash checkboxes (not clickable) */
+.nco-sheet .stash-checkbox.display-only {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Gain Leverage Button - Yellow/Gold (dice roll) */
+.nco-sheet .gain-leverage-btn {
+  color: var(--nco-yellow);
+  border-color: var(--nco-yellow);
+}
+
+.nco-sheet .gain-leverage-btn:hover {
+  background: var(--nco-yellow);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-yellow);
+}
+
+/* Bonus Leverage Button - Green (+1) */
+.nco-sheet .bonus-leverage-btn {
+  color: var(--nco-green);
+  border-color: var(--nco-green);
+}
+
+.nco-sheet .bonus-leverage-btn:hover {
+  background: var(--nco-green);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-green);
+}
+
+/* Spend Leverage Button - Cyan (coins) */
+.nco-sheet .spend-leverage-btn {
+  color: var(--nco-cyan);
+  border-color: var(--nco-cyan);
+}
+
+.nco-sheet .spend-leverage-btn:hover {
+  background: var(--nco-cyan);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-cyan);
+}
+
+/* ==========================================
+   Experience Section with Buttons
+   ========================================== */
+.nco-sheet .experience-section .section-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--nco-border);
+}
+
+.nco-sheet .experience-section .section-header-row .section-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* Display-only experience checkboxes (not clickable) */
+.nco-sheet .exp-checkbox.display-only {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Mark XP Button - Yellow */
+.nco-sheet .mark-xp-btn {
+  color: var(--nco-yellow);
+  border-color: var(--nco-yellow);
+}
+
+.nco-sheet .mark-xp-btn:hover {
+  background: var(--nco-yellow);
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px var(--nco-yellow);
+}
+
+/* Advancement Button - Magenta/Pink */
+.nco-sheet .advancement-btn {
+  color: #ff00ff;
+  border-color: #ff00ff;
+}
+
+.nco-sheet .advancement-btn:hover {
+  background: #ff00ff;
+  color: var(--nco-bg-dark);
+  box-shadow: 0 0 10px #ff00ff;
 }

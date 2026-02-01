@@ -1,8 +1,14 @@
 <form class="nco-sheet" autocomplete="off">
   {{!-- Header --}}
   <header class="sheet-header">
-    <div class="name-section">
-      <input type="text" name="name" value="{{actor.name}}" placeholder="Character Name" />
+    <div class="header-left">
+      <div class="portrait-section">
+        <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+      </div>
+      <div class="name-bio-section">
+        <input type="text" class="character-name" name="name" value="{{actor.name}}" placeholder="Character Name" />
+        <input type="text" class="character-bio" name="system.bio" value="{{system.bio}}" placeholder="Short bio..." />
+      </div>
     </div>
     <div class="roll-section">
       <button type="button" class="roll-button">
@@ -38,15 +44,61 @@
 
     {{!-- Right Column --}}
     <div class="column-right">
-      {{!-- Hits --}}
-      <div class="section">
-        <h3 class="section-title">HITS</h3>
-        <div class="checkbox-row">
-          {{#each hitsArray}}
-          <div class="checkbox hits-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
-            {{#if this.checked}}<i class="fas fa-times"></i>{{/if}}
+      {{!-- Hits & Stunt Points Row --}}
+      <div class="hits-stunt-row">
+        {{!-- Hits --}}
+        <div class="section hits-section">
+          <div class="section-header-row">
+            <h3 class="section-title">HITS</h3>
+            <div class="row-spacer"></div>
+            <div class="button-group">
+              <button type="button" class="icon-btn rest-btn" title="Rest (Recover 1 Hit)">
+                <i class="fas fa-bed"></i>
+              </button>
+            </div>
           </div>
-          {{/each}}
+          <div class="checkbox-row hits-row">
+            {{#each hitsArray}}
+            <div class="checkbox hits-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+              {{#if this.checked}}<i class="fas fa-times"></i>{{/if}}
+            </div>
+            {{/each}}
+            {{!-- 4th hit box - locked until upgraded --}}
+            {{#unless hitsMaxed}}
+            <div class="checkbox hits-checkbox disabled locked" title="Upgrade required">
+              <i class="fas fa-lock"></i>
+            </div>
+            {{/unless}}
+          </div>
+        </div>
+
+        {{!-- Stunt Points --}}
+        <div class="section stunt-section">
+          <div class="section-header-row">
+            <h3 class="section-title">STUNT POINTS</h3>
+            <div class="row-spacer"></div>
+            <div class="button-group">
+              <button type="button" class="icon-btn bonus-stunt-btn" title="Bonus Stunt (+1)">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button type="button" class="icon-btn refresh-stunt-btn" title="Refresh Stunt Points">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="checkbox-row stunt-row">
+            {{#each stuntArray}}
+            <div class="checkbox stunt-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+              {{#if this.checked}}<i class="fas fa-check"></i>{{/if}}
+            </div>
+            {{/each}}
+            {{!-- Locked stunt boxes - show remaining until max 5 --}}
+            {{#each lockedStuntArray}}
+            <div class="checkbox stunt-checkbox disabled locked" title="Upgrade required">
+              <i class="fas fa-lock"></i>
+            </div>
+            {{/each}}
+          </div>
         </div>
       </div>
 
@@ -60,12 +112,28 @@
             <span class="condition-label">{{this.label}}</span>
           </label>
           {{/each}}
+          {{!-- Custom Condition (7th) --}}
+          <label class="condition-item custom-condition">
+            <input type="checkbox" class="condition-checkbox" data-condition="custom" {{#if system.conditions.custom}}checked{{/if}} />
+            <input type="text" class="custom-condition-input" name="system.customCondition" value="{{system.customCondition}}" placeholder="Custom..." />
+          </label>
         </div>
       </div>
 
       {{!-- Traumas --}}
-      <div class="section">
-        <h3 class="section-title">TRAUMAS</h3>
+      <div class="section traumas-section">
+        <div class="section-header-row">
+          <h3 class="section-title">TRAUMAS</h3>
+          <div class="row-spacer"></div>
+          <div class="button-group">
+            <button type="button" class="icon-btn recovery-roll-btn" title="Recovery Roll">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button type="button" class="icon-btn trauma-roll-btn" title="Trauma Roll">
+              <i class="fas fa-skull"></i>
+            </button>
+          </div>
+        </div>
         <div class="input-column">
           {{#each system.traumas}}
           <input type="text" name="system.traumas.{{@index}}" value="{{this}}" placeholder="Trauma {{add @index 1}}" />
@@ -74,23 +142,11 @@
       </div>
 
       {{!-- Flaws --}}
-      <div class="section">
+      <div class="section flaws-section">
         <h3 class="section-title">FLAWS</h3>
         <div class="input-column">
           {{#each system.flaws}}
           <input type="text" name="system.flaws.{{@index}}" value="{{this}}" placeholder="Flaw {{add @index 1}}" />
-          {{/each}}
-        </div>
-      </div>
-
-      {{!-- Stunt Points --}}
-      <div class="section">
-        <h3 class="section-title">STUNT POINTS</h3>
-        <div class="checkbox-row">
-          {{#each stuntArray}}
-          <div class="checkbox stunt-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
-            {{#if this.checked}}<i class="fas fa-check"></i>{{/if}}
-          </div>
           {{/each}}
         </div>
       </div>
@@ -102,7 +158,7 @@
       </div>
 
       {{!-- Special Gear --}}
-      <div class="section">
+      <div class="section special-gear-section">
         <h3 class="section-title">SPECIAL GEAR</h3>
         <div class="input-column">
           {{#each system.specialGear}}
@@ -111,12 +167,26 @@
         </div>
       </div>
 
-      {{!-- Stash --}}
-      <div class="section">
-        <h3 class="section-title">STASH</h3>
-        <div class="checkbox-row">
+      {{!-- Stash (Leverage) --}}
+      <div class="section stash-section">
+        <div class="section-header-row stash-header">
+          <h3 class="section-title">STASH</h3>
+          <div class="row-spacer"></div>
+          <div class="button-group">
+            <button type="button" class="icon-btn gain-leverage-btn" title="Gain Leverage (D3)">
+              <i class="fas fa-dice-d6"></i>
+            </button>
+            <button type="button" class="icon-btn bonus-leverage-btn" title="Bonus Leverage (+1)">
+              <i class="fas fa-plus"></i>
+            </button>
+            <button type="button" class="icon-btn spend-leverage-btn" title="Spend Leverage">
+              <i class="fas fa-coins"></i>
+            </button>
+          </div>
+        </div>
+        <div class="checkbox-row stash-row">
           {{#each stashArray}}
-          <div class="checkbox stash-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+          <div class="checkbox stash-checkbox display-only {{#if this.checked}}checked{{/if}}">
             {{#if this.checked}}<i class="fas fa-check"></i>{{/if}}
           </div>
           {{/each}}
@@ -125,7 +195,15 @@
 
       {{!-- Drive --}}
       <div class="section">
-        <h3 class="section-title">DRIVE</h3>
+        <div class="section-header-row drive-header">
+          <h3 class="section-title">DRIVE</h3>
+          <div class="row-spacer"></div>
+          <div class="button-group">
+            <button type="button" class="icon-btn retire-btn" title="Retire Character">
+              <i class="fas fa-door-open"></i>
+            </button>
+          </div>
+        </div>
         <div class="checkbox-row drive-row">
           {{#each driveArray}}
           <div class="checkbox tristate drive-checkbox state-{{tristate this.state}}" data-index="{{this.index}}">
@@ -134,17 +212,29 @@
           </div>
           {{/each}}
         </div>
+        <input type="text" class="drive-note" name="system.driveNote" value="{{system.driveNote}}" placeholder="Drive description..." />
         <div class="hint">(Click to cycle: ○ → ✓ → ✗)</div>
       </div>
 
       {{!-- Experience --}}
-      <div class="section">
-        <h3 class="section-title">EXPERIENCE</h3>
+      <div class="section experience-section">
+        <div class="section-header-row">
+          <h3 class="section-title">EXPERIENCE</h3>
+          <div class="row-spacer"></div>
+          <div class="button-group">
+            <button type="button" class="icon-btn mark-xp-btn" title="Mark Experience (+1)">
+              <i class="fas fa-plus"></i>
+            </button>
+            <button type="button" class="icon-btn advancement-btn" title="Advancement (costs 5 XP)">
+              <i class="fas fa-arrow-up"></i>
+            </button>
+          </div>
+        </div>
         <div class="experience-container">
           {{#each expBlocks}}
           <div class="exp-block">
             {{#each this.checkboxes}}
-            <div class="checkbox exp-checkbox {{#if this.checked}}checked{{/if}}" data-index="{{this.index}}">
+            <div class="checkbox exp-checkbox display-only {{#if this.checked}}checked{{/if}}">
               {{#if this.checked}}<i class="fas fa-check"></i>{{/if}}
             </div>
             {{/each}}

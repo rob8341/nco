@@ -1,10 +1,16 @@
 {
   "NCO.ActorSheet": "Neon City Overdrive Character Sheet",
+  "NCO.CharacterSheet": "Neon City Overdrive Character Sheet",
+  "NCO.ThreatSheet": "Neon City Overdrive Threat Sheet",
+  "NCO.CharacterName": "Character Name",
+  "NCO.ThreatName": "Threat Name",
+  "NCO.Tags": "Tags",
+  "NCO.Actions": "Actions",
   "NCO.Roll": "Roll",
   "NCO.Trademarks": "Trademarks",
   "NCO.Trademark": "Trademark",
-  "NCO.Edge": "Edge",
   "NCO.Edges": "Edges",
+  "NCO.Edge": "Edge",
   "NCO.Hits": "Hits",
   "NCO.Conditions": "Conditions",
   "NCO.Condition.Angry": "Angry",
@@ -23,10 +29,8 @@
   "NCO.Stash": "Stash",
   "NCO.Drive": "Drive",
   "NCO.Experience": "Experience",
-  "NCO.RollTitle": "Neon City Overdrive Roll",
   "NCO.ActionDice": "Action Dice",
   "NCO.DangerDice": "Danger Dice",
-  "NCO.Result": "Result",
-  "NCO.Boon": "Boon",
-  "NCO.CharacterName": "Character Name"
+  "NCO.RollTitle": "Neon City Roll",
+  "NCO.Result": "Result"
 }

@@ -1,28 +1,15 @@
 {
   "Actor": {
-    "types": ["character"],
+    "types": ["character", "threat"],
     "character": {
+      "img": "",
+      "bio": "",
       "trademarks": [
-        {
-          "name": "",
-          "edges": ["", "", "", "", ""]
-        },
-        {
-          "name": "",
-          "edges": ["", "", "", "", ""]
-        },
-        {
-          "name": "",
-          "edges": ["", "", "", "", ""]
-        },
-        {
-          "name": "",
-          "edges": ["", "", "", "", ""]
-        },
-        {
-          "name": "",
-          "edges": ["", "", "", "", ""]
-        }
+        { "name": "", "edges": ["", "", "", "", ""] },
+        { "name": "", "edges": ["", "", "", "", ""] },
+        { "name": "", "edges": ["", "", "", "", ""] },
+        { "name": "", "edges": ["", "", "", "", ""] },
+        { "name": "", "edges": ["", "", "", "", ""] }
       ],
       "hits": {
         "value": 0,
@@ -34,8 +21,10 @@
         "exhausted": false,
         "restrained": false,
         "scared": false,
-        "weakened": false
+        "weakened": false,
+        "custom": false
       },
+      "customCondition": "",
       "traumas": ["", "", "", ""],
       "flaws": ["", ""],
       "stuntPoints": {
@@ -49,20 +38,29 @@
         "max": 5
       },
       "drive": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "driveNote": "",
       "experience": {
         "value": 0,
         "max": 15
       }
+    },
+    "threat": {
+      "img": "",
+      "bio": "",
+      "hits": {
+        "value": 0,
+        "max": 5
+      },
+      "drive": "",
+      "tags": "",
+      "actions": ""
     }
   },
   "Item": {
-    "types": ["gear", "trademark"],
+    "types": ["gear"],
     "gear": {
       "description": "",
       "special": false
-    },
-    "trademark": {
-      "edges": ["", "", "", "", ""]
     }
   }
 }
