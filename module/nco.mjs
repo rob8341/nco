@@ -617,17 +617,17 @@ for (let i = 0; i < traumas.length; i++) {
             Each action costs 1 leverage. Choose one:
           </div>
           <div style="display:flex;flex-direction:column;gap:8px">
-            <button type="button" class="spend-option" data-action="doc" style="padding:10px;background:#0a1a1a;border:1px solid #00f5ff;border-radius:4px;color:#00f5ff;cursor:pointer;text-align:left;font-family:'Rajdhani',sans-serif">
-              <i class="fas fa-medkit" style="margin-right:8px;color:#00ff88"></i><strong>VISIT A DOC</strong><br>
-              <span style="font-size:0.85em;color:#888">Seek medical treatment and immediately heal one trauma.</span>
+            <button type="button" class="spend-option" data-action="doc" style="padding:10px;background:#0a1a1a;border:1px solid #00f5ff;border-radius:4px;color:#00f5ff;cursor:pointer;text-align:left;font-family:'Rajdhani',sans-serif;height:65px;min-height:65px;max-height:65px;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box">
+              <div><i class="fas fa-medkit" style="margin-right:8px;color:#00ff88"></i><strong>VISIT A DOC</strong></div>
+              <div style="font-size:0.85em;color:#888;margin-top:4px">Seek medical treatment and immediately heal one trauma.</div>
             </button>
-            <button type="button" class="spend-option" data-action="dream" style="padding:10px;background:#0a1a1a;border:1px solid #9900ff;border-radius:4px;color:#9900ff;cursor:pointer;text-align:left;font-family:'Rajdhani',sans-serif">
-              <i class="fas fa-star" style="margin-right:8px;color:#ff00ff"></i><strong>CHASE A DREAM</strong><br>
-              <span style="font-size:0.85em;color:#888">Work towards a drive. Tick one drive track box.</span>
+            <button type="button" class="spend-option" data-action="dream" style="padding:10px;background:#0a1a1a;border:1px solid #9900ff;border-radius:4px;color:#9900ff;cursor:pointer;text-align:left;font-family:'Rajdhani',sans-serif;height:65px;min-height:65px;max-height:65px;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box">
+              <div><i class="fas fa-star" style="margin-right:8px;color:#ff00ff"></i><strong>CHASE A DREAM</strong></div>
+              <div style="font-size:0.85em;color:#888;margin-top:4px">Work towards a drive. Tick one drive track box.</div>
             </button>
-            <button type="button" class="spend-option" data-action="train" style="padding:10px;background:#0a1a1a;border:1px solid #ffd000;border-radius:4px;color:#ffd000;cursor:pointer;text-align:left;font-family:'Rajdhani',sans-serif">
-              <i class="fas fa-dumbbell" style="margin-right:8px;color:#ffd000"></i><strong>TRAIN</strong><br>
-              <span style="font-size:0.85em;color:#888">Improve yourself in some small way. Mark +1 experience points.</span>
+            <button type="button" class="spend-option" data-action="train" style="padding:10px;background:#0a1a1a;border:1px solid #ffd000;border-radius:4px;color:#ffd000;cursor:pointer;text-align:left;font-family:'Rajdhani',sans-serif;height:65px;min-height:65px;max-height:65px;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box">
+              <div><i class="fas fa-dumbbell" style="margin-right:8px;color:#ffd000"></i><strong>TRAIN</strong></div>
+              <div style="font-size:0.85em;color:#888;margin-top:4px">Improve yourself. Mark +1 Experience!</div>
             </button>
           </div>
         </div>
@@ -1698,11 +1698,7 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="display:flex;justify-content:center;align-items:flex-start;gap:20px;margin-bottom:10px">
             <div style="text-align:center">
               <label style="color:#ff6666;font-size:0.8em;display:block;margin-bottom:4px;font-weight:bold">Modifier (costs rolls)</label>
-              <div style="display:flex;align-items:center;gap:4px">
-                <button type="button" id="mod-minus" style="width:28px;height:28px;background:#1a0a10;border:2px solid #ff3366;border-radius:4px;color:#ff3366;cursor:pointer;font-size:1em;font-weight:bold">−</button>
-                <input type="number" id="gear-roll-mod" value="0" readonly style="width:45px;padding:4px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1em;font-weight:bold;text-align:center"/>
-                <button type="button" id="mod-plus" style="width:28px;height:28px;background:#0a1a10;border:2px solid #00ff88;border-radius:4px;color:#00ff88;cursor:pointer;font-size:1em;font-weight:bold">+</button>
-              </div>
+              <input type="number" id="gear-roll-mod" value="0" style="width:60px;padding:6px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1em;font-weight:bold;text-align:center"/>
             </div>
             <div style="text-align:center">
               <label style="color:#ffd000;font-size:0.8em;display:block;margin-bottom:4px;font-weight:bold">Stash Bonus (free)</label>
@@ -1744,18 +1740,7 @@ for (let i = 0; i < traumas.length; i++) {
             html.find("#total-cost").css("color", "#ffd000");
           }
           
-          // Update modifier button states (only modifier is limited by gear rolls)
-          const currentMod = parseInt(html.find("#gear-roll-mod").val()) || 0;
-          if (currentMod >= maxModifier) {
-            html.find("#mod-plus").css({ "opacity": "0.3", "cursor": "not-allowed" });
-          } else {
-            html.find("#mod-plus").css({ "opacity": "1", "cursor": "pointer" });
-          }
-          if (currentMod <= 0) {
-            html.find("#mod-minus").css({ "opacity": "0.3", "cursor": "not-allowed" });
-          } else {
-            html.find("#mod-minus").css({ "opacity": "1", "cursor": "pointer" });
-          }
+          // Modifier is now an editable text field, no button state updates needed
         };
         
         const updateRollButton = () => {
@@ -1784,24 +1769,9 @@ for (let i = 0; i < traumas.length; i++) {
           updateRollButton();
         });
         
-        // Modifier +/- buttons with limits (only modifier uses gear rolls, not leverage)
-        html.find("#mod-minus").click(() => {
-          const input = html.find("#gear-roll-mod");
-          const currentVal = parseInt(input.val()) || 0;
-          if (currentVal > 0) {
-            input.val(currentVal - 1);
-            updateCostWarning();
-          }
-        });
-        html.find("#mod-plus").click(() => {
-          const input = html.find("#gear-roll-mod");
-          const currentVal = parseInt(input.val()) || 0;
-          if (currentVal < maxModifier) {
-            input.val(currentVal + 1);
-            updateCostWarning();
-          } else {
-            ui.notifications.warn(`Cannot add more modifiers! Only ${currentRolls} gear roll(s) remaining.`);
-          }
+        // When modifier input changes, update the cost warning
+        html.find("#gear-roll-mod").change(() => {
+          updateCostWarning();
         });
         
         // Execute roll button

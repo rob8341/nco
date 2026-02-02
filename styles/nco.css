@@ -2858,6 +2858,7 @@ textarea#chat-message:focus,
   background: var(--nco-bg-dark);
   border: 1px solid var(--nco-yellow);
   transition: all 0.2s ease;
+  width: 100%;
 }
 
 .nco-sheet .special-gear-item-compact:hover {
@@ -2911,10 +2912,16 @@ textarea#chat-message:focus,
   flex-shrink: 1;
 }
 
-/* Spacer to push X button to the right */
+/* Spacer to push X button to the right in special gear */
 .nco-sheet .special-gear-spacer {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 8px;
+}
+
+/* Remove button in special gear uses same styling as compact gear */
+.nco-sheet .special-gear-item-compact .remove-gear-btn-compact {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* Tags display - limit width so it doesn't stretch the sheet */
@@ -2951,11 +2958,23 @@ textarea#chat-message:focus,
   max-height: 16px !important;
   border-color: #ffd000;
   font-size: 8px;
+  cursor: default;
+  pointer-events: none;
+}
+
+.nco-sheet .gear-roll-checkbox:hover {
+  border-color: #ffd000 !important;
+  box-shadow: none !important;
 }
 
 .nco-sheet .gear-roll-checkbox.checked {
   background: var(--nco-bg-dark);
   color: #ffd000;
+}
+
+.nco-sheet .gear-roll-checkbox.checked:hover {
+  border-color: #ffd000 !important;
+  box-shadow: none !important;
 }
 
 .nco-sheet .gear-roll-checkbox i {
