@@ -4,6 +4,7 @@
     "character": {
       "img": "",
       "bio": "",
+      "initiative": 1,
       "trademarks": [
         { "name": "", "edges": ["", "", "", "", ""] },
         { "name": "", "edges": ["", "", "", "", ""] },
@@ -51,6 +52,7 @@
     "threat": {
       "img": "",
       "bio": "",
+      "initiative": 0,
       "hits": {
         "value": 0,
         "max": 5

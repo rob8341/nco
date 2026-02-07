@@ -513,6 +513,41 @@ for (let i = 0; i < traumas.length; i++) {
     const current = parseInt(this.actor.system.stash?.value) || 0;
     const max = parseInt(this.actor.system.stash?.max) || 5;
     
+    // Confirmation dialog
+    const confirmed = await new Promise(resolve => {
+      new Dialog({
+        title: "Gain Leverage",
+        content: `
+          <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+            <div style="color:#ffd000;font-weight:bold;text-align:center;margin-bottom:10px">
+              <i class="fas fa-dice-d6" style="margin-right:8px"></i>GAIN LEVERAGE
+            </div>
+            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+              Roll D3 for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
+            </div>
+            <div style="color:#888;text-align:center;font-size:0.9em">
+              Current Stash: ${current}/${max}
+            </div>
+          </div>
+        `,
+        buttons: {
+          confirm: {
+            icon: '<i class="fas fa-dice-d6"></i>',
+            label: "Roll",
+            callback: () => resolve(true)
+          },
+          cancel: {
+            icon: '<i class="fas fa-times"></i>',
+            label: "Cancel",
+            callback: () => resolve(false)
+          }
+        },
+        default: "cancel"
+      }).render(true);
+    });
+    
+    if (!confirmed) return;
+    
     // Roll d3 (1d6: 1-2=1, 3-4=2, 5-6=3)
     const roll = await (new Roll("1d6")).evaluate({ allowInteractive: false });
     const d6Result = roll.dice[0].results[0].result;
@@ -569,6 +604,41 @@ for (let i = 0; i < traumas.length; i++) {
       ui.notifications.warn("Stash is already full!");
       return;
     }
+    
+    // Confirmation dialog
+    const confirmed = await new Promise(resolve => {
+      new Dialog({
+        title: "Bonus Leverage",
+        content: `
+          <div style="background:linear-gradient(135deg,#0d1a0d 0%,#0a200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+            <div style="color:#00ff88;font-weight:bold;text-align:center;margin-bottom:10px">
+              <i class="fas fa-plus" style="margin-right:8px"></i>BONUS LEVERAGE
+            </div>
+            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+              Award +1 bonus leverage to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
+            </div>
+            <div style="color:#888;text-align:center;font-size:0.9em">
+              Current Stash: ${current}/${max}
+            </div>
+          </div>
+        `,
+        buttons: {
+          confirm: {
+            icon: '<i class="fas fa-plus"></i>',
+            label: "Confirm",
+            callback: () => resolve(true)
+          },
+          cancel: {
+            icon: '<i class="fas fa-times"></i>',
+            label: "Cancel",
+            callback: () => resolve(false)
+          }
+        },
+        default: "cancel"
+      }).render(true);
+    });
+    
+    if (!confirmed) return;
     
     const newVal = current + 1;
     await this.actor.update({ "system.stash.value": newVal });
@@ -737,6 +807,41 @@ for (let i = 0; i < traumas.length; i++) {
       ui.notifications.warn("Experience is already at maximum!");
       return;
     }
+    
+    // Confirmation dialog
+    const confirmed = await new Promise(resolve => {
+      new Dialog({
+        title: "Mark Experience",
+        content: `
+          <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+            <div style="color:#ffd000;font-weight:bold;text-align:center;margin-bottom:10px">
+              <i class="fas fa-plus" style="margin-right:8px"></i>MARK EXPERIENCE
+            </div>
+            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+              Award +1 experience to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
+            </div>
+            <div style="color:#888;text-align:center;font-size:0.9em">
+              Current XP: ${current}/${max}
+            </div>
+          </div>
+        `,
+        buttons: {
+          confirm: {
+            icon: '<i class="fas fa-plus"></i>',
+            label: "Confirm",
+            callback: () => resolve(true)
+          },
+          cancel: {
+            icon: '<i class="fas fa-times"></i>',
+            label: "Cancel",
+            callback: () => resolve(false)
+          }
+        },
+        default: "cancel"
+      }).render(true);
+    });
+    
+    if (!confirmed) return;
     
     const newVal = current + 1;
     await this.actor.update({ "system.experience.value": newVal });
@@ -943,7 +1048,7 @@ for (let i = 0; i < traumas.length; i++) {
           ${this.actor.name} ${advancementDesc}
         </div>
         <div style="color:#ffd000;text-align:center;margin-top:10px;font-size:0.9em">
-          <i class="fas fa-minus" style="margin-right:4px"></i>-5 XP (Remaining: ${newXP})
+          <i class="fas fa-minus" style="margin-right:4px"></i>5 XP (Remaining: ${newXP})
         </div>
       </div>
     `;
@@ -1910,7 +2015,44 @@ for (let i = 0; i < traumas.length; i++) {
     event.preventDefault();
     event.stopPropagation();
     
+    const current = parseInt(this.actor.system.gearRolls?.value) || 0;
     const max = parseInt(this.actor.system.gearRolls?.max) || 4;
+    
+    // Confirmation dialog
+    const confirmed = await new Promise(resolve => {
+      new Dialog({
+        title: "Reset Gear Rolls",
+        content: `
+          <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+            <div style="color:#00f5ff;font-weight:bold;text-align:center;margin-bottom:10px">
+              <i class="fas fa-redo" style="margin-right:8px"></i>RESET GEAR ROLLS
+            </div>
+            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+              Reset gear rolls for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
+            </div>
+            <div style="color:#888;text-align:center;font-size:0.9em">
+              Current: ${current}/${max} → Will reset to: ${max}/${max}
+            </div>
+          </div>
+        `,
+        buttons: {
+          confirm: {
+            icon: '<i class="fas fa-redo"></i>',
+            label: "Reset",
+            callback: () => resolve(true)
+          },
+          cancel: {
+            icon: '<i class="fas fa-times"></i>',
+            label: "Cancel",
+            callback: () => resolve(false)
+          }
+        },
+        default: "cancel"
+      }).render(true);
+    });
+    
+    if (!confirmed) return;
+    
     await this.actor.update({ "system.gearRolls.value": max });
     
     // Send chat message
@@ -2072,6 +2214,73 @@ class NCOSpecialGearSheet extends ItemSheet {
 }
 
 /* -------------------------------------------- */
+/*  Combat & Initiative                         */
+/* -------------------------------------------- */
+
+// Reset initiative to default values when combat is reset or ended
+Hooks.on("deleteCombat", async (combat) => {
+  console.log("NCO | Combat deleted, resetting initiative values");
+  for (const combatant of combat.combatants) {
+    const actor = combatant.actor;
+    if (!actor) continue;
+    
+    // Reset initiative based on actor type
+    const defaultInit = actor.type === "character" ? 1 : 0;
+    await actor.update({ "system.initiative": defaultInit });
+  }
+});
+
+// Hook to set default initiative when rolling initiative
+Hooks.on("combatRound", async (combat, updateData, updateOptions) => {
+  // On new round, you could reset initiative if needed
+});
+
+// Hook to reset initiative when combat is reset
+Hooks.on("updateCombat", async (combat, updateData, options, userId) => {
+  // If round is reset to 0 (combat reset)
+  if (updateData.round === 0 || updateData.round === null) {
+    console.log("NCO | Combat reset, resetting initiative values");
+    for (const combatant of combat.combatants) {
+      const actor = combatant.actor;
+      if (!actor) continue;
+      
+      // Reset initiative based on actor type
+      const defaultInit = actor.type === "character" ? 1 : 0;
+      await actor.update({ "system.initiative": defaultInit });
+    }
+  }
+});
+
+// Set default initiative when actor is created
+Hooks.on("createActor", async (actor, options, userId) => {
+  if (game.user.id !== userId) return;
+  
+  const defaultInit = actor.type === "character" ? 1 : 0;
+  if (actor.system.initiative === undefined) {
+    await actor.update({ "system.initiative": defaultInit });
+  }
+});
+
+// Set default initiative when combatant is added to combat (prevents dice roll)
+Hooks.on("createCombatant", async (combatant, options, userId) => {
+  if (game.user.id !== userId) return;
+  
+  const actor = combatant.actor;
+  if (!actor) return;
+  
+  // Set initiative based on actor type (characters = 1, threats = 0)
+  let defaultInit = 0;
+  if (actor.type === "character") {
+    defaultInit = actor.system?.initiative ?? 1;
+  } else if (actor.type === "threat") {
+    defaultInit = actor.system?.initiative ?? 0;
+  }
+  
+  // Update the combatant's initiative immediately
+  await combatant.update({ initiative: defaultInit });
+});
+
+/* -------------------------------------------- */
 /*  Dice Rolling                                */
 /* -------------------------------------------- */
 
@@ -2123,10 +2332,10 @@ async function rollDice(actionDice = 1, dangerDice = 0) {
   const sixes = A.filter(x => x === 6).length;
   const boons = !botch && high === 6 ? Math.max(0, sixes - 1) : 0;
 
-  const outcome = botch ? ["💥 Botch!", "#ff3366", "#1a0a10"]
-    : high <= 3 ? ["❌ Fail", "#ff3366", "#1a0a10"]
-    : high <= 5 ? ["➖ Partial Success", "#ffd000", "#1a1500"]
-    : ["✅ Success", "#00ff88", "#0a1a10"];
+  const outcome = botch ? ["💥 Botch!", "#ff3366", "#1a0a10", "Learn from your mistake! Mark experience!"]
+    : high <= 3 ? ["❌ Fail", "#ff3366", "#1a0a10", ""]
+    : high <= 5 ? ["➖ Partial Success", "#ffd000", "#1a1500", ""]
+    : ["✅ Success", "#00ff88", "#0a1a10", ""];
 
   // === Chip helper for dice display ===
   const chip = (v, t, o = {}) => {
@@ -2168,6 +2377,7 @@ async function rollDice(actionDice = 1, dangerDice = 0) {
       ${boons ? `<div style="color:#ff00ff;font-weight:bold;text-shadow:0 0 10px #ff00ff;margin:8px 0">✨ Boon! x${boons}</div>` : ""}
       <hr style="border:none;border-top:1px solid #333;margin:8px 0">
       <div style="font-size:1.3em;font-weight:bold;color:${outcome[0].includes('Success') ? '#00ff88' : outcome[1]};background:${outcome[2]};border:2px solid ${outcome[1]};border-radius:6px;padding:10px;text-align:center;text-shadow:0 0 10px ${outcome[1]}">${outcome[0]}${high ? ` (highest = ${high})` : ""}</div>
+      ${outcome[3] ? `<div style="color:#ffd000;text-align:center;margin-top:10px;font-size:1em;font-weight:bold;text-shadow:0 0 8px #ffd000;padding:8px;background:#1a1a0d;border:1px solid #ffd000;border-radius:4px"><i class="fas fa-lightbulb" style="margin-right:6px"></i>${outcome[3]}</div>` : ''}
     </div>`;
 
   await ChatMessage.create({ user: game.user.id, speaker, content: html });
@@ -2181,6 +2391,71 @@ async function rollDice(actionDice = 1, dangerDice = 0) {
 
 Hooks.once("ready", async function() {
   console.log("NCO | Neon City Overdrive System Ready");
+});
+
+/* -------------------------------------------- */
+/*  Combat Tracker Initiative Override          */
+/* -------------------------------------------- */
+
+// Override initiative roll to use manual input
+Hooks.on("renderCombatTracker", (app, html, data) => {
+  // Find all initiative roll buttons and replace their click handlers
+  html.find(".combatant-control.roll").each(function() {
+    const btn = $(this);
+    const li = btn.closest(".combatant");
+    const combatantId = li.data("combatantId");
+    
+    // Remove existing click handler
+    btn.off("click");
+    
+    // Add new click handler for manual initiative input
+    btn.on("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const combat = game.combat;
+      if (!combat) return;
+      
+      const combatant = combat.combatants.get(combatantId);
+      if (!combatant) return;
+      
+      const actor = combatant.actor;
+      const currentInit = combatant.initiative ?? (actor?.system?.initiative ?? (actor?.type === "character" ? 1 : 0));
+      
+      // Show manual initiative input dialog
+      new Dialog({
+        title: "Set Initiative",
+        content: `
+          <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+            <div style="color:#00f5ff;font-weight:bold;font-size:1.1em;text-align:center;margin-bottom:15px;text-shadow:0 0 10px #00f5ff">
+              <i class="fas fa-sort-numeric-down" style="margin-right:8px"></i>SET INITIATIVE
+            </div>
+            <div style="color:#e0e0e0;text-align:center;margin-bottom:15px">
+              Set initiative for <span style="color:#00f5ff;font-weight:bold">${combatant.name}</span>
+            </div>
+            <div style="text-align:center">
+              <input type="number" id="init-value" value="${currentInit}" style="width:80px;padding:10px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1.3em;font-weight:bold;text-align:center;font-family:'Orbitron',sans-serif"/>
+            </div>
+          </div>
+        `,
+        buttons: {
+          set: {
+            icon: '<i class="fas fa-check"></i>',
+            label: "Set",
+            callback: async (html) => {
+              const newInit = parseInt(html.find("#init-value").val()) || 0;
+              await combat.setInitiative(combatantId, newInit);
+            }
+          },
+          cancel: {
+            icon: '<i class="fas fa-times"></i>',
+            label: "Cancel"
+          }
+        },
+        default: "set"
+      }).render(true);
+    });
+  });
 });
 
 /* -------------------------------------------- */

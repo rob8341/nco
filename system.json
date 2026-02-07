@@ -10,8 +10,9 @@
   },
   "authors": [
     {
-      "name": "Custom",
-      "url": ""
+      "name": "rob8341",
+      "url": "https://github.com/rob8341",
+      "discord": "YOUR_DISCORD_TAG"
     }
   ],
   "esmodules": [
@@ -28,8 +29,30 @@
     }
   ],
   "primaryTokenAttribute": "hits",
+  "secondaryTokenAttribute": "stuntPoints",
   "background": "",
-  "url": "",
-  "manifest": "",
-  "download": "https://github.com/rob8341/nco/releases/download/v0.2/NCO.zip"
+  "url": "https://github.com/rob8341/NCO",
+  "manifest": "https://github.com/rob8341/NCO/releases/latest/download/system.json",
+  "download": "https://github.com/rob8341/NCO/releases/latest/download/NCO.zip",
+  "bugs": "https://github.com/rob8341/NCO/issues",
+  "changelog": "https://github.com/rob8341/NCO/blob/main/CHANGELOG.md",
+  "license": "LICENSE",
+  "readme": "README.md",
+  "media": [
+    {
+      "type": "cover",
+      "url": "https://github.com/YOUR_GITHUB_USERNAME/NCO/raw/main/assets/cover.webp",
+      "caption": "Neon City Overdrive"
+    },
+    {
+      "type": "screenshot",
+      "url": "https://github.com/YOUR_GITHUB_USERNAME/NCO/raw/main/assets/screenshot.webp",
+      "caption": "Character Sheet"
+    }
+  ],
+  "relationships": {
+    "systems": [],
+    "requires": [],
+    "recommends": []
+  }
 }
