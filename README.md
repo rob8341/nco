@@ -48,12 +48,12 @@ A FoundryVTT v13 compatible system for **Neon City Overdrive**, a rules-light, f
 2. Click **Install System**
 3. Paste the manifest URL:
    ```
-   https://github.com/YOUR_GITHUB_USERNAME/NCO/releases/latest/download/system.json
+   https://raw.githubusercontent.com/rob8341/nco/refs/heads/main/system.json
    ```
 4. Click **Install**
 
 ### Method 2: Manual Installation
-1. Download the latest release from [Releases](https://github.com/YOUR_GITHUB_USERNAME/NCO/releases)
+1. Download the latest release from [Releases](https://github.com/rob8341/NCO/releases)
 2. Extract the `NCO` folder to `<FoundryVTT Data>/Data/systems/`
 3. Restart FoundryVTT
 
