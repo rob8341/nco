@@ -80,7 +80,7 @@ When a character has 5+ XP, click the Advancement button to:
 ## Credits
 
 - **Neon City Overdrive** by Nathan Russell - [Peril Planet](https://www.perilplanet.com/neon-city-overdrive/)
-- FoundryVTT system implementation - rob8341
+- FoundryVTT system implementation - rob8341 with Claude Opus 4.5 AI
 
 ## License
 
