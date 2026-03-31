@@ -2,7 +2,7 @@
   "id": "NCO",
   "title": "Neon City Overdrive",
   "description": "A rules-light, fast-playing tabletop roleplaying game of cinematic cyberpunk action.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "compatibility": {
     "minimum": "12",
     "verified": "13",
@@ -32,8 +32,8 @@
   "secondaryTokenAttribute": "stuntPoints",
   "background": "",
   "url": "https://github.com/rob8341/NCO",
-  "manifest": "https://github.com/rob8341/NCO/releases/latest/download/system.json",
-  "download": "https://github.com/rob8341/NCO/releases/latest/download/NCO.zip",
+  "manifest": "https://raw.githubusercontent.com/rob8341/nco/refs/heads/main/system.json",
+  "download": "https://github.com/rob8341/nco/releases/download/v1.1.0/NCO.zip",
   "bugs": "https://github.com/rob8341/NCO/issues",
   "changelog": "https://github.com/rob8341/NCO/blob/main/CHANGELOG.md",
   "license": "LICENSE",
@@ -41,12 +41,12 @@
   "media": [
     {
       "type": "cover",
-      "url": "https://github.com/YOUR_GITHUB_USERNAME/NCO/raw/main/assets/cover.webp",
+      "url": "",
       "caption": "Neon City Overdrive"
     },
     {
       "type": "screenshot",
-      "url": "https://github.com/YOUR_GITHUB_USERNAME/NCO/raw/main/assets/screenshot.webp",
+      "url": "",
       "caption": "Character Sheet"
     }
   ],

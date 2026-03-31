@@ -24,18 +24,24 @@
       
       {{#each system.trademarks}}
       <div class="trademark-block">
-        <input type="text" 
-               class="trademark-input" 
-               name="system.trademarks.{{@index}}.name" 
-               value="{{this.name}}" 
-               placeholder="Trademark {{add @index 1}}" />
+        <div class="trademark-row">
+          <span class="highlight-pip" title="Highlight for roll"></span>
+          <input type="text"
+                 class="trademark-input"
+                 name="system.trademarks.{{@index}}.name"
+                 value="{{this.name}}"
+                 placeholder="Trademark {{add @index 1}}" />
+        </div>
         <div class="edges-container">
           {{#each this.edges}}
-          <input type="text" 
-                 class="edge-input" 
-                 name="system.trademarks.{{@../index}}.edges.{{@index}}" 
-                 value="{{this}}" 
-                 placeholder="Edge {{add @index 1}}" />
+          <div class="edge-row">
+            <span class="highlight-pip" title="Highlight for roll"></span>
+            <input type="text"
+                   class="edge-input"
+                   name="system.trademarks.{{@../index}}.edges.{{@index}}"
+                   value="{{this}}"
+                   placeholder="Edge {{add @index 1}}" />
+          </div>
           {{/each}}
         </div>
       </div>
@@ -309,7 +315,6 @@
           </div>
           {{/each}}
         </div>
-        <div class="hint">(3 blocks × 5 XP)</div>
       </div>
     </div>
   </div>

@@ -218,18 +218,53 @@
   margin-bottom: 8px;
 }
 
+.nco-sheet .trademark-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.nco-sheet .edge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nco-sheet .highlight-pip {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #444;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.nco-sheet .highlight-pip.highlighted {
+  background: var(--nco-cyan);
+  border-color: var(--nco-cyan);
+  box-shadow: 0 0 6px var(--nco-cyan);
+}
+
 .nco-sheet .trademark-input {
   font-family: 'Orbitron', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  width: 100%;
+  flex: 1;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--nco-cyan);
   color: var(--nco-cyan);
   padding: 5px 0;
-  margin-bottom: 8px;
   text-transform: uppercase;
+  transition: border-bottom-color 0.15s, text-shadow 0.15s;
+}
+
+.nco-sheet .trademark-input.highlighted {
+  border-bottom-color: var(--nco-cyan);
+  text-shadow: 0 0 8px var(--nco-cyan);
 }
 
 .nco-sheet .trademark-input:focus {
@@ -252,11 +287,17 @@
 
 .nco-sheet .edge-input {
   font-size: 12px;
+  flex: 1;
   background: transparent;
   border: none;
   border-bottom: 1px dotted var(--nco-border);
   color: var(--nco-yellow);
   padding: 3px 0;
+  transition: text-shadow 0.15s;
+}
+
+.nco-sheet .edge-input.highlighted {
+  text-shadow: 0 0 6px var(--nco-yellow);
 }
 
 .nco-sheet .edge-input:focus {
@@ -1055,6 +1096,13 @@ button.dialog-button:hover {
 .app.dialog .dialog-button i,
 .app button i {
   margin-right: 6px;
+}
+
+/* Default button — override Foundry's red glow */
+.app.dialog button.default {
+  border-color: var(--nco-cyan);
+  color: var(--nco-cyan);
+  box-shadow: none;
 }
 
 /* Cancel/Close Buttons */

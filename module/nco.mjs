@@ -310,6 +310,15 @@ class NCOActorSheet extends ActorSheet {
     // Gear roll system
     html.find(".gear-roll-btn").click(this._onGearRoll.bind(this));
     html.find(".reset-gear-roll-btn").click(this._onResetGearRoll.bind(this));
+
+    // Trademark / edge highlight pips
+    html.find(".highlight-pip").click((event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const pip = $(event.currentTarget);
+      pip.toggleClass("highlighted");
+      pip.siblings("input").toggleClass("highlighted");
+    });
   }
 
   async _onRoll(event) {
@@ -348,20 +357,27 @@ for (let i = 0; i < traumas.length; i++) {
       
       // Total danger dice
       const totalDangerDice = conditionDice + traumaDice;
-    
+
+      // Count highlighted trademarks and edges separately
+      const trademarkDice = this.element.find(".trademark-row .highlight-pip.highlighted").length;
+      const edgeDice = this.element.find(".edge-row .highlight-pip.highlighted").length;
+      const defaultActionDice = 1 + trademarkDice + edgeDice;
+
     const content = `
       <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
         <div style="margin-bottom:15px">
           <label style="color:#00f5ff;font-weight:bold;display:block;margin-bottom:5px">Action Dice (d6)</label>
-          <input type="number" id="nco-action" value="1" min="0" max="20" style="width:80px;padding:8px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1.1em;font-weight:bold"/>
+          <input type="number" id="nco-action" value="${defaultActionDice}" min="0" max="20" style="width:80px;padding:8px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1.1em;font-weight:bold"/>
         </div>
         <div style="margin-bottom:10px">
           <label style="color:#ff3366;font-weight:bold;display:block;margin-bottom:5px">Danger Dice (d6)</label>
           <input type="number" id="nco-danger" value="${totalDangerDice}" min="0" max="20" style="width:80px;padding:8px;background:#1a0a10;border:2px solid #ff3366;border-radius:4px;color:#ff3366;font-size:1.1em;font-weight:bold"/>
         </div>
         <div style="color:#888;font-size:0.8em;margin-top:10px;padding:8px;background:#111;border-radius:4px;border:1px solid #333">
-          <div style="margin-bottom:4px"><span style="color:#ffd000">Conditions:</span> ${conditionDice} dice</div>
-          <div><span style="color:#ff3366">Traumas:</span> ${traumaDice} dice</div>
+          <div style="margin-bottom:4px"><span style="color:#ff3366">Conditions:</span> ${conditionDice} dice</div>
+          <div style="margin-bottom:4px"><span style="color:#ff3366">Traumas:</span> ${traumaDice} dice</div>
+          ${trademarkDice ? `<div style="margin-bottom:4px"><span style="color:#00f5ff">Trademarks:</span> ${trademarkDice} dice</div>` : ""}
+          ${edgeDice ? `<div><span style="color:#00f5ff">Edges:</span> ${edgeDice} dice</div>` : ""}
         </div>
       </div>
     `;
@@ -376,7 +392,8 @@ for (let i = 0; i < traumas.length; i++) {
           callback: async (html) => {
             const actionDice = Math.max(0, parseInt(html.find('#nco-action').val()) || 0);
             const dangerDice = Math.max(0, parseInt(html.find('#nco-danger').val()) || 0);
-            await rollDice(actionDice, dangerDice);
+            await rollDice(actionDice, dangerDice, this.actor);
+            this.element.find(".highlight-pip, .trademark-input, .edge-input").removeClass("highlighted");
           }
         },
         cancel: {
@@ -417,7 +434,7 @@ for (let i = 0; i < traumas.length; i++) {
               <i class="fas fa-skull-crossbones" style="margin-right:8px"></i>TRAUMA SUFFERED!
             </div>
             <div style="color:#ff6666;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #ff6666">
-              ${this.actor.name} has taken too many hits and suffered a trauma!
+              Has taken too many hits and suffered a trauma!
             </div>
             <div style="color:#ff3366;text-align:center;margin-top:8px;font-size:0.9em">
               Record a new trauma.
@@ -432,7 +449,7 @@ for (let i = 0; i < traumas.length; i++) {
               <i class="fas fa-heart-broken" style="margin-right:8px"></i>HIT TAKEN!
             </div>
             <div style="color:#ff6666;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #ff6666">
-              ${this.actor.name} took a hit!
+              ${["Took a hit!", "Clipped and bleeding.", "That one's gonna leave a mark."][Math.floor(Math.random()*3)]}
             </div>
             <div style="color:#888;text-align:center;margin-top:4px;font-size:0.9em">
               Hits: ${newVal}/${max}
@@ -463,9 +480,6 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="font-size:1em;font-weight:bold;color:#ffd000;text-shadow:0 0 10px #ffd000;text-align:center">
             <i class="fas fa-exclamation-circle" style="margin-right:8px"></i>CONDITION GAINED
           </div>
-          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name}
-          </div>
           <div style="color:#ffd000;text-align:center;margin-top:8px;font-size:1.2em;font-weight:bold;text-shadow:0 0 8px #ffd000">
             ${label}
           </div>
@@ -495,7 +509,7 @@ for (let i = 0; i < traumas.length; i++) {
             <i class="fas fa-bolt" style="margin-right:8px"></i>STUNT USED!
           </div>
           <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name} used a stunt!
+            ${["Used a stunt!", "Pulled off something slick.", "Burned a trick — worth it."][Math.floor(Math.random()*3)]}
           </div>
           <div style="color:#888;text-align:center;margin-top:4px;font-size:0.9em">
             Stunt points remaining: ${newVal}/${parseInt(this.actor.system.stuntPoints?.max) || 3}
@@ -515,13 +529,13 @@ for (let i = 0; i < traumas.length; i++) {
     
     // Confirmation dialog
     const confirmed = await new Promise(resolve => {
+      Hooks.once("renderDialog", (_app, html) => {
+        html.find(".window-title").html('<i class="fas fa-dice-d6" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">GAIN LEVERAGE</span>');
+      });
       new Dialog({
-        title: "Gain Leverage",
+        title: "GAIN LEVERAGE",
         content: `
           <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#ffd000;font-weight:bold;text-align:center;margin-bottom:10px">
-              <i class="fas fa-dice-d6" style="margin-right:8px"></i>GAIN LEVERAGE
-            </div>
             <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
               Roll D3 for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
             </div>
@@ -574,9 +588,6 @@ for (let i = 0; i < traumas.length; i++) {
         <div style="font-size:1em;font-weight:bold;color:#ffd000;text-shadow:0 0 10px #ffd000;text-align:center">
           <i class="fas fa-dice-d6" style="margin-right:8px"></i>GAIN LEVERAGE
         </div>
-        <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-          ${this.actor.name}
-        </div>
         <div style="text-align:center;margin-top:10px">
           <span style="display:inline-block;min-width:40px;padding:8px 12px;border-radius:6px;font-weight:700;font-size:1.3em;border:2px solid #ffd000;background:#1a1a0d;color:#ffd000">${d6Result}</span>
           <span style="color:#888;margin:0 8px">→ D3:</span>
@@ -607,13 +618,13 @@ for (let i = 0; i < traumas.length; i++) {
     
     // Confirmation dialog
     const confirmed = await new Promise(resolve => {
+      Hooks.once("renderDialog", (_app, html) => {
+        html.find(".window-title").html('<i class="fas fa-plus" style="color:#00ff88;margin-right:6px;text-shadow:0 0 10px #00ff88"></i><span style="color:#00ff88;text-shadow:0 0 10px #00ff88;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">BONUS LEVERAGE</span>');
+      });
       new Dialog({
-        title: "Bonus Leverage",
+        title: "BONUS LEVERAGE",
         content: `
           <div style="background:linear-gradient(135deg,#0d1a0d 0%,#0a200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#00ff88;font-weight:bold;text-align:center;margin-bottom:10px">
-              <i class="fas fa-plus" style="margin-right:8px"></i>BONUS LEVERAGE
-            </div>
             <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
               Award +1 bonus leverage to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
             </div>
@@ -651,7 +662,7 @@ for (let i = 0; i < traumas.length; i++) {
           <i class="fas fa-plus" style="margin-right:8px"></i>BONUS LEVERAGE
         </div>
         <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-          ${this.actor.name} received 1 bonus leverage!
+          Received +1 bonus leverage!
         </div>
         <div style="color:#888;text-align:center;margin-top:6px;font-size:0.9em">
           Stash: ${newVal}/${max}
@@ -673,13 +684,13 @@ for (let i = 0; i < traumas.length; i++) {
     }
     
     // Show dialog with options
+    Hooks.once("renderDialog", (_app, html) => {
+      html.find(".window-title").html('<i class="fas fa-coins" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">SPEND LEVERAGE</span>');
+    });
     new Dialog({
-      title: "Spend Leverage",
+      title: "SPEND LEVERAGE",
       content: `
         <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-          <div style="color:#ffd000;font-weight:bold;font-size:1.1em;text-align:center;margin-bottom:15px;text-shadow:0 0 10px #ffd000">
-            <i class="fas fa-coins" style="margin-right:8px"></i>SPEND LEVERAGE
-          </div>
           <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
             Current Stash: <span style="color:#00f5ff;font-weight:bold">${current}</span>
           </div>
@@ -770,11 +781,8 @@ for (let i = 0; i < traumas.length; i++) {
         <div style="font-size:1em;font-weight:bold;color:${actionColor};text-shadow:0 0 10px ${actionColor};text-align:center">
           <i class="fas ${actionIcon}" style="margin-right:8px"></i>${actionTitle}
         </div>
-        <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-          ${this.actor.name}
-        </div>
         <div style="color:#e0e0e0;text-align:center;margin-top:8px">
-          ${this.actor.name} ${actionDesc}
+          ${actionDesc.charAt(0).toUpperCase() + actionDesc.slice(1)}
         </div>
         <div style="color:#ffd000;text-align:center;margin-top:8px;font-size:0.9em">
           <i class="fas fa-coins" style="margin-right:4px"></i>-1 Leverage (Stash: ${newStash}/${max})
@@ -810,13 +818,13 @@ for (let i = 0; i < traumas.length; i++) {
     
     // Confirmation dialog
     const confirmed = await new Promise(resolve => {
+      Hooks.once("renderDialog", (_app, html) => {
+        html.find(".window-title").html('<i class="fas fa-plus" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">MARK EXPERIENCE</span>');
+      });
       new Dialog({
-        title: "Mark Experience",
+        title: "MARK EXPERIENCE",
         content: `
           <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#ffd000;font-weight:bold;text-align:center;margin-bottom:10px">
-              <i class="fas fa-plus" style="margin-right:8px"></i>MARK EXPERIENCE
-            </div>
             <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
               Award +1 experience to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
             </div>
@@ -854,7 +862,7 @@ for (let i = 0; i < traumas.length; i++) {
           <i class="fas fa-plus" style="margin-right:8px"></i>EXPERIENCE GAINED
         </div>
         <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-          ${this.actor.name} gained 1 experience point!
+          Gained +1 experience point!
         </div>
         <div style="color:#888;text-align:center;margin-top:4px;font-size:0.9em">
           Experience: ${newVal}/${max}
@@ -930,13 +938,13 @@ for (let i = 0; i < traumas.length; i++) {
       `;
     }
     
+    Hooks.once("renderDialog", (_app, html) => {
+      html.find(".window-title").html('<i class="fas fa-arrow-up" style="color:#ff00ff;margin-right:6px;text-shadow:0 0 10px #ff00ff"></i><span style="color:#ff00ff;text-shadow:0 0 10px #ff00ff;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">ADVANCEMENT</span>');
+    });
     new Dialog({
-      title: "Advancement",
+      title: "ADVANCEMENT",
       content: `
         <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-          <div style="color:#ff00ff;font-weight:bold;font-size:1.1em;text-align:center;margin-bottom:15px;text-shadow:0 0 10px #ff00ff">
-            <i class="fas fa-arrow-up" style="margin-right:8px"></i>ADVANCEMENT
-          </div>
           <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
             Spend <span style="color:#ffd000;font-weight:bold">5 XP</span> to advance.
           </div>
@@ -1038,14 +1046,11 @@ for (let i = 0; i < traumas.length; i++) {
         <div style="font-size:1.1em;font-weight:bold;color:#ff00ff;text-shadow:0 0 15px #ff00ff;text-align:center">
           <i class="fas fa-arrow-up" style="margin-right:8px"></i>ADVANCEMENT
         </div>
-        <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-          ${this.actor.name}
-        </div>
         <div style="font-size:1em;font-weight:bold;color:${advancementColor};text-shadow:0 0 10px ${advancementColor};text-align:center;margin-top:12px">
           <i class="fas ${advancementIcon}" style="margin-right:8px"></i>${advancementTitle}
         </div>
         <div style="color:#e0e0e0;text-align:center;margin-top:8px">
-          ${this.actor.name} ${advancementDesc}
+          ${advancementDesc.charAt(0).toUpperCase() + advancementDesc.slice(1)}
         </div>
         <div style="color:#ffd000;text-align:center;margin-top:10px;font-size:0.9em">
           <i class="fas fa-minus" style="margin-right:4px"></i>5 XP (Remaining: ${newXP})
@@ -1069,7 +1074,7 @@ for (let i = 0; i < traumas.length; i++) {
           <i class="fas fa-sync-alt" style="margin-right:8px"></i>STUNT POOL REFRESHED
         </div>
         <div style="color:#00ff88;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00ff88">
-          ${this.actor.name} refreshed their stunt points to ${max}!
+          Stunt points refreshed to ${max}!
         </div>
       </div>
     `;
@@ -1095,7 +1100,7 @@ for (let i = 0; i < traumas.length; i++) {
             <i class="fas fa-plus" style="margin-right:8px"></i>BONUS STUNT
           </div>
           <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name} received a bonus stunt point!
+            Received a bonus stunt point!
           </div>
           <div style="color:#888;text-align:center;margin-top:4px;font-size:0.9em">
             Stunt points: ${newVal}/${max}
@@ -1127,7 +1132,7 @@ for (let i = 0; i < traumas.length; i++) {
             <i class="fas fa-bed" style="margin-right:8px"></i>REST
           </div>
           <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name} recovered from 1 hit!
+            Recovered from 1 hit!
           </div>
           <div style="color:#888;text-align:center;margin-top:4px;font-size:0.9em">
             Hits remaining: ${newVal}/${max}
@@ -1177,9 +1182,6 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="font-size:1.3em;font-weight:bold;color:#ff0000;text-shadow:0 0 20px #ff0000;text-align:center">
             <i class="fas fa-skull" style="margin-right:8px"></i>TRAUMA ROLL<i class="fas fa-skull" style="margin-left:8px"></i>
           </div>
-          <div style="color:#00f5ff;text-align:center;margin-top:10px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name}
-          </div>
           <div style="text-align:center;margin-top:15px">
             <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:3px solid #ff0000;background:#1a0000;color:#ff0000;box-shadow:0 0 20px #ff0000">${traumaResult}</span>
           </div>
@@ -1187,7 +1189,7 @@ for (let i = 0; i < traumas.length; i++) {
             ☠️ DYING! ☠️
           </div>
           <div style="color:#ff6666;text-align:center;margin-top:10px;font-size:1.1em">
-            ${this.actor.name} is dying in <span style="color:#ff0000;font-weight:bold;font-size:1.3em">${turnsUntilDeath}</span> turn${turnsUntilDeath === 1 ? '' : 's'}!
+            Dying in <span style="color:#ff0000;font-weight:bold;font-size:1.3em">${turnsUntilDeath}</span> turn${turnsUntilDeath === 1 ? '' : 's'}!
           </div>
           <div style="color:#888;text-align:center;margin-top:8px;font-size:0.85em">
             (Death timer roll: ${turnsUntilDeath})
@@ -1201,9 +1203,6 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="font-size:1.2em;font-weight:bold;color:#ff3366;text-shadow:0 0 10px #ff3366;text-align:center">
             <i class="fas fa-skull" style="margin-right:8px"></i>TRAUMA ROLL
           </div>
-          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name}
-          </div>
           <div style="text-align:center;margin-top:12px">
             <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #ff3366;background:#1a0a10;color:#ff3366">${traumaResult}</span>
           </div>
@@ -1211,7 +1210,7 @@ for (let i = 0; i < traumas.length; i++) {
             ✓ Still standing...
           </div>
           <div style="color:#888;text-align:center;margin-top:6px;font-size:0.9em">
-            Death awaits another day.
+            ${["Death awaits another day.", "Not today, reaper.", "The city doesn't get to keep you yet."][Math.floor(Math.random()*3)]}
           </div>
         </div>
       `;
@@ -1296,18 +1295,12 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="font-size:1.2em;font-weight:bold;color:#00ff88;text-shadow:0 0 15px #00ff88;text-align:center">
             <i class="fas fa-heart" style="margin-right:8px"></i>RECOVERY ROLL
           </div>
-          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name}
-          </div>
           <div style="text-align:center;margin-top:15px">
             <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #00ff88;background:#0a1a10;color:#00ff88;box-shadow:0 0 15px #00ff88">${dieResult}</span>
             ${modifier !== 0 ? `<span style="color:#888;margin:0 8px">${modifier >= 0 ? '+' : ''}${modifier} =</span><span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #00ff88;background:#0a1a10;color:#00ff88">${totalResult}</span>` : ''}
           </div>
           <div style="color:#00ff88;text-align:center;margin-top:15px;font-size:1.3em;font-weight:bold;text-shadow:0 0 15px #00ff88">
             ✓ TRAUMA HEALED!
-          </div>
-          <div style="color:#88ffaa;text-align:center;margin-top:8px">
-            ${this.actor.name} has recovered from a trauma.
           </div>
           <div style="color:#ff6666;text-align:center;margin-top:10px;font-size:0.9em;padding:8px;background:#1a0505;border-radius:4px;border:1px solid #ff3366">
             <i class="fas fa-times-circle" style="margin-right:6px"></i>
@@ -1321,9 +1314,6 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="font-size:1.2em;font-weight:bold;color:#ff3366;text-shadow:0 0 10px #ff3366;text-align:center">
             <i class="fas fa-heart-broken" style="margin-right:8px"></i>RECOVERY ROLL
           </div>
-          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name}
-          </div>
           <div style="text-align:center;margin-top:15px">
             <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #ff3366;background:#1a0a10;color:#ff3366">${dieResult}</span>
             ${modifier !== 0 ? `<span style="color:#888;margin:0 8px">${modifier >= 0 ? '+' : ''}${modifier} =</span><span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #ff3366;background:#1a0a10;color:#ff3366">${totalResult}</span>` : ''}
@@ -1332,7 +1322,7 @@ for (let i = 0; i < traumas.length; i++) {
             ✗ RECOVERY FAILED
           </div>
           <div style="color:#ff9999;text-align:center;margin-top:8px">
-            ${this.actor.name} wasted time and resources trying to recover, but the trauma remains.
+            Wasted time and resources trying to recover, but the trauma remains.
           </div>
           <div style="color:#ff6666;text-align:center;margin-top:10px;font-size:0.9em;padding:8px;background:#1a0505;border-radius:4px;border:1px solid #ff3366">
             <i class="fas fa-times-circle" style="margin-right:6px"></i>
@@ -1362,6 +1352,9 @@ for (let i = 0; i < traumas.length; i++) {
     const dangerDice = 10 - tickedDrive;
 
     // Confirmation dialog
+    Hooks.once("renderDialog", (_app, html) => {
+      html.find(".window-title").html('<i class="fas fa-door-open" style="color:#ff3366;margin-right:6px;text-shadow:0 0 10px #ff3366"></i><span style="color:#ff3366;text-shadow:0 0 10px #ff3366;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">RETIRE CHARACTER</span>');
+    });
     new Dialog({
       title: "Retire Character",
       content: `
@@ -1533,9 +1526,6 @@ for (let i = 0; i < traumas.length; i++) {
         <div style="font-size:1.3em;font-weight:bold;color:#9900ff;text-shadow:0 0 15px #9900ff;text-align:center;margin-bottom:8px">
           <i class="fas fa-door-open" style="margin-right:8px"></i>RETIREMENT ROLL
         </div>
-        <div style="color:#00f5ff;text-align:center;font-size:1.1em;margin-bottom:10px;text-shadow:0 0 8px #00f5ff">
-          ${this.actor.name}
-        </div>
         <hr style="border:none;border-top:1px solid #444;margin:10px 0">
         ${block(`Action Dice (${a}d6)`, A, "a", true)}
         ${block(`Danger Dice (${d}d6)`, D, "d")}
@@ -1607,13 +1597,13 @@ for (let i = 0; i < traumas.length; i++) {
     if (!item) return;
     
     // Confirmation dialog
+    Hooks.once("renderDialog", (_app, html) => {
+      html.find(".window-title").html('<i class="fas fa-exclamation-triangle" style="color:#ff3366;margin-right:6px;text-shadow:0 0 10px #ff3366"></i><span style="color:#ff3366;text-shadow:0 0 10px #ff3366;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">CONFIRM REMOVAL</span>');
+    });
     new Dialog({
-      title: "Remove Item",
+      title: "CONFIRM REMOVAL",
       content: `
         <div style="background:linear-gradient(135deg,#1a0a10 0%,#0d0d1a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-          <div style="color:#ff3366;font-weight:bold;text-align:center;margin-bottom:10px">
-            <i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>CONFIRM REMOVAL
-          </div>
           <div style="color:#e0e0e0;text-align:center">
             Remove <span style="color:#00f5ff;font-weight:bold">${item.name}</span>?
           </div>
@@ -1674,12 +1664,9 @@ for (let i = 0; i < traumas.length; i++) {
         <div style="color:#e0e0e0;font-family:'Rajdhani',sans-serif;font-size:0.95em;line-height:1.5">
           ${description}
         </div>
-        <div style="color:#666;font-size:0.8em;margin-top:8px;font-style:italic">
-          — ${this.actor.name}
-        </div>
       </div>
     `;
-    
+
     await ChatMessage.create({ user: game.user.id, speaker, content: html });
   }
 
@@ -1733,12 +1720,9 @@ for (let i = 0; i < traumas.length; i++) {
           ${description}
         </div>
         ${tagsHtml}
-        <div style="color:#666;font-size:0.8em;margin-top:8px;font-style:italic">
-          — ${this.actor.name}
-        </div>
       </div>
     `;
-    
+
     await ChatMessage.create({ user: game.user.id, speaker, content: html });
   }
 
@@ -1764,13 +1748,13 @@ for (let i = 0; i < traumas.length; i++) {
       `;
     }
     
+    Hooks.once("renderDialog", (_app, html) => {
+      html.find(".window-title").html('<i class="fas fa-dice-d6" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">GEAR ROLL</span>');
+    });
     new Dialog({
-      title: "Gear Roll",
+      title: "GEAR ROLL",
       content: `
         <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:12px;border-radius:8px;font-family:'Orbitron',sans-serif">
-          <div style="color:#ffd000;font-weight:bold;font-size:1em;text-align:center;margin-bottom:8px;text-shadow:0 0 10px #ffd000">
-            <i class="fas fa-dice-d6" style="margin-right:8px"></i>GEAR ROLL
-          </div>
           <div style="color:#e0e0e0;text-align:center;margin-bottom:8px;font-size:0.9em">
             Gear Rolls Remaining: <span style="color:#00f5ff;font-weight:bold">${currentRolls}</span>
           </div>
@@ -1956,9 +1940,6 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="font-size:1.2em;font-weight:bold;color:#00ff88;text-shadow:0 0 15px #00ff88;text-align:center">
             <i class="fas fa-tools" style="margin-right:8px"></i>GEAR ROLL
           </div>
-          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name}
-          </div>
           <div style="text-align:center;margin-top:15px">
             <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #00ff88;background:#0a1a10;color:#00ff88;box-shadow:0 0 15px #00ff88">${dieResult}</span>
             ${(modifier !== 0 || leverageSpent > 0) ? `<span style="color:#888;margin:0 8px">+${modifier + leverageSpent} =</span><span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #00ff88;background:#0a1a10;color:#00ff88">${totalResult}</span>` : ''}
@@ -1970,7 +1951,7 @@ for (let i = 0; i < traumas.length; i++) {
             ✓ SUCCESS!
           </div>
           <div style="color:#88ffaa;text-align:center;margin-top:8px">
-            ${this.actor.name} acquired specialised gear with <span style="color:#ffd000;font-weight:bold">${targetTags}</span> tag${targetTags > 1 ? 's' : ''}!
+            Acquired specialised gear with <span style="color:#ffd000;font-weight:bold">${targetTags}</span> tag${targetTags > 1 ? 's' : ''}!
           </div>
           <div style="color:#888;text-align:center;margin-top:10px;font-size:0.85em;padding:8px;background:#111;border-radius:4px">
             Gear Rolls Spent: ${totalGearRollCost} • Remaining: ${newRollsRemaining}/${maxRolls}
@@ -1984,9 +1965,6 @@ for (let i = 0; i < traumas.length; i++) {
           <div style="font-size:1.2em;font-weight:bold;color:#ff3366;text-shadow:0 0 10px #ff3366;text-align:center">
             <i class="fas fa-tools" style="margin-right:8px"></i>GEAR ROLL
           </div>
-          <div style="color:#00f5ff;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00f5ff">
-            ${this.actor.name}
-          </div>
           <div style="text-align:center;margin-top:15px">
             <span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #ff3366;background:#1a0a10;color:#ff3366">${dieResult}</span>
             ${(modifier !== 0 || leverageSpent > 0) ? `<span style="color:#888;margin:0 8px">+${modifier + leverageSpent} =</span><span style="display:inline-block;min-width:50px;padding:10px 15px;border-radius:8px;font-weight:700;font-size:1.5em;border:2px solid #ff3366;background:#1a0a10;color:#ff3366">${totalResult}</span>` : ''}
@@ -1998,7 +1976,7 @@ for (let i = 0; i < traumas.length; i++) {
             ✗ FAILED
           </div>
           <div style="color:#ff9999;text-align:center;margin-top:8px">
-            ${this.actor.name} wasted ${totalGearRollCost} gear roll${totalGearRollCost > 1 ? 's' : ''} trying to acquire specialised gear.
+            Wasted ${totalGearRollCost} gear roll${totalGearRollCost > 1 ? 's' : ''} trying to acquire specialised gear.
           </div>
           <div style="color:#888;text-align:center;margin-top:10px;font-size:0.85em;padding:8px;background:#111;border-radius:4px">
             Gear Rolls Spent: ${totalGearRollCost} • Remaining: ${newRollsRemaining}/${maxRolls}
@@ -2020,13 +1998,13 @@ for (let i = 0; i < traumas.length; i++) {
     
     // Confirmation dialog
     const confirmed = await new Promise(resolve => {
+      Hooks.once("renderDialog", (_app, html) => {
+        html.find(".window-title").html('<i class="fas fa-redo" style="color:#00f5ff;margin-right:6px;text-shadow:0 0 10px #00f5ff"></i><span style="color:#00f5ff;text-shadow:0 0 10px #00f5ff;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">RESET GEAR ROLLS</span>');
+      });
       new Dialog({
-        title: "Reset Gear Rolls",
+        title: "RESET GEAR ROLLS",
         content: `
           <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#00f5ff;font-weight:bold;text-align:center;margin-bottom:10px">
-              <i class="fas fa-redo" style="margin-right:8px"></i>RESET GEAR ROLLS
-            </div>
             <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
               Reset gear rolls for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
             </div>
@@ -2063,7 +2041,7 @@ for (let i = 0; i < traumas.length; i++) {
           <i class="fas fa-redo" style="margin-right:8px"></i>GEAR ROLLS RESET
         </div>
         <div style="color:#00ff88;text-align:center;margin-top:8px;font-size:1.1em;text-shadow:0 0 8px #00ff88">
-          ${this.actor.name} reset their gear rolls to ${max}!
+          Gear rolls reset to ${max}!
         </div>
       </div>
     `;
@@ -2284,10 +2262,10 @@ Hooks.on("createCombatant", async (combatant, options, userId) => {
 /*  Dice Rolling                                */
 /* -------------------------------------------- */
 
-async function rollDice(actionDice = 1, dangerDice = 0) {
+async function rollDice(actionDice = 1, dangerDice = 0, actor = null) {
   const a = Math.max(0, actionDice);
   const d = Math.max(0, dangerDice);
-  const speaker = ChatMessage.getSpeaker();
+  const speaker = ChatMessage.getSpeaker({ actor });
 
   // === Rolls ===
   const rA = a ? await (new Roll(`${a}d6`)).evaluate({ allowInteractive: false }) : null;
@@ -2329,52 +2307,57 @@ async function rollDice(actionDice = 1, dangerDice = 0) {
 
   const high = Arem.length ? Math.max(...Arem) : null;
   const botch = !Arem.length || (Arem.length === 1 && Arem[0] === 1);
-  const sixes = A.filter(x => x === 6).length;
-  const boons = !botch && high === 6 ? Math.max(0, sixes - 1) : 0;
+  const boons = !botch && high === 6 ? Math.max(0, Arem.filter(x => x === 6).length - 1) : 0;
 
   const outcome = botch ? ["💥 Botch!", "#ff3366", "#1a0a10", "Learn from your mistake! Mark experience!"]
     : high <= 3 ? ["❌ Fail", "#ff3366", "#1a0a10", ""]
     : high <= 5 ? ["➖ Partial Success", "#ffd000", "#1a1500", ""]
     : ["✅ Success", "#00ff88", "#0a1a10", ""];
 
-  // === Chip helper for dice display ===
-  const chip = (v, t, o = {}) => {
-    const base = "display:inline-block;min-width:28px;padding:4px 8px;margin:2px;border-radius:6px;font-weight:700;text-align:center;font-family:'Orbitron',monospace;";
-    if (o.cancel) {
-      return `<span style="${base}opacity:.6;border:2px solid #ff3366;background:#1a0a10;color:#ff3366;text-decoration:line-through">${v}</span>`;
-    }
-    if (o.hl) {
-      return `<span style="${base}border:2px solid #00f5ff;background:#0a1a1a;color:#00f5ff;box-shadow:0 0 10px #00f5ff">${v}</span>`;
-    }
-    const c = t === "a" ? "#00f5ff" : "#ff3366";
-    const b = t === "a" ? "#00f5ff" : "#ff3366";
-    const bg = t === "a" ? "#0a1a1a" : "#1a0a10";
-    return `<span style="${base}border:1px solid ${b};background:${bg};color:${c}">${v}</span>`;
+  // === Chip helper ===
+  const base = "display:inline-block;min-width:28px;padding:4px 8px;margin:2px;border-radius:6px;font-weight:700;text-align:center;font-family:'Orbitron',monospace;";
+  const chip = (v, state, type = "a") => {
+    if (state === "cancel")  return `<span style="${base}opacity:.5;border:2px solid #555;background:#1a1a1a;color:#666;text-decoration:line-through">${v}</span>`;
+    if (state === "chosen")  return `<span style="${base}border:2px solid #ffd000;background:#1a1500;color:#ffd000;box-shadow:0 0 10px #ffd000">${v}</span>`;
+    if (state === "boon")    return `<span style="${base}border:2px solid #cc44ff;background:#1a0a20;color:#cc44ff;box-shadow:0 0 10px #cc44ff">${v}</span>`;
+    const c = type === "a" ? "#00f5ff" : "#ff3366";
+    const bg = type === "a" ? "#0a1a1a" : "#1a0a10";
+    return `<span style="${base}border:1px solid ${c};background:${bg};color:${c}">${v}</span>`;
   };
 
-  const block = (title, arr, t, hl) => `
+  // Build action chips: cancelled first, then remaining (chosen → boon → normal)
+  const actionChips = (() => {
+    const cancelledChips = canc.map(v => chip(v, "cancel"));
+    let chosenUsed = false;
+    const restChips = Arem.map(v => {
+      if (!chosenUsed && v === high) { chosenUsed = true; return chip(v, "chosen"); }
+      if (high === 6 && v === 6) return chip(v, "boon");
+      return chip(v, "normal", "a");
+    });
+    return [...cancelledChips, ...restChips];
+  })();
+
+  // Build danger chips: cancelling dice first (aligned with cancelled action dice), then rest
+  const dangerChips = [
+    ...canc.map(v => chip(v, "normal", "d")),
+    ...Drem.map(v => chip(v, "normal", "d")),
+  ];
+
+const block = (title, chips) => `
     <div style="margin:8px 0">
       <strong style="color:#b0b0b0;font-size:0.9em">${title}</strong>
-      <div style="margin-top:4px">${
-        arr.length ? arr.map(v => chip(v, t, { hl: hl && v === high })).join("") : '<span style="color:#666">(none)</span>'
-      }</div>
+      <div style="margin-top:4px">${chips.length ? chips.join("") : '<span style="color:#666">(none)</span>'}</div>
     </div>`;
+
 
   // === Build Chat Output ===
   let html = `
     <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);border:2px solid #00f5ff;border-radius:8px;padding:12px;box-shadow:0 0 20px rgba(0,245,255,0.3)">
       <div style="font-size:1.2em;font-weight:bold;color:#00f5ff;text-shadow:0 0 10px #00f5ff;text-align:center;margin-bottom:8px">NEON CITY OVERDRIVE</div>
       <hr style="border:none;border-top:1px solid #333;margin:8px 0">
-      ${block(`Action Dice (${a}d6)`, A, "a", true)}
-      ${block(`Danger Dice (${d}d6)`, D, "d")}
-      <hr style="border:none;border-top:1px solid #333;margin:8px 0">
-      <div style="margin:8px 0">
-        <strong style="color:#b0b0b0;font-size:0.9em">Cancelled:</strong>
-        <div style="margin-top:4px">${canc.length ? canc.map(v => chip(v, "a", { cancel: true })).join("") : '<span style="color:#666">None</span>'}</div>
-      </div>
-      ${block("Remaining Action", Arem, "a", true)}
-      ${block("Remaining Danger", Drem, "d")}
-      ${boons ? `<div style="color:#ff00ff;font-weight:bold;text-shadow:0 0 10px #ff00ff;margin:8px 0">✨ Boon! x${boons}</div>` : ""}
+      ${block(`Action Dice (${a}d6)`, actionChips)}
+      ${block(`Danger Dice (${d}d6)`, dangerChips)}
+      ${boons ? `<div style="color:#cc44ff;font-weight:bold;text-shadow:0 0 10px #cc44ff;margin:8px 0">✨ Boon! x${boons}</div>` : ""}
       <hr style="border:none;border-top:1px solid #333;margin:8px 0">
       <div style="font-size:1.3em;font-weight:bold;color:${outcome[0].includes('Success') ? '#00ff88' : outcome[1]};background:${outcome[2]};border:2px solid ${outcome[1]};border-radius:6px;padding:10px;text-align:center;text-shadow:0 0 10px ${outcome[1]}">${outcome[0]}${high ? ` (highest = ${high})` : ""}</div>
       ${outcome[3] ? `<div style="color:#ffd000;text-align:center;margin-top:10px;font-size:1em;font-weight:bold;text-shadow:0 0 8px #ffd000;padding:8px;background:#1a1a0d;border:1px solid #ffd000;border-radius:4px"><i class="fas fa-lightbulb" style="margin-right:6px"></i>${outcome[3]}</div>` : ''}
@@ -2423,13 +2406,13 @@ Hooks.on("renderCombatTracker", (app, html, data) => {
       const currentInit = combatant.initiative ?? (actor?.system?.initiative ?? (actor?.type === "character" ? 1 : 0));
       
       // Show manual initiative input dialog
+      Hooks.once("renderDialog", (_app, html) => {
+        html.find(".window-title").html('<i class="fas fa-sort-numeric-down" style="color:#00f5ff;margin-right:6px;text-shadow:0 0 10px #00f5ff"></i><span style="color:#00f5ff;text-shadow:0 0 10px #00f5ff;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">SET INITIATIVE</span>');
+      });
       new Dialog({
-        title: "Set Initiative",
+        title: "SET INITIATIVE",
         content: `
           <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#00f5ff;font-weight:bold;font-size:1.1em;text-align:center;margin-bottom:15px;text-shadow:0 0 10px #00f5ff">
-              <i class="fas fa-sort-numeric-down" style="margin-right:8px"></i>SET INITIATIVE
-            </div>
             <div style="color:#e0e0e0;text-align:center;margin-bottom:15px">
               Set initiative for <span style="color:#00f5ff;font-weight:bold">${combatant.name}</span>
             </div>
