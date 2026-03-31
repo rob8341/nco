@@ -2,6 +2,25 @@
 
 All notable changes to the Neon City Overdrive FoundryVTT system will be documented in this file.
 
+## [1.1.0] - 2026-03-31
+
+### Added
+- **Trademark & Edge highlighting** — click the pip next to any trademark or edge to highlight it for a roll; highlighted count adds to default action dice automatically
+- **Roll dialog breakdown** — action dice default pre-filled from highlighted trademarks and edges, shown as separate labelled sources (Trademarks / Edges)
+- **Randomised chat flavour text** — "took a hit", "used a stunt", and "death awaits another day" each rotate through 3 variants
+
+### Changed
+- **Dialog window headers** — all dialog windows now display their title with icon, colour, and Orbitron neon-glow font matching the in-content style; titles no longer appear blank
+- **Roll chat card** — cancelled dice shown in grey with strikethrough; chosen die highlighted yellow; boon dice highlighted purple; cancelled pairs sorted so the action die appears above the danger die that cancelled it; remaining/cancelled breakdown sections removed for a cleaner card
+- **Roll chat card colour coding** — danger sources (Conditions, Traumas) in red; action sources (Trademarks, Edges) in blue in the roll dialog breakdown
+- **Roll chat card speaker** — chat messages from the Roll button now show the actor's name instead of the player's name
+- **Boon calculation** — boons now counted from remaining (non-cancelled) action dice only
+- **Boon label** — coloured purple to match boon dice
+- **Dialog default button** — removed Foundry's red glow from the default roll button; styled consistently with the NCO cyan theme
+
+### Removed
+- "(3 blocks × 5 XP)" hint label from the Experience section
+
 ## [1.0.0] - Initial Release
 
 ### Added
