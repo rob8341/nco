@@ -57,7 +57,8 @@ class CharacterData extends foundry.abstract.TypeDataModel {
       experience:      new f.SchemaField({
                          value: new f.NumberField({ initial: 0, integer: true, min: 0 }),
                          max:   new f.NumberField({ initial: 15, integer: true, min: 0 })
-                       })
+                       }),
+      notes:           new f.StringField({ initial: "" })
     };
   }
 }
@@ -378,7 +379,7 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
     const form = this.element?.querySelector("form");
     if (form && this.isEditable) {
       const updateData = {};
-      form.querySelectorAll("input[type='text'][name]").forEach(input => {
+      form.querySelectorAll("input[type='text'][name], textarea[name]").forEach(input => {
         updateData[input.name] = input.value;
       });
       if (Object.keys(updateData).length > 0) {
@@ -395,7 +396,7 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
 
     // Cache text input values in memory before DOM replacement
     this._cachedInputs = {};
-    this.element?.querySelectorAll("input[type='text'][name]").forEach(input => {
+    this.element?.querySelectorAll("input[type='text'][name], textarea[name]").forEach(input => {
       this._cachedInputs[input.name] = input.value;
     });
   }
@@ -410,7 +411,7 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
 
       if (this._cachedInputs) {
         for (const [name, value] of Object.entries(this._cachedInputs)) {
-          const input = this.element.querySelector(`input[type="text"][name="${name}"]`);
+          const input = this.element.querySelector(`input[type="text"][name="${name}"], textarea[name="${name}"]`);
           if (input && input.value !== value) input.value = value;
         }
       }
@@ -729,6 +730,7 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
     
     // Roll d3 (1d6: 1-2=1, 3-4=2, 5-6=3)
     const roll = await (new Roll("1d6")).evaluate();
+    await ncoShowDice([roll, "nco-danger"]);
     const d6Result = roll.dice[0].results[0].result;
     const d3Result = Math.ceil(d6Result / 2);
 
@@ -1271,12 +1273,14 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
 
     // Roll the trauma die
     const traumaRoll = await (new Roll("1d6")).evaluate();
+    await ncoShowDice([traumaRoll, "nco-danger"]);
     const traumaResult = traumaRoll.dice[0].results[0].result;
 
     let html;
     if (traumaResult === 1) {
       // Deadly result - roll for turns until death
       const deathRoll = await (new Roll("1d6")).evaluate();
+      await ncoShowDice([deathRoll, "nco-danger"]);
       const turnsUntilDeath = deathRoll.dice[0].results[0].result;
 
       html = `
@@ -1344,9 +1348,9 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
             Roll d6: On 4+ the trauma is healed. Otherwise, you've wasted time and resources.
           </div>
           <hr style="border:none;border-top:1px solid #444;margin:15px 0">
-          <div style="margin-bottom:10px">
+          <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:10px">
             <label style="color:#00f5ff;font-weight:bold;display:block;margin-bottom:5px">Modifier (+ or -):</label>
-            <input type="number" id="nco-recovery-mod" value="0" style="width:80px;padding:8px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1.1em;font-weight:bold"/>
+            <input type="number" id="nco-recovery-mod" value="0" style="width:80px;padding:8px;background:#1a1a2e;border:2px solid #00f5ff;border-radius:4px;color:#00f5ff;font-size:1.1em;font-weight:bold;text-align:center"/>
           </div>
           <div style="color:#666;font-size:0.8em;text-align:center">
             (Any applicable bonuses from edges, gear, etc.)
@@ -1376,6 +1380,7 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
 
     // Roll the recovery die
     const roll = await (new Roll("1d6")).evaluate();
+    await ncoShowDice([roll, "nco-danger"]);
     const dieResult = roll.dice[0].results[0].result;
     const totalResult = dieResult + modifier;
 
@@ -1495,6 +1500,8 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
     // === Rolls ===
     const rA = a ? await (new Roll(`${a}d6`)).evaluate() : null;
     const rD = d ? await (new Roll(`${d}d6`)).evaluate() : null;
+
+    await ncoShowDice(...[rA && [rA, "nco-action"], rD && [rD, "nco-danger"]].filter(Boolean));
 
     const getResults = r => r?.dice?.[0]?.results?.map(r => r.result) ?? [];
     const A = getResults(rA), D = getResults(rD);
@@ -1934,7 +1941,7 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
             </div>
           </div>
 
-          <div style="text-align:center;margin-top:10px">
+          <div style="display:flex;justify-content:center;margin-top:10px">
             <button type="button" id="gear-roll-execute" disabled style="padding:8px 24px;background:#333;border:2px solid #666;border-radius:6px;color:#666;cursor:not-allowed;font-family:'Orbitron',sans-serif;font-weight:bold;font-size:0.9em">
               <i class="fas fa-dice-d6" style="margin-right:6px"></i>SELECT TARGET FIRST
             </button>
@@ -1978,6 +1985,7 @@ class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
     
     // Roll the d6
     const roll = await (new Roll("1d6")).evaluate();
+    await ncoShowDice([roll, "nco-danger"]);
     const dieResult = roll.dice[0].results[0].result;
     const totalResult = dieResult + modifier + leverageSpent;
     
@@ -2104,7 +2112,7 @@ class NCOThreatSheet extends foundry.applications.api.HandlebarsApplicationMixin
 
   static DEFAULT_OPTIONS = {
     classes: ["nco", "sheet", "actor", "threat"],
-    position: { width: 550, height: 450 },
+    position: { width: 550, height: 500 },
     window: { resizable: false },
     actions: {}
   };
@@ -2130,9 +2138,45 @@ class NCOThreatSheet extends foundry.applications.api.HandlebarsApplicationMixin
     return context;
   }
 
+  async close(options) {
+    const form = this.element?.querySelector("form");
+    if (form && this.isEditable) {
+      const updateData = {};
+      form.querySelectorAll("input[name], textarea[name]").forEach(el => {
+        updateData[el.name] = el.type === "number" ? Number(el.value) : el.value;
+      });
+      if (Object.keys(updateData).length > 0) {
+        await this.actor.update(updateData, { render: false });
+      }
+    }
+    return super.close(options);
+  }
+
   _onRender(context, options) {
     super._onRender(context, options);
+
+    // Sync window title with name input value
+    const titleEl = this.element.querySelector(".window-title");
+    const nameInput = this.element.querySelector('input[name="name"]');
+    if (titleEl && nameInput) titleEl.textContent = nameInput.value || this.title;
+
     if (!this.isEditable) return;
+
+    // Name — save immediately and update sidebar + title
+    nameInput?.addEventListener("change", async (event) => {
+      await this.actor.update({ name: event.currentTarget.value });
+      if (titleEl) titleEl.textContent = event.currentTarget.value;
+    });
+
+    // All other inputs and textareas — save on change
+    this.element.querySelectorAll("input[name]:not([name='name']), textarea[name]").forEach(el => {
+      el.addEventListener("change", async (event) => {
+        const val = event.currentTarget.type === "number"
+          ? Number(event.currentTarget.value)
+          : event.currentTarget.value;
+        await this.actor.update({ [event.currentTarget.name]: val });
+      });
+    });
 
     // Portrait click
     this.element.querySelector('.portrait-container')?.addEventListener('click', ev => {
@@ -2285,9 +2329,15 @@ class NCOSpecialGearSheet extends foundry.applications.api.HandlebarsApplication
     const form = this.element?.querySelector("form");
     if (form && this.isEditable) {
       const updateData = {};
-      form.querySelectorAll("input[type='text'][name], textarea[name]").forEach(el => {
+      // Non-tag text/textarea fields
+      form.querySelectorAll("input[type='text'][name]:not([name^='system.tags.']), textarea[name]").forEach(el => {
         updateData[el.name] = el.value;
       });
+      // Rebuild tags array as a whole
+      const tagInputs = form.querySelectorAll("input[name^='system.tags.']");
+      if (tagInputs.length) {
+        updateData["system.tags"] = Array.from(tagInputs).map(el => el.value);
+      }
       if (Object.keys(updateData).length > 0) {
         await this.item.update(updateData, { render: false });
       }
@@ -2312,11 +2362,18 @@ class NCOSpecialGearSheet extends foundry.applications.api.HandlebarsApplication
       el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } });
     });
 
-    // Save all fields on change
-    this.element.querySelectorAll("input[type='text'][name], textarea[name]").forEach(el => {
+    // Save non-tag fields on change
+    this.element.querySelectorAll("input[type='text'][name]:not([name^='system.tags.']), textarea[name]").forEach(el => {
       el.addEventListener("change", async (event) => {
-        const updateData = { [event.currentTarget.name]: event.currentTarget.value };
-        await this.item.update(updateData);
+        await this.item.update({ [event.currentTarget.name]: event.currentTarget.value });
+      });
+    });
+
+    // Save tags as a full array on any tag change
+    this.element.querySelectorAll("input[name^='system.tags.']").forEach(el => {
+      el.addEventListener("change", async () => {
+        const tags = Array.from(this.element.querySelectorAll("input[name^='system.tags.']")).map(i => i.value);
+        await this.item.update({ "system.tags": tags });
       });
     });
 
@@ -2411,6 +2468,8 @@ async function rollDice(actionDice = 1, dangerDice = 0, actor = null) {
   // === Rolls ===
   const rA = a ? await (new Roll(`${a}d6`)).evaluate() : null;
   const rD = d ? await (new Roll(`${d}d6`)).evaluate() : null;
+
+  await ncoShowDice(...[rA && [rA, "nco-action"], rD && [rD, "nco-danger"]].filter(Boolean));
 
   const getResults = r => r?.dice?.[0]?.results?.map(r => r.result) ?? [];
   const A = getResults(rA), D = getResults(rD);
@@ -2507,6 +2566,60 @@ Hooks.once("setup", function() {
       foundry.utils.setProperty(game.user, "flags.dice-so-nice.settings", {});
     if (!game.user.flags["dice-so-nice"]?.appearance)
       foundry.utils.setProperty(game.user, "flags.dice-so-nice.appearance", {});
+  }
+});
+
+// Register NCO cyberpunk colorsets with Dice So Nice
+Hooks.once("diceSoNiceReady", dice3d => {
+  dice3d.addColorset({
+    name: "nco-action",
+    description: "NCO Action Dice",
+    category: "Neon City Overdrive",
+    foreground: "#00f5ff",
+    background: "#ffffff",
+    outline: "#00f5ff",
+    edge: "#00aacc",
+    texture: "none",
+    material: "glass",
+    font: "Orbitron",
+    visibility: "visible"
+  });
+  dice3d.addColorset({
+    name: "nco-danger",
+    description: "NCO Danger Dice",
+    category: "Neon City Overdrive",
+    foreground: "#ff3366",
+    background: "#0a0a0a",
+    outline: "#ff3366",
+    edge: "#aa0033",
+    texture: "none",
+    material: "glass",
+    font: "Orbitron",
+    visibility: "visible"
+  });
+});
+
+// Show one or more rolls simultaneously with their NCO colorsets. No-ops if DSN is inactive.
+// Pass pairs: ncoShowDice([rollA, "nco-action"], [rollD, "nco-danger"])
+// Or single:  ncoShowDice([roll, "nco-danger"])
+async function ncoShowDice(...pairs) {
+  if (!game.dice3d) return;
+  await Promise.all(pairs.map(([roll, colorset]) => {
+    roll.options = foundry.utils.mergeObject(roll.options ?? {}, { appearance: { colorset } });
+    return game.dice3d.showForRoll(roll, game.user, true);
+  }));
+}
+
+// Apply neon emissive glow to NCO dice materials so they radiate their neon color.
+// Works with any DSN quality setting; blooms visibly when DSN "glow" is enabled.
+Hooks.on("diceSoNiceShaderOnBeforeCompile", function(_shader, material) {
+  const colorset = material.userData?.appearance?.colorset;
+  if (colorset === "nco-action") {
+    material.emissive?.set(0x00f5ff);
+    material.emissiveIntensity = 0.55;
+  } else if (colorset === "nco-danger") {
+    material.emissive?.set(0xff3366);
+    material.emissiveIntensity = 0.55;
   }
 });
 

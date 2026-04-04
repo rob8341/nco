@@ -596,6 +596,34 @@
   color: var(--nco-text-dim);
 }
 
+.nco-sheet .notes-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.nco-sheet .notes-field {
+  resize: none;
+  height: 160px;
+  width: 100%;
+  margin-top: 4px;
+  font-size: 12px;
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--nco-bg-dark);
+  border: 1px solid var(--nco-border);
+  color: var(--nco-text);
+  padding: 6px 10px;
+  line-height: 1.4;
+}
+
+.nco-sheet .notes-field:focus {
+  outline: none;
+  border-color: var(--nco-cyan);
+}
+
+.nco-sheet .notes-field::placeholder {
+  color: var(--nco-text-dim);
+}
+
 /* ==========================================
    Conditions Grid
    ========================================== */
@@ -2950,6 +2978,7 @@ textarea#chat-message:focus,
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nco-sheet .special-gear-name-compact:hover {
@@ -2957,7 +2986,7 @@ textarea#chat-message:focus,
   text-shadow: 0 0 6px rgba(255, 208, 0, 0.5);
 }
 
-/* Special Gear Tags - each tag in its own bracket, larger grey font */
+/* Special Gear Tags - fill remaining space, ellipsis only when crowded by X */
 .nco-sheet .special-gear-tags-compact {
   font-size: 12px;
   font-weight: 500;
@@ -2966,28 +2995,18 @@ textarea#chat-message:focus,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex-shrink: 1;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
-/* Spacer to push X button to the right in special gear */
+/* Spacer no longer needed — tags fill the space */
 .nco-sheet .special-gear-spacer {
-  flex: 1 1 auto;
-  min-width: 8px;
+  display: none;
 }
 
 /* Remove button in special gear uses same styling as compact gear */
 .nco-sheet .special-gear-item-compact .remove-gear-btn-compact {
   flex-shrink: 0;
-  margin-left: auto;
-}
-
-/* Tags display - limit width so it doesn't stretch the sheet */
-.nco-sheet .special-gear-tags-compact {
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex-shrink: 1;
 }
 
 /* Gear Roll Counter */

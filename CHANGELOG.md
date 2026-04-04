@@ -1,89 +1,103 @@
 # Changelog
 
-All notable changes to the Neon City Overdrive FoundryVTT system will be documented in this file.
+> *Every patch is a chrome implant. Every version is a new life.*
 
-## [1.3.0] - 2026-04-04
+---
+
+## [1.4.0] — 2026-04-04 // NEON DICE UPDATE
+
+*"The dice hit the table. The table glows. The city watches."*
+
+### Added
+- **Dice So Nice integration** — cyberpunk neon dice for every roll
+  - Action dice: white body, cyan `#00f5ff` numbers, glass material, Orbitron font
+  - Danger dice: black body, red `#ff3366` numbers, glass material, Orbitron font
+  - Action and danger pools throw simultaneously — no waiting
+  - Emissive neon glow on all NCO dice; blooms if DSN glow is enabled
+  - Non-action rolls (trauma, recovery, gear, stash, retirement) use danger dice defaults
+  - Colorsets registered under "Neon City Overdrive" category in DSN settings
+- **Notes field** — freeform text area at the bottom of the character sheet, below Experience
+- **Threat sheet saves** — all threat fields (name, hits, tags, actions, drive) now save in real time on change; sidebar updates immediately when the threat is renamed
 
 ### Fixed
-- **Text field persistence** — text fields (name, bio, trademarks, edges, traumas, flaws, drive note) no longer wipe when clicking checkboxes or buttons; values are cached before re-render and restored after
-- **Character name** — name now saves on change with explicit listener; window title and sidebar update correctly
-- **Close saves** — all text fields on character, gear, and special gear sheets save when the sheet is closed
-- **Portrait click** — character portrait now opens a file picker (migrated from legacy `data-edit` to ApplicationV2 click handler)
-- **Boon calculation (retirement roll)** — cancelled 6s no longer count toward boons; only remaining action dice are considered
-- **Add special gear button** — button was not bound due to `querySelector` only matching the first `.add-gear-btn`; changed to `querySelectorAll`
-- **Item sheet form submission** — pressing Enter in gear name fields no longer breaks Foundry layout; Enter now blurs the input to trigger save
-- **FilePicker namespace** — all `FilePicker` calls updated to `foundry.applications.apps.FilePicker.implementation` for v13+ compatibility
+- **Threat name on sidebar** — renaming a threat now updates the actors sidebar and window title on blur, not only on close
+- **Threat sheet fields not persisting** — tags, actions, and drive textareas were never saved; now have `change` listeners and a `close()` safety save
+- **Special gear tags not saving** — dot-notation array index updates (`system.tags.0`) do not work correctly with `ArrayField`; now rebuilds and sets the full array on every change and on close
+- **Notes field not saving on close** — `close()` and the re-render cache only covered `input[type="text"]`; both now include `textarea[name]`
 
 ### Changed
-- **Header theme** — character sheet header changed from purple/pink/cyan to black-cyan-black deep teal gradient
-- **Name/bio text** — silver-white with cyan neon glow for contrast against header background
-- **Trademarks & Edges label** — changed from pink to cyan to match the rest of the UI
-- **Roll button** — moved to top-right corner as a square icon button
-- **Sheet spacing** — increased header and body padding/gap
-- **Retirement roll chat card** — dice display now matches basic roll style (cancelled grey/strikethrough, chosen gold, boon purple)
-- **Item sheet titles** — gear and special gear sheets now show item name in window title instead of raw type key
-- **Special gear sheet** — increased height to fit tags without clipping; made resizable
-- **Danger dice from traumas** — trauma count now reads from DOM inputs so unsaved edits are included in roll calculations
+- **Gear roll dialog** — ROLL button centered with flexbox
+- **Recovery roll dialog** — modifier label and input centered
+- **Special gear item line** — all tags displayed in full; only truncated with ellipsis when crowding the remove button
+- **Threat sheet height** — bumped from 450 to 500px to prevent bottom clipping
 
-## [1.2.0] - 2026-04-03
+---
+
+## [1.3.0] — 2026-04-04
+
+### Fixed
+- **Text field persistence** — text fields no longer wipe when clicking checkboxes or buttons
+- **Character name** — saves on change; window title and sidebar update correctly
+- **Close saves** — all text fields on character, gear, and special gear sheets save on close
+- **Portrait click** — opens file picker via ApplicationV2 handler
+- **Boon calculation (retirement roll)** — cancelled 6s no longer count toward boons
+- **Add special gear button** — fixed `querySelector` only matching the first `.add-gear-btn`
+- **Item sheet form submission** — Enter in gear name fields now blurs instead of breaking layout
+- **FilePicker namespace** — updated to `foundry.applications.apps.FilePicker.implementation`
 
 ### Changed
-- **Foundry v14 compatibility** — system now supports FoundryVTT v12 through v14
-- **Combat tracker** — initiative roll button override rewritten with native DOM APIs to support ApplicationV2 (v14's `CombatTracker` passes an `HTMLElement` instead of a jQuery object)
-- **Dice rolling** — removed deprecated `allowInteractive` option from all `Roll.evaluate()` calls
+- **Header theme** — deep teal gradient (black-cyan-black)
+- **Name/bio text** — silver-white with cyan neon glow
+- **Trademarks & Edges label** — cyan to match UI
+- **Roll button** — top-right square icon
+- **Sheet spacing** — increased padding and gap
+- **Retirement roll chat card** — matches basic roll style (grey/gold/purple)
+- **Item sheet titles** — show item name in window title
+- **Special gear sheet** — taller; made resizable
+- **Danger dice from traumas** — reads from DOM so unsaved edits are included
 
-## [1.1.0] - 2026-03-31
+---
+
+## [1.2.0] — 2026-04-03
+
+### Changed
+- **Foundry v14 compatibility** — v12 through v14 supported
+- **Combat tracker** — initiative override rewritten with native DOM APIs for ApplicationV2
+- **Dice rolling** — removed deprecated `allowInteractive` option from `Roll.evaluate()`
+
+---
+
+## [1.1.0] — 2026-03-31
 
 ### Added
-- **Trademark & Edge highlighting** — click the pip next to any trademark or edge to highlight it for a roll; highlighted count adds to default action dice automatically
-- **Roll dialog breakdown** — action dice default pre-filled from highlighted trademarks and edges, shown as separate labelled sources (Trademarks / Edges)
-- **Randomised chat flavour text** — "took a hit", "used a stunt", and "death awaits another day" each rotate through 3 variants
+- **Trademark & Edge highlighting** — click the pip to highlight for a roll; count adds to action dice
+- **Roll dialog breakdown** — action dice pre-filled from highlighted trademarks and edges
+- **Randomised chat flavour** — hit/stunt/death lines rotate through 3 variants
 
 ### Changed
-- **Dialog window headers** — all dialog windows now display their title with icon, colour, and Orbitron neon-glow font matching the in-content style; titles no longer appear blank
-- **Roll chat card** — cancelled dice shown in grey with strikethrough; chosen die highlighted yellow; boon dice highlighted purple; cancelled pairs sorted so the action die appears above the danger die that cancelled it; remaining/cancelled breakdown sections removed for a cleaner card
-- **Roll chat card colour coding** — danger sources (Conditions, Traumas) in red; action sources (Trademarks, Edges) in blue in the roll dialog breakdown
-- **Roll chat card speaker** — chat messages from the Roll button now show the actor's name instead of the player's name
-- **Boon calculation** — boons now counted from remaining (non-cancelled) action dice only
-- **Boon label** — coloured purple to match boon dice
-- **Dialog default button** — removed Foundry's red glow from the default roll button; styled consistently with the NCO cyan theme
+- **Dialog window headers** — Orbitron neon-glow titles across all dialogs
+- **Roll chat card** — grey strikethrough for cancelled, gold for chosen, purple for boon
+- **Roll chat card speaker** — shows actor name, not player name
+- **Boon calculation** — counted from remaining (non-cancelled) action dice only
+- **Boon label** — purple
+- **Default roll button** — no Foundry red glow; NCO cyan theme
 
 ### Removed
-- "(3 blocks × 5 XP)" hint label from the Experience section
+- "(3 blocks × 5 XP)" hint from Experience section
 
-## [1.0.0] - Initial Release
+---
+
+## [1.0.0] — Initial Uplink
+
+*"System online. Neon live. Let's run."*
 
 ### Added
-- Character sheet with full NCO mechanics
-  - Trademarks (5) with Edges (5 each)
-  - Hits (3+1 upgradeable) with Rest button
-  - Conditions (6 + custom) with chat notifications
-  - Traumas (4) with Trauma Roll and Recovery Roll
-  - Flaws (2)
-  - Stunt Points (3+2 upgradeable) with Refresh and Bonus buttons
-  - Drive (10 tri-state checkboxes) with Retire mechanic
-  - Experience (15, 3 blocks of 5) with Advancement system
-  - Basic Gear (20 max) and Special Gear (4 max) management
-  - Stash/Leverage system with Gain, Bonus, and Spend buttons
-  - Gear Roll system with counter
-
-- Threat sheet for NPCs/enemies
-  - Numeric hits (current/max)
-  - Drive, Tags, and Actions text fields
-
-- Item sheets
-  - Basic Gear (icon, name, description)
-  - Special Gear (icon, name, description, 6 tags)
-
-- Full dice rolling system
-  - Action dice (d6) vs Danger dice (d6)
-  - Dice cancellation mechanics
-  - Botch, Fail, Partial Success, Success, Boon outcomes
-  - Dice So Nice integration with chrome dice
-
-- Styled chat messages for all actions
-- Cyberpunk neon theme (cyan, pink, purple)
-- Orbitron and Rajdhani fonts
+- Full character sheet — Trademarks, Edges, Hits, Conditions, Traumas, Flaws, Stunt Points, Drive, Experience, Gear, Stash
+- Threat sheet — hits, drive, tags, actions
+- Item sheets — Basic Gear and Special Gear
+- Action vs Danger dice system with cancellation, botch/fail/partial/success/boon
+- Dice So Nice integration (chrome dice)
+- Styled chat messages, cyberpunk neon theme, Orbitron/Rajdhani fonts
 
 ### Compatibility
-- FoundryVTT v12-v13 (v14 added in 1.2.0)
+- FoundryVTT v12–v13 (v14 added in 1.2.0)

@@ -1,51 +1,62 @@
-# Neon City Overdrive - FoundryVTT System
+# NEON CITY OVERDRIVE — FoundryVTT System
 
-A FoundryVTT v12–v14 compatible system for **Neon City Overdrive**, a rules-light, fast-playing tabletop roleplaying game of cinematic cyberpunk action.
+> *"The city never sleeps. The neon never dies. Roll the dice and see if you do."*
+
+A FoundryVTT v12–v14 system for **Neon City Overdrive** — a rules-light, fast-playing tabletop RPG of cinematic cyberpunk action. Neon-soaked streets, chrome implants, corporate war, and dice that glow in the dark.
 
 ![Foundry Version](https://img.shields.io/badge/Foundry-v12--v14-informational)
-![Version](https://img.shields.io/badge/Version-1.3.0-blue)
+![Version](https://img.shields.io/badge/Version-1.4.0-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
+
+---
 
 ## Features
 
 ### Character Sheet
-- **Trademarks & Edges** - 5 trademarks with 5 edges each
-- **Hits** - 3 base (+1 upgradeable) with Rest button
-- **Conditions** - 6 standard + 1 custom condition
-- **Traumas** - 4 trauma lines with Trauma Roll and Recovery Roll
-- **Flaws** - 2 flaw lines
-- **Stunt Points** - 3 base (+2 upgradeable) with Refresh and Bonus buttons
-- **Drive** - 10 tri-state checkboxes (empty/tick/cross) with Retire mechanic
-- **Experience** - 15 XP (3 blocks of 5) with Advancement system
-- **Gear** - Basic gear (20 max) and Special Gear (4 max) management
-- **Stash/Leverage** - Gain, Bonus, and Spend leverage buttons
-- **Gear Roll System** - Roll for acquiring special gear with tags
+- **Trademarks & Edges** — 5 trademarks with 5 edges each; click the pip to highlight for a roll
+- **Hits** — 3 base (+1 upgradeable) with Rest button
+- **Conditions** — 6 standard + 1 custom condition
+- **Traumas** — 4 trauma lines with Trauma Roll and Recovery Roll
+- **Flaws** — 2 flaw lines
+- **Stunt Points** — 3 base (+2 upgradeable) with Refresh and Bonus buttons
+- **Drive** — 10 tri-state checkboxes (empty/tick/cross) with Retire mechanic
+- **Experience** — 15 XP (3 blocks of 5) with Advancement system
+- **Gear** — Basic gear (20 max) and Special Gear (4 max) management
+- **Stash/Leverage** — Gain, Bonus, and Spend leverage buttons
+- **Gear Roll System** — Roll for acquiring special gear with tags
+- **Notes** — freeform text field for anything the city throws at you
 
 ### Threat Sheet
 - Numeric hits (current/max)
 - Drive, Tags, and Actions text fields
+- All fields persist on close; sidebar updates in real time
 
 ### Item Sheets
-- **Basic Gear** - Icon, name, description
-- **Special Gear** - Icon, name, description, 6 tags
+- **Basic Gear** — Icon, name, description
+- **Special Gear** — Icon, name, description, 6 tags displayed inline
 
 ### Dice System
 - Action dice vs Danger dice mechanics
 - Automatic dice cancellation
-- Botch, Fail, Partial Success, Success, Boon outcomes
-- Dice So Nice integration with chrome cyberpunk dice
-- Danger dice from conditions and traumas
+- Botch, Fail, Partial, Success, Boon outcomes
+- **Dice So Nice integration** — neon cyberpunk dice:
+  - Action dice: white with cyan numbers, glass material, Orbitron font
+  - Danger dice: black with red numbers, glass material, Orbitron font
+  - Both pools thrown simultaneously; emissive neon glow on every roll
+- Danger dice auto-calculated from conditions and traumas
 
 ### Visual Theme
-- Cyberpunk neon aesthetic (cyan, teal, black)
+- Cyberpunk neon aesthetic — cyan, red, gold, black
 - Orbitron and Rajdhani fonts
-- Styled chat messages for all actions
+- Styled chat messages for every action
 - Custom pause screen
+
+---
 
 ## Installation
 
-### Method 1: Manifest URL (Recommended)
-1. In FoundryVTT, go to **Game Systems** tab
+### Method 1: Manifest URL *(recommended)*
+1. In FoundryVTT, go to **Game Systems**
 2. Click **Install System**
 3. Paste the manifest URL:
    ```
@@ -53,39 +64,43 @@ A FoundryVTT v12–v14 compatible system for **Neon City Overdrive**, a rules-li
    ```
 4. Click **Install**
 
-### Method 2: Manual Installation
+### Method 2: Manual
 1. Download the latest release from [Releases](https://github.com/rob8341/NCO/releases)
 2. Extract the `NCO` folder to `<FoundryVTT Data>/Data/systems/`
 3. Restart FoundryVTT
 
+---
+
 ## Usage
 
 1. Create a new World and select **Neon City Overdrive** as the game system
-2. Create **Characters** for players
-3. Create **Threats** for NPCs and enemies
-4. Add **Basic Gear** and **Special Gear** items to characters
+2. Create **Characters** for the runners
+3. Create **Threats** for corps, gangers, and worse
+4. Arm them with **Basic Gear** and **Special Gear**
 
-### Roll Button
-Click the roll button (top right of character sheet) to open the dice dialog:
-- Highlight trademarks and edges by clicking their pip — each adds 1 action die automatically
-- Danger dice auto-calculated from conditions + traumas
-- Results posted to chat: cancelled dice grey, chosen die yellow, boon dice purple
-- Highlights clear automatically after rolling
+### Rolling Dice
+Click the roll button (top-right of the character sheet) to open the dice dialog:
+- Highlight trademarks and edges by clicking their pip — each adds 1 action die
+- Danger dice are auto-calculated from active conditions and traumas
+- Results post to chat: cancelled dice grey, chosen die gold, boon dice purple
+- If **Dice So Nice** is active, dice fly — action pool white/cyan, danger pool black/red, both at once
 
 ### Advancement
-When a character has 5+ XP, click the Advancement button to:
+At 5+ XP, click the Advancement button to:
 - Write a new Trademark (max 5)
 - Write a new Edge for any Trademark
 - Increase Hit maximum (+1, max 4)
 - Increase Stunt Point maximum (+1, max 5)
 
+---
+
 ## Credits
 
-- **Neon City Overdrive** by Nathan Russell - [Peril Planet](https://www.perilplanet.com/neon-city-overdrive/)
-- FoundryVTT system implementation - rob8341 with Claude Opus 4.5 AI
+- **Neon City Overdrive** by Nathan Russell — [Peril Planet](https://www.perilplanet.com/neon-city-overdrive/)
+- FoundryVTT system by rob8341 with Claude Sonnet 4.6 AI
 
 ## License
 
-This system is released under the MIT License. See [LICENSE](LICENSE) for details.
+MIT License. See [LICENSE](LICENSE) for details.
 
-**Note:** This is an unofficial fan implementation. Please support the official game!
+> *This is an unofficial fan implementation. Jack in, run fast, and support the official game.*
