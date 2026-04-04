@@ -1,6 +1,102 @@
 /**
- * Neon City Overdrive System for FoundryVTT v13
+ * Neon City Overdrive System for FoundryVTT v12-v14
  */
+
+/* -------------------------------------------- */
+/*  System Data Models                          */
+/* -------------------------------------------- */
+
+class CharacterData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const f = foundry.data.fields;
+    return {
+      bio:             new f.StringField({ initial: "" }),
+      initiative:      new f.NumberField({ initial: 1, integer: true, min: 0 }),
+      trademarks:      new f.ArrayField(
+                         new f.SchemaField({
+                           name:  new f.StringField({ initial: "" }),
+                           edges: new f.ArrayField(new f.StringField({ initial: "" }), { initial: ["","","","",""] })
+                         }),
+                         { initial: Array.from({ length: 5 }, () => ({ name: "", edges: ["","","","",""] })) }
+                       ),
+      hits:            new f.SchemaField({
+                         value: new f.NumberField({ initial: 0, integer: true, min: 0 }),
+                         max:   new f.NumberField({ initial: 3, integer: true, min: 0 })
+                       }),
+      conditions:      new f.SchemaField({
+                         angry:      new f.BooleanField({ initial: false }),
+                         dazed:      new f.BooleanField({ initial: false }),
+                         exhausted:  new f.BooleanField({ initial: false }),
+                         restrained: new f.BooleanField({ initial: false }),
+                         scared:     new f.BooleanField({ initial: false }),
+                         weakened:   new f.BooleanField({ initial: false }),
+                         custom:     new f.BooleanField({ initial: false })
+                       }),
+      customCondition: new f.StringField({ initial: "" }),
+      traumas:         new f.ArrayField(new f.StringField({ initial: "" }), { initial: ["","","",""] }),
+      flaws:           new f.ArrayField(new f.StringField({ initial: "" }), { initial: ["",""] }),
+      stuntPoints:     new f.SchemaField({
+                         value: new f.NumberField({ initial: 0, integer: true, min: 0 }),
+                         max:   new f.NumberField({ initial: 3, integer: true, min: 0 })
+                       }),
+      gear:            new f.StringField({ initial: "" }),
+      specialGear:     new f.ArrayField(new f.StringField({ initial: "" }), { initial: ["","","",""] }),
+      stash:           new f.SchemaField({
+                         value: new f.NumberField({ initial: 0, integer: true, min: 0 }),
+                         max:   new f.NumberField({ initial: 5, integer: true, min: 0 })
+                       }),
+      gearRolls:       new f.SchemaField({
+                         value: new f.NumberField({ initial: 4, integer: true, min: 0 }),
+                         max:   new f.NumberField({ initial: 4, integer: true, min: 0 })
+                       }),
+      drive:           new f.ArrayField(
+                         new f.NumberField({ initial: 0, integer: true, min: 0, max: 2 }),
+                         { initial: [0,0,0,0,0,0,0,0,0,0] }
+                       ),
+      driveNote:       new f.StringField({ initial: "" }),
+      experience:      new f.SchemaField({
+                         value: new f.NumberField({ initial: 0, integer: true, min: 0 }),
+                         max:   new f.NumberField({ initial: 15, integer: true, min: 0 })
+                       })
+    };
+  }
+}
+
+class ThreatData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const f = foundry.data.fields;
+    return {
+      bio:        new f.StringField({ initial: "" }),
+      initiative: new f.NumberField({ initial: 0, integer: true, min: 0 }),
+      hits:       new f.SchemaField({
+                    value: new f.NumberField({ initial: 0, integer: true, min: 0 }),
+                    max:   new f.NumberField({ initial: 5, integer: true, min: 0 })
+                  }),
+      drive:      new f.StringField({ initial: "" }),
+      tags:       new f.StringField({ initial: "" }),
+      actions:    new f.StringField({ initial: "" })
+    };
+  }
+}
+
+class GearData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const f = foundry.data.fields;
+    return {
+      description: new f.StringField({ initial: "" })
+    };
+  }
+}
+
+class SpecialGearData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const f = foundry.data.fields;
+    return {
+      description: new f.StringField({ initial: "" }),
+      tags:        new f.ArrayField(new f.StringField({ initial: "" }), { initial: ["","","","","",""] })
+    };
+  }
+}
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -8,6 +104,16 @@
 
 Hooks.once("init", async function() {
   console.log("NCO | Initializing Neon City Overdrive System");
+
+  // Register system data models (replaces template.json)
+  CONFIG.Actor.dataModels = {
+    character: CharacterData,
+    threat:    ThreatData
+  };
+  CONFIG.Item.dataModels = {
+    gear:           GearData,
+    "special-gear": SpecialGearData
+  };
 
   // Register system namespace
   game.nco = {
@@ -18,33 +124,31 @@ Hooks.once("init", async function() {
   registerHandlebarsHelpers();
 
   // Register sheet application classes
-  Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("NCO", NCOActorSheet, {
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(Actor, "NCO", NCOActorSheet, {
     types: ["character"],
     makeDefault: true,
     label: "NCO.CharacterSheet"
   });
-  Actors.registerSheet("NCO", NCOThreatSheet, {
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(Actor, "NCO", NCOThreatSheet, {
     types: ["threat"],
     makeDefault: true,
     label: "NCO.ThreatSheet"
   });
 
   // Register item sheet classes
-  Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("NCO", NCOGearSheet, {
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(Item, "NCO", NCOGearSheet, {
     types: ["gear"],
     makeDefault: true,
     label: "NCO.GearSheet"
   });
-  Items.registerSheet("NCO", NCOSpecialGearSheet, {
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(Item, "NCO", NCOSpecialGearSheet, {
     types: ["special-gear"],
     makeDefault: true,
     label: "NCO.SpecialGearSheet"
   });
 
   // Preload Handlebars templates
-  await loadTemplates([
+  await foundry.applications.handlebars.loadTemplates([
     "systems/NCO/templates/actor-sheet.hbs",
     "systems/NCO/templates/threat-sheet.hbs",
     "systems/NCO/templates/gear-sheet.hbs",
@@ -90,27 +194,45 @@ function registerHandlebarsHelpers() {
 /*  Actor Sheet                                 */
 /* -------------------------------------------- */
 
-class NCOActorSheet extends ActorSheet {
-  
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["nco", "sheet", "actor", "character"],
-      template: "systems/NCO/templates/actor-sheet.hbs",
-      width: 720,
-      height: 900,
-      resizable: false,
-      tabs: [],
-      scrollY: [".sheet-body"]
-    });
+class NCOActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
+  foundry.applications.sheets.ActorSheetV2
+) {
+
+  static DEFAULT_OPTIONS = {
+    classes: ["nco", "sheet", "actor", "character"],
+    position: { width: 720, height: 900 },
+    window: { resizable: false },
+    form: {
+      handler: NCOActorSheet._onSubmitForm,
+      submitOnChange: true,
+    },
+    actions: {}
+  };
+
+  static async _onSubmitForm(event, form, formData) {
+    // Use flat dot-notation to preserve ArrayField types (trademarks, traumas, flaws, etc.)
+    const flatData = foundry.utils.flattenObject(formData.object);
+    await this.actor.update(flatData);
   }
 
-  async getData(options) {
-    const context = await super.getData(options);
+  static PARTS = {
+    main: {
+      template: "systems/NCO/templates/actor-sheet.hbs"
+    }
+  };
+
+  get title() {
+    return this.actor.name;
+  }
+
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
     const actorData = this.actor.toObject(false);
-    
+
+    context.actor = this.actor;
     context.system = actorData.system;
     context.flags = actorData.flags;
-    
+
     // Safely get values with defaults
     const hits = context.system.hits || { value: 0, max: 3 };
     const stuntPoints = context.system.stuntPoints || { value: 0, max: 3 };
@@ -251,73 +373,140 @@ class NCOActorSheet extends ActorSheet {
     return context;
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
+  async close(options) {
+    // Save all text input values before closing
+    const form = this.element?.querySelector("form");
+    if (form && this.isEditable) {
+      const updateData = {};
+      form.querySelectorAll("input[type='text'][name]").forEach(input => {
+        updateData[input.name] = input.value;
+      });
+      if (Object.keys(updateData).length > 0) {
+        await this.actor.update(updateData, { render: false });
+      }
+    }
+    return super.close(options);
+  }
+
+  async _preRender(context, options) {
+    await super._preRender(context, options);
+    const body = this.element?.querySelector(".sheet-body");
+    this._savedScrollTop = body?.scrollTop ?? 0;
+
+    // Cache text input values in memory before DOM replacement
+    this._cachedInputs = {};
+    this.element?.querySelectorAll("input[type='text'][name]").forEach(input => {
+      this._cachedInputs[input.name] = input.value;
+    });
+  }
+
+  _onRender(context, options) {
+    super._onRender(context, options);
+
+    // Restore scroll position and cached text inputs after re-render
+    if (!options.isFirstRender) {
+      const body = this.element.querySelector(".sheet-body");
+      if (body && this._savedScrollTop) body.scrollTop = this._savedScrollTop;
+
+      if (this._cachedInputs) {
+        for (const [name, value] of Object.entries(this._cachedInputs)) {
+          const input = this.element.querySelector(`input[type="text"][name="${name}"]`);
+          if (input && input.value !== value) input.value = value;
+        }
+      }
+    }
+
+    // Update window title — use the input value (may not be saved yet) or fall back to actor name
+    const titleEl = this.element.querySelector(".window-title");
+    const nameInput = this.element.querySelector('input[name="name"]');
+    if (titleEl) titleEl.textContent = nameInput?.value || this.title;
+
     if (!this.isEditable) return;
 
-    // Roll button
-    html.find(".roll-button").click(this._onRoll.bind(this));
+    const el = this.element;
 
-    // Hits checkboxes (only allow checking/taking damage, not unchecking)
-    html.find(".hits-checkbox").click(this._onHitsClick.bind(this));
-
-    // Rest button (recover 1 hit)
-    html.find(".rest-btn").click(this._onRest.bind(this));
-
-    // Condition checkboxes
-    html.find(".condition-checkbox").change(this._onConditionChange.bind(this));
-
-    // Stunt Points checkboxes
-    html.find(".stunt-checkbox").click(this._onStuntClick.bind(this));
-
-    // Stash buttons (stash checkboxes are display-only now)
-    html.find(".gain-leverage-btn").click(this._onGainLeverage.bind(this));
-    html.find(".bonus-leverage-btn").click(this._onBonusLeverage.bind(this));
-    html.find(".spend-leverage-btn").click(this._onSpendLeverage.bind(this));
-
-    // Drive tri-state checkboxes
-    html.find(".drive-checkbox").click(this._onDriveClick.bind(this));
-
-    // Experience buttons (checkboxes are now display-only)
-    html.find(".mark-xp-btn").click(this._onMarkXP.bind(this));
-    html.find(".advancement-btn").click(this._onAdvancement.bind(this));
-
-    // Refresh Stunt Points button
-    html.find(".refresh-stunt-btn").click(this._onRefreshStunt.bind(this));
-
-    // Bonus Stunt button
-    html.find(".bonus-stunt-btn").click(this._onBonusStunt.bind(this));
-
-    // Trauma Roll button
-    html.find(".trauma-roll-btn").click(this._onTraumaRoll.bind(this));
-
-    // Recovery Roll button
-    html.find(".recovery-roll-btn").click(this._onRecoveryRoll.bind(this));
-
-    // Retire button
-    html.find(".retire-btn").click(this._onRetire.bind(this));
-
-    // Gear management
-    html.find(".add-gear-btn").click(this._onAddGear.bind(this));
-    html.find(".remove-gear-btn-compact").click(this._onRemoveGear.bind(this));
-    html.find(".gear-icon-compact").click(this._onGearDescriptionToChat.bind(this));
-    html.find(".gear-name-compact").click(this._onOpenGear.bind(this));
-    
-    // Special gear management
-    html.find(".special-gear-icon-compact").click(this._onSpecialGearDescriptionToChat.bind(this));
-    html.find(".special-gear-name-compact").click(this._onOpenGear.bind(this));
-    
-    // Gear roll system
-    html.find(".gear-roll-btn").click(this._onGearRoll.bind(this));
-    html.find(".reset-gear-roll-btn").click(this._onResetGearRoll.bind(this));
-
-    // Trademark / edge highlight pips
-    html.find(".highlight-pip").click((event) => {
+    // Portrait image click — open file picker
+    el.querySelector(".profile-img")?.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const pip = $(event.currentTarget);
-      pip.toggleClass("highlighted");
-      pip.siblings("input").toggleClass("highlighted");
+      const fp = new foundry.applications.apps.FilePicker.implementation({
+        type: "image",
+        current: this.actor.img,
+        callback: async (path) => { await this.actor.update({ img: path }); this.render(); }
+      });
+      fp.browse();
+    });
+
+    // Character name — save on change and update title
+    el.querySelector('input[name="name"]')?.addEventListener("change", async (event) => {
+      const newName = event.currentTarget.value;
+      await this.actor.update({ name: newName });
+    });
+
+    // Roll button
+    el.querySelector(".roll-button")?.addEventListener("click", this._onRoll.bind(this));
+
+    // Hits checkboxes (only allow checking/taking damage, not unchecking)
+    el.querySelectorAll(".hits-checkbox").forEach(e => e.addEventListener("click", this._onHitsClick.bind(this)));
+
+    // Rest button (recover 1 hit)
+    el.querySelector(".rest-btn")?.addEventListener("click", this._onRest.bind(this));
+
+    // Condition checkboxes
+    el.querySelectorAll(".condition-checkbox").forEach(e => e.addEventListener("change", this._onConditionChange.bind(this)));
+
+    // Stunt Points checkboxes
+    el.querySelectorAll(".stunt-checkbox").forEach(e => e.addEventListener("click", this._onStuntClick.bind(this)));
+
+    // Stash buttons (stash checkboxes are display-only now)
+    el.querySelector(".gain-leverage-btn")?.addEventListener("click", this._onGainLeverage.bind(this));
+    el.querySelector(".bonus-leverage-btn")?.addEventListener("click", this._onBonusLeverage.bind(this));
+    el.querySelector(".spend-leverage-btn")?.addEventListener("click", this._onSpendLeverage.bind(this));
+
+    // Drive tri-state checkboxes
+    el.querySelectorAll(".drive-checkbox").forEach(e => e.addEventListener("click", this._onDriveClick.bind(this)));
+
+    // Experience buttons (checkboxes are now display-only)
+    el.querySelector(".mark-xp-btn")?.addEventListener("click", this._onMarkXP.bind(this));
+    el.querySelector(".advancement-btn")?.addEventListener("click", this._onAdvancement.bind(this));
+
+    // Refresh Stunt Points button
+    el.querySelector(".refresh-stunt-btn")?.addEventListener("click", this._onRefreshStunt.bind(this));
+
+    // Bonus Stunt button
+    el.querySelector(".bonus-stunt-btn")?.addEventListener("click", this._onBonusStunt.bind(this));
+
+    // Trauma Roll button
+    el.querySelector(".trauma-roll-btn")?.addEventListener("click", this._onTraumaRoll.bind(this));
+
+    // Recovery Roll button
+    el.querySelector(".recovery-roll-btn")?.addEventListener("click", this._onRecoveryRoll.bind(this));
+
+    // Retire button
+    el.querySelector(".retire-btn")?.addEventListener("click", this._onRetire.bind(this));
+
+    // Gear management
+    el.querySelectorAll(".add-gear-btn").forEach(e => e.addEventListener("click", this._onAddGear.bind(this)));
+    el.querySelectorAll(".remove-gear-btn-compact").forEach(e => e.addEventListener("click", this._onRemoveGear.bind(this)));
+    el.querySelectorAll(".gear-icon-compact").forEach(e => e.addEventListener("click", this._onGearDescriptionToChat.bind(this)));
+    el.querySelectorAll(".gear-name-compact").forEach(e => e.addEventListener("click", this._onOpenGear.bind(this)));
+
+    // Special gear management
+    el.querySelectorAll(".special-gear-icon-compact").forEach(e => e.addEventListener("click", this._onSpecialGearDescriptionToChat.bind(this)));
+    el.querySelectorAll(".special-gear-name-compact").forEach(e => e.addEventListener("click", this._onOpenGear.bind(this)));
+
+    // Gear roll system
+    el.querySelector(".gear-roll-btn")?.addEventListener("click", this._onGearRoll.bind(this));
+    el.querySelector(".reset-gear-roll-btn")?.addEventListener("click", this._onResetGearRoll.bind(this));
+
+    // Trademark / edge highlight pips
+    el.querySelectorAll(".highlight-pip").forEach(pip => {
+      pip.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        pip.classList.toggle("highlighted");
+        pip.parentElement.querySelectorAll("input").forEach(input => input.classList.toggle("highlighted"));
+      });
     });
   }
 
@@ -335,32 +524,18 @@ class NCOActorSheet extends ActorSheet {
         }
       }
       
-      // Count danger dice from filled trauma lines
-const traumasData = this.actor.system.traumas;
-let traumas = [];
-if (Array.isArray(traumasData)) {
-  traumas = traumasData;
-} else if (traumasData && typeof traumasData === 'object') {
-  // Foundry v13 may store arrays as objects with numeric keys
-  traumas = Object.values(traumasData);
-} else {
-  traumas = ["", "", "", ""];
-}
-
-let traumaDice = 0;
-for (let i = 0; i < traumas.length; i++) {
-  const t = traumas[i];
-  if (t && typeof t === "string" && t.trim() !== "") {
-    traumaDice++;
-  }
-}
+      // Count danger dice from filled trauma lines (read from DOM to include unsaved edits)
+      let traumaDice = 0;
+      this.element.querySelectorAll('input[name^="system.traumas"]').forEach(input => {
+        if (input.value.trim() !== "") traumaDice++;
+      });
       
       // Total danger dice
       const totalDangerDice = conditionDice + traumaDice;
 
       // Count highlighted trademarks and edges separately
-      const trademarkDice = this.element.find(".trademark-row .highlight-pip.highlighted").length;
-      const edgeDice = this.element.find(".edge-row .highlight-pip.highlighted").length;
+      const trademarkDice = this.element.querySelectorAll(".trademark-row .highlight-pip.highlighted").length;
+      const edgeDice = this.element.querySelectorAll(".edge-row .highlight-pip.highlighted").length;
       const defaultActionDice = 1 + trademarkDice + edgeDice;
 
     const content = `
@@ -382,27 +557,31 @@ for (let i = 0; i < traumas.length; i++) {
       </div>
     `;
 
-    new Dialog({
-      title: "Neon City Overdrive — Roll",
+    await foundry.applications.api.DialogV2.wait({
+      window: { title: "Neon City Overdrive — Roll" },
       content: content,
-      buttons: {
-        roll: {
+      rejectClose: false,
+      buttons: [
+        {
+          action: "roll",
           icon: '<i class="fas fa-dice"></i>',
           label: "Roll",
-          callback: async (html) => {
-            const actionDice = Math.max(0, parseInt(html.find('#nco-action').val()) || 0);
-            const dangerDice = Math.max(0, parseInt(html.find('#nco-danger').val()) || 0);
+          default: true,
+          callback: async (event, button) => {
+            const win = button.closest(".dialog-v2") ?? button.closest(".application");
+            const actionDice = Math.max(0, parseInt(win?.querySelector('#nco-action')?.value) || 0);
+            const dangerDice = Math.max(0, parseInt(win?.querySelector('#nco-danger')?.value) || 0);
             await rollDice(actionDice, dangerDice, this.actor);
-            this.element.find(".highlight-pip, .trademark-input, .edge-input").removeClass("highlighted");
+            this.element.querySelectorAll(".highlight-pip, .trademark-input, .edge-input").forEach(e => e.classList.remove("highlighted"));
           }
         },
-        cancel: {
+        {
+          action: "cancel",
           icon: '<i class="fas fa-times"></i>',
           label: "Cancel"
         }
-      },
-      default: "roll"
-    }).render(true);
+      ]
+    });
     
     } catch (error) {
       console.error("NCO | Error in _onRoll:", error);
@@ -462,9 +641,10 @@ for (let i = 0; i < traumas.length; i++) {
   }
 
   async _onConditionChange(event) {
+    event.stopPropagation();
     const key = event.currentTarget.dataset.condition;
     const checked = event.currentTarget.checked;
-    await this.actor.update({ [`system.conditions.${key}`]: checked });
+    await this.actor.update({ [`system.conditions.${key}`]: checked }, { render: false });
 
     // If condition was ticked, send chat message
     if (checked) {
@@ -528,59 +708,35 @@ for (let i = 0; i < traumas.length; i++) {
     const max = parseInt(this.actor.system.stash?.max) || 5;
     
     // Confirmation dialog
-    const confirmed = await new Promise(resolve => {
-      Hooks.once("renderDialog", (_app, html) => {
-        html.find(".window-title").html('<i class="fas fa-dice-d6" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">GAIN LEVERAGE</span>');
-      });
-      new Dialog({
-        title: "GAIN LEVERAGE",
-        content: `
-          <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
-              Roll D3 for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
-            </div>
-            <div style="color:#888;text-align:center;font-size:0.9em">
-              Current Stash: ${current}/${max}
-            </div>
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: { title: "GAIN LEVERAGE" },
+      content: `
+        <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+          <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+            Roll D3 for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
           </div>
-        `,
-        buttons: {
-          confirm: {
-            icon: '<i class="fas fa-dice-d6"></i>',
-            label: "Roll",
-            callback: () => resolve(true)
-          },
-          cancel: {
-            icon: '<i class="fas fa-times"></i>',
-            label: "Cancel",
-            callback: () => resolve(false)
-          }
-        },
-        default: "cancel"
-      }).render(true);
+          <div style="color:#888;text-align:center;font-size:0.9em">
+            Current Stash: ${current}/${max}
+          </div>
+        </div>
+      `,
+      yes: { icon: '<i class="fas fa-dice-d6"></i>', label: "Roll" },
+      no: { icon: '<i class="fas fa-times"></i>', label: "Cancel" },
+      rejectClose: false
     });
-    
+
     if (!confirmed) return;
     
     // Roll d3 (1d6: 1-2=1, 3-4=2, 5-6=3)
-    const roll = await (new Roll("1d6")).evaluate({ allowInteractive: false });
+    const roll = await (new Roll("1d6")).evaluate();
     const d6Result = roll.dice[0].results[0].result;
     const d3Result = Math.ceil(d6Result / 2);
-    
-    // Dice So Nice animation
-    if (game.dice3d) {
-      roll.dice.forEach(die => {
-        die.options.colorset = "nco-action";
-        die.options.material = "chrome";
-      });
-      await game.dice3d.showForRoll(roll, game.user, true);
-    }
-    
+
     // Add leverage (cap at max)
     const gained = Math.min(d3Result, max - current);
     const newVal = current + gained;
     await this.actor.update({ "system.stash.value": newVal });
-    
+
     // Send chat message
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     const html = `
@@ -617,43 +773,28 @@ for (let i = 0; i < traumas.length; i++) {
     }
     
     // Confirmation dialog
-    const confirmed = await new Promise(resolve => {
-      Hooks.once("renderDialog", (_app, html) => {
-        html.find(".window-title").html('<i class="fas fa-plus" style="color:#00ff88;margin-right:6px;text-shadow:0 0 10px #00ff88"></i><span style="color:#00ff88;text-shadow:0 0 10px #00ff88;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">BONUS LEVERAGE</span>');
-      });
-      new Dialog({
-        title: "BONUS LEVERAGE",
-        content: `
-          <div style="background:linear-gradient(135deg,#0d1a0d 0%,#0a200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
-              Award +1 bonus leverage to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
-            </div>
-            <div style="color:#888;text-align:center;font-size:0.9em">
-              Current Stash: ${current}/${max}
-            </div>
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: { title: "BONUS LEVERAGE" },
+      content: `
+        <div style="background:linear-gradient(135deg,#0d1a0d 0%,#0a200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+          <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+            Award +1 bonus leverage to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
           </div>
-        `,
-        buttons: {
-          confirm: {
-            icon: '<i class="fas fa-plus"></i>',
-            label: "Confirm",
-            callback: () => resolve(true)
-          },
-          cancel: {
-            icon: '<i class="fas fa-times"></i>',
-            label: "Cancel",
-            callback: () => resolve(false)
-          }
-        },
-        default: "cancel"
-      }).render(true);
+          <div style="color:#888;text-align:center;font-size:0.9em">
+            Current Stash: ${current}/${max}
+          </div>
+        </div>
+      `,
+      yes: { icon: '<i class="fas fa-plus"></i>', label: "Confirm" },
+      no: { icon: '<i class="fas fa-times"></i>', label: "Cancel" },
+      rejectClose: false
     });
-    
+
     if (!confirmed) return;
     
     const newVal = current + 1;
     await this.actor.update({ "system.stash.value": newVal });
-    
+
     // Send chat message
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     const html = `
@@ -684,11 +825,19 @@ for (let i = 0; i < traumas.length; i++) {
     }
     
     // Show dialog with options
-    Hooks.once("renderDialog", (_app, html) => {
-      html.find(".window-title").html('<i class="fas fa-coins" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">SPEND LEVERAGE</span>');
+    let dialogApp;
+    Hooks.once("renderDialogV2", (app) => {
+      dialogApp = app;
+      app.element.querySelectorAll(".spend-option").forEach(btn => {
+        btn.addEventListener("click", async (ev) => {
+          const action = ev.currentTarget.dataset.action;
+          await this._executeSpendLeverage(action);
+          dialogApp.close();
+        });
+      });
     });
-    new Dialog({
-      title: "SPEND LEVERAGE",
+    await foundry.applications.api.DialogV2.wait({
+      window: { title: "SPEND LEVERAGE" },
       content: `
         <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
           <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
@@ -713,22 +862,11 @@ for (let i = 0; i < traumas.length; i++) {
           </div>
         </div>
       `,
-      buttons: {
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
-        }
-      },
-      render: (html) => {
-        html.find(".spend-option").click(async (ev) => {
-          const action = ev.currentTarget.dataset.action;
-          await this._executeSpendLeverage(action);
-          // Close the dialog
-          html.closest(".app").find(".header-button.close").click();
-        });
-      },
-      default: "cancel"
-    }).render(true);
+      rejectClose: false,
+      buttons: [
+        { action: "cancel", icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+      ]
+    });
   }
 
   async _executeSpendLeverage(action) {
@@ -817,43 +955,28 @@ for (let i = 0; i < traumas.length; i++) {
     }
     
     // Confirmation dialog
-    const confirmed = await new Promise(resolve => {
-      Hooks.once("renderDialog", (_app, html) => {
-        html.find(".window-title").html('<i class="fas fa-plus" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">MARK EXPERIENCE</span>');
-      });
-      new Dialog({
-        title: "MARK EXPERIENCE",
-        content: `
-          <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
-              Award +1 experience to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
-            </div>
-            <div style="color:#888;text-align:center;font-size:0.9em">
-              Current XP: ${current}/${max}
-            </div>
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: { title: "MARK EXPERIENCE" },
+      content: `
+        <div style="background:linear-gradient(135deg,#1a1a0d 0%,#20200a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+          <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+            Award +1 experience to <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
           </div>
-        `,
-        buttons: {
-          confirm: {
-            icon: '<i class="fas fa-plus"></i>',
-            label: "Confirm",
-            callback: () => resolve(true)
-          },
-          cancel: {
-            icon: '<i class="fas fa-times"></i>',
-            label: "Cancel",
-            callback: () => resolve(false)
-          }
-        },
-        default: "cancel"
-      }).render(true);
+          <div style="color:#888;text-align:center;font-size:0.9em">
+            Current XP: ${current}/${max}
+          </div>
+        </div>
+      `,
+      yes: { icon: '<i class="fas fa-plus"></i>', label: "Confirm" },
+      no: { icon: '<i class="fas fa-times"></i>', label: "Cancel" },
+      rejectClose: false
     });
-    
+
     if (!confirmed) return;
     
     const newVal = current + 1;
     await this.actor.update({ "system.experience.value": newVal });
-    
+
     // Send chat message
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     const html = `
@@ -938,11 +1061,19 @@ for (let i = 0; i < traumas.length; i++) {
       `;
     }
     
-    Hooks.once("renderDialog", (_app, html) => {
-      html.find(".window-title").html('<i class="fas fa-arrow-up" style="color:#ff00ff;margin-right:6px;text-shadow:0 0 10px #ff00ff"></i><span style="color:#ff00ff;text-shadow:0 0 10px #ff00ff;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">ADVANCEMENT</span>');
+    let advDialogApp;
+    Hooks.once("renderDialogV2", (app) => {
+      advDialogApp = app;
+      app.element.querySelectorAll(".advancement-option").forEach(btn => {
+        btn.addEventListener("click", async (ev) => {
+          const choice = ev.currentTarget.dataset.choice;
+          await this._executeAdvancement(choice);
+          advDialogApp.close();
+        });
+      });
     });
-    new Dialog({
-      title: "ADVANCEMENT",
+    await foundry.applications.api.DialogV2.wait({
+      window: { title: "ADVANCEMENT" },
       content: `
         <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
           <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
@@ -956,22 +1087,11 @@ for (let i = 0; i < traumas.length; i++) {
           </div>
         </div>
       `,
-      buttons: {
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
-        }
-      },
-      render: (html) => {
-        html.find(".advancement-option").click(async (ev) => {
-          const choice = ev.currentTarget.dataset.choice;
-          await this._executeAdvancement(choice);
-          // Close the dialog
-          html.closest(".app").find(".header-button.close").click();
-        });
-      },
-      default: "cancel"
-    }).render(true);
+      rejectClose: false,
+      buttons: [
+        { action: "cancel", icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+      ]
+    });
   }
 
   async _executeAdvancement(choice) {
@@ -1039,7 +1159,7 @@ for (let i = 0; i < traumas.length; i++) {
     }
     
     await this.actor.update(updates);
-    
+
     const newXP = currentXP - 5;
     const html = `
       <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#1a0a20 0%,#0d0d1a 100%);border:2px solid ${advancementColor};border-radius:8px;padding:12px;box-shadow:0 0 25px ${advancementColor}40">
@@ -1150,32 +1270,14 @@ for (let i = 0; i < traumas.length; i++) {
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
 
     // Roll the trauma die
-    const traumaRoll = await (new Roll("1d6")).evaluate({ allowInteractive: false });
+    const traumaRoll = await (new Roll("1d6")).evaluate();
     const traumaResult = traumaRoll.dice[0].results[0].result;
-
-    // Dice So Nice animation
-    if (game.dice3d) {
-      traumaRoll.dice.forEach(die => {
-        die.options.colorset = "nco-danger";
-        die.options.material = "chrome";
-      });
-      await game.dice3d.showForRoll(traumaRoll, game.user, true);
-    }
 
     let html;
     if (traumaResult === 1) {
       // Deadly result - roll for turns until death
-      const deathRoll = await (new Roll("1d6")).evaluate({ allowInteractive: false });
+      const deathRoll = await (new Roll("1d6")).evaluate();
       const turnsUntilDeath = deathRoll.dice[0].results[0].result;
-
-      // Dice So Nice animation for death roll
-      if (game.dice3d) {
-        deathRoll.dice.forEach(die => {
-          die.options.colorset = "nco-danger";
-          die.options.material = "chrome";
-        });
-        await game.dice3d.showForRoll(deathRoll, game.user, true);
-      }
 
       html = `
         <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#1a0000 0%,#2a0505 100%);border:3px solid #ff0000;border-radius:8px;padding:15px;box-shadow:0 0 40px rgba(255,0,0,0.8)">
@@ -1224,8 +1326,8 @@ for (let i = 0; i < traumas.length; i++) {
     event.stopPropagation();
 
     // Combined confirmation and modifier dialog
-    new Dialog({
-      title: "Recovery Roll",
+    await foundry.applications.api.DialogV2.wait({
+      window: { title: "Recovery Roll" },
       content: `
         <div style="background:linear-gradient(135deg,#1a0a10 0%,#0d0d1a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
           <div style="color:#ff3366;font-weight:bold;font-size:1.1em;text-align:center;margin-bottom:15px;text-shadow:0 0 10px #ff3366">
@@ -1251,40 +1353,31 @@ for (let i = 0; i < traumas.length; i++) {
           </div>
         </div>
       `,
-      buttons: {
-        confirm: {
+      rejectClose: false,
+      buttons: [
+        {
+          action: "confirm",
           icon: '<i class="fas fa-dice-d6"></i>',
           label: "Roll Recovery",
-          callback: async (html) => {
-            const modifier = parseInt(html.find('#nco-recovery-mod').val()) || 0;
+          default: true,
+          callback: async (event, button) => {
+            const win = button.closest(".dialog-v2") ?? button.closest(".application");
+            const modifier = parseInt(win?.querySelector('#nco-recovery-mod')?.value) || 0;
             await this._executeRecoveryRoll(modifier);
           }
         },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
-        }
-      },
-      default: "cancel"
-    }).render(true);
+        { action: "cancel", icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+      ]
+    });
   }
 
   async _executeRecoveryRoll(modifier) {
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
 
     // Roll the recovery die
-    const roll = await (new Roll("1d6")).evaluate({ allowInteractive: false });
+    const roll = await (new Roll("1d6")).evaluate();
     const dieResult = roll.dice[0].results[0].result;
     const totalResult = dieResult + modifier;
-
-    // Dice So Nice animation
-    if (game.dice3d) {
-      roll.dice.forEach(die => {
-        die.options.colorset = "nco-action";
-        die.options.material = "chrome";
-      });
-      await game.dice3d.showForRoll(roll, game.user, true);
-    }
 
     const success = totalResult >= 4;
     let html;
@@ -1352,11 +1445,8 @@ for (let i = 0; i < traumas.length; i++) {
     const dangerDice = 10 - tickedDrive;
 
     // Confirmation dialog
-    Hooks.once("renderDialog", (_app, html) => {
-      html.find(".window-title").html('<i class="fas fa-door-open" style="color:#ff3366;margin-right:6px;text-shadow:0 0 10px #ff3366"></i><span style="color:#ff3366;text-shadow:0 0 10px #ff3366;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">RETIRE CHARACTER</span>');
-    });
-    new Dialog({
-      title: "Retire Character",
+    await foundry.applications.api.DialogV2.wait({
+      window: { title: "Retire Character" },
       content: `
         <div style="background:linear-gradient(135deg,#1a0a20 0%,#0d0d1a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
           <div style="color:#ff3366;font-weight:bold;font-size:1.2em;text-align:center;margin-bottom:15px;text-shadow:0 0 10px #ff3366">
@@ -1382,21 +1472,19 @@ for (let i = 0; i < traumas.length; i++) {
           </div>
         </div>
       `,
-      buttons: {
-        confirm: {
+      rejectClose: false,
+      buttons: [
+        {
+          action: "confirm",
           icon: '<i class="fas fa-door-open"></i>',
           label: "Retire",
           callback: async () => {
             await this._executeRetirement(actionDice, dangerDice);
           }
         },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
-        }
-      },
-      default: "cancel"
-    }).render(true);
+        { action: "cancel", icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+      ]
+    });
   }
 
   async _executeRetirement(actionDice, dangerDice) {
@@ -1405,28 +1493,8 @@ for (let i = 0; i < traumas.length; i++) {
     const d = Math.max(0, dangerDice);
 
     // === Rolls ===
-    const rA = a ? await (new Roll(`${a}d6`)).evaluate({ allowInteractive: false }) : null;
-    const rD = d ? await (new Roll(`${d}d6`)).evaluate({ allowInteractive: false }) : null;
-
-    // Dice So Nice - Chrome dice with neon glow
-    if (game.dice3d) {
-      const shows = [];
-      if (rA) {
-        rA.dice.forEach(die => {
-          die.options.colorset = "nco-action";
-          die.options.material = "chrome";
-        });
-        shows.push(game.dice3d.showForRoll(rA, game.user, true));
-      }
-      if (rD) {
-        rD.dice.forEach(die => {
-          die.options.colorset = "nco-danger";
-          die.options.material = "chrome";
-        });
-        shows.push(game.dice3d.showForRoll(rD, game.user, true));
-      }
-      await Promise.all(shows);
-    }
+    const rA = a ? await (new Roll(`${a}d6`)).evaluate() : null;
+    const rD = d ? await (new Roll(`${d}d6`)).evaluate() : null;
 
     const getResults = r => r?.dice?.[0]?.results?.map(r => r.result) ?? [];
     const A = getResults(rA), D = getResults(rD);
@@ -1444,7 +1512,7 @@ for (let i = 0; i < traumas.length; i++) {
 
     const high = Arem.length ? Math.max(...Arem) : null;
     const botch = !Arem.length || (Arem.length === 1 && Arem[0] === 1);
-    const sixes = A.filter(x => x === 6).length;
+    const sixes = Arem.filter(x => x === 6).length;
     const boons = !botch && high === 6 ? Math.max(0, sixes - 1) : 0;
 
     // Determine retirement outcome
@@ -1497,46 +1565,52 @@ for (let i = 0; i < traumas.length; i++) {
       `;
     }
 
-    // === Chip helper for dice display ===
-    const chip = (v, t, o = {}) => {
-      const base = "display:inline-block;min-width:28px;padding:4px 8px;margin:2px;border-radius:6px;font-weight:700;text-align:center;font-family:'Orbitron',monospace;";
-      if (o.cancel) {
-        return `<span style="${base}opacity:.6;border:2px solid #ff3366;background:#1a0a10;color:#ff3366;text-decoration:line-through">${v}</span>`;
-      }
-      if (o.hl) {
-        return `<span style="${base}border:2px solid #00f5ff;background:#0a1a1a;color:#00f5ff;box-shadow:0 0 10px #00f5ff">${v}</span>`;
-      }
-      const c = t === "a" ? "#00f5ff" : "#ff3366";
-      const b = t === "a" ? "#00f5ff" : "#ff3366";
-      const bg = t === "a" ? "#0a1a1a" : "#1a0a10";
-      return `<span style="${base}border:1px solid ${b};background:${bg};color:${c}">${v}</span>`;
+    // === Chip helper (same style as basic roll) ===
+    const base = "display:inline-block;min-width:28px;padding:4px 8px;margin:2px;border-radius:6px;font-weight:700;text-align:center;font-family:'Orbitron',monospace;";
+    const chip = (v, state, type = "a") => {
+      if (state === "cancel")  return `<span style="${base}opacity:.5;border:2px solid #555;background:#1a1a1a;color:#666;text-decoration:line-through">${v}</span>`;
+      if (state === "chosen")  return `<span style="${base}border:2px solid #ffd000;background:#1a1500;color:#ffd000;box-shadow:0 0 10px #ffd000">${v}</span>`;
+      if (state === "boon")    return `<span style="${base}border:2px solid #cc44ff;background:#1a0a20;color:#cc44ff;box-shadow:0 0 10px #cc44ff">${v}</span>`;
+      const c = type === "a" ? "#00f5ff" : "#ff3366";
+      const bg = type === "a" ? "#0a1a1a" : "#1a0a10";
+      return `<span style="${base}border:1px solid ${c};background:${bg};color:${c}">${v}</span>`;
     };
 
-    const block = (title, arr, t, hl) => `
-      <div style="margin:6px 0">
-        <strong style="color:#b0b0b0;font-size:0.85em">${title}</strong>
-        <div style="margin-top:3px">${
-          arr.length ? arr.map(v => chip(v, t, { hl: hl && v === high })).join("") : '<span style="color:#666">(none)</span>'
-        }</div>
+    // Build action chips: cancelled first, then remaining (chosen → boon → normal)
+    const actionChips = (() => {
+      const cancelledChips = canc.map(v => chip(v, "cancel"));
+      let chosenUsed = false;
+      const restChips = Arem.map(v => {
+        if (!chosenUsed && v === high) { chosenUsed = true; return chip(v, "chosen"); }
+        if (high === 6 && v === 6) return chip(v, "boon");
+        return chip(v, "normal", "a");
+      });
+      return [...cancelledChips, ...restChips];
+    })();
+
+    // Build danger chips: cancelling dice first, then rest
+    const dangerChips = [
+      ...canc.map(v => chip(v, "normal", "d")),
+      ...Drem.map(v => chip(v, "normal", "d")),
+    ];
+
+    const block = (title, chips) => `
+      <div style="margin:8px 0">
+        <strong style="color:#b0b0b0;font-size:0.9em">${title}</strong>
+        <div style="margin-top:4px">${chips.length ? chips.join("") : '<span style="color:#666">(none)</span>'}</div>
       </div>`;
 
     // === Build Chat Output ===
     const html = `
-      <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#1a0a20 0%,#0d0d1a 100%);border:3px solid #9900ff;border-radius:8px;padding:15px;box-shadow:0 0 30px rgba(153,0,255,0.5)">
+      <div style="font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);border:3px solid #9900ff;border-radius:8px;padding:15px;box-shadow:0 0 30px rgba(153,0,255,0.5)">
         <div style="font-size:1.3em;font-weight:bold;color:#9900ff;text-shadow:0 0 15px #9900ff;text-align:center;margin-bottom:8px">
           <i class="fas fa-door-open" style="margin-right:8px"></i>RETIREMENT ROLL
         </div>
-        <hr style="border:none;border-top:1px solid #444;margin:10px 0">
-        ${block(`Action Dice (${a}d6)`, A, "a", true)}
-        ${block(`Danger Dice (${d}d6)`, D, "d")}
-        <hr style="border:none;border-top:1px solid #444;margin:8px 0">
-        <div style="margin:6px 0">
-          <strong style="color:#b0b0b0;font-size:0.85em">Cancelled:</strong>
-          <div style="margin-top:3px">${canc.length ? canc.map(v => chip(v, "a", { cancel: true })).join("") : '<span style="color:#666">None</span>'}</div>
-        </div>
-        ${block("Remaining Action", Arem, "a", true)}
-        ${block("Remaining Danger", Drem, "d")}
-        <hr style="border:none;border-top:1px solid #444;margin:10px 0">
+        <hr style="border:none;border-top:1px solid #333;margin:8px 0">
+        ${block(`Action Dice (${a}d6)`, actionChips)}
+        ${block(`Danger Dice (${d}d6)`, dangerChips)}
+        ${boons ? `<div style="color:#cc44ff;font-weight:bold;text-shadow:0 0 10px #cc44ff;margin:8px 0">✨ Boon! x${boons}</div>` : ""}
+        <hr style="border:none;border-top:1px solid #333;margin:8px 0">
         <div style="font-size:1.3em;font-weight:bold;color:${outcomeColor};background:linear-gradient(135deg,#0a0a0a 0%,#1a0a1a 100%);border:2px solid ${outcomeColor};border-radius:6px;padding:12px;text-align:center;text-shadow:0 0 15px ${outcomeColor}">
           ${outcomeTitle}
           ${high ? `<div style="font-size:0.7em;color:#888;margin-top:4px">(highest remaining = ${high})</div>` : ''}
@@ -1597,11 +1671,8 @@ for (let i = 0; i < traumas.length; i++) {
     if (!item) return;
     
     // Confirmation dialog
-    Hooks.once("renderDialog", (_app, html) => {
-      html.find(".window-title").html('<i class="fas fa-exclamation-triangle" style="color:#ff3366;margin-right:6px;text-shadow:0 0 10px #ff3366"></i><span style="color:#ff3366;text-shadow:0 0 10px #ff3366;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">CONFIRM REMOVAL</span>');
-    });
-    new Dialog({
-      title: "CONFIRM REMOVAL",
+    await foundry.applications.api.DialogV2.wait({
+      window: { title: "CONFIRM REMOVAL" },
       content: `
         <div style="background:linear-gradient(135deg,#1a0a10 0%,#0d0d1a 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
           <div style="color:#e0e0e0;text-align:center">
@@ -1609,21 +1680,19 @@ for (let i = 0; i < traumas.length; i++) {
           </div>
         </div>
       `,
-      buttons: {
-        confirm: {
+      rejectClose: false,
+      buttons: [
+        {
+          action: "confirm",
           icon: '<i class="fas fa-trash"></i>',
           label: "Remove",
           callback: async () => {
             await item.delete();
           }
         },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
-        }
-      },
-      default: "cancel"
-    }).render(true);
+        { action: "cancel", icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+      ]
+    });
   }
 
   async _onOpenGear(event) {
@@ -1748,42 +1817,111 @@ for (let i = 0; i < traumas.length; i++) {
       `;
     }
     
-    Hooks.once("renderDialog", (_app, html) => {
-      html.find(".window-title").html('<i class="fas fa-dice-d6" style="color:#ffd000;margin-right:6px;text-shadow:0 0 10px #ffd000"></i><span style="color:#ffd000;text-shadow:0 0 10px #ffd000;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">GEAR ROLL</span>');
+    let selectedTags = 0;
+    let gearRollDialogApp;
+    Hooks.once("renderDialogV2", (app) => {
+      gearRollDialogApp = app;
+      const el = app.element;
+
+      const updateCostWarning = () => {
+        const mod = Math.abs(parseInt(el.querySelector("#gear-roll-mod")?.value) || 0);
+        const totalCost = 1 + mod;
+        const currentRollsNow = parseInt(this.actor.system.gearRolls?.value) || 0;
+        const totalCostEl = el.querySelector("#total-cost");
+        const warningEl = el.querySelector("#gear-roll-cost-warning");
+        if (totalCostEl) totalCostEl.textContent = totalCost;
+        if (warningEl) {
+          if (totalCost > currentRollsNow) {
+            warningEl.style.borderColor = "#ff3366";
+            warningEl.style.background = "#1a0505";
+            if (totalCostEl) totalCostEl.style.color = "#ff3366";
+          } else {
+            warningEl.style.borderColor = "#ffd000";
+            warningEl.style.background = "#1a1a0d";
+            if (totalCostEl) totalCostEl.style.color = "#ffd000";
+          }
+        }
+      };
+
+      const updateRollButton = () => {
+        const btn = el.querySelector("#gear-roll-execute");
+        if (!btn) return;
+        if (selectedTags > 0) {
+          btn.disabled = false;
+          Object.assign(btn.style, { background: "#0a1a10", borderColor: "#00ff88", color: "#00ff88", cursor: "pointer" });
+          btn.innerHTML = '<i class="fas fa-dice-d6" style="margin-right:8px"></i>ROLL';
+        } else {
+          btn.disabled = true;
+          Object.assign(btn.style, { background: "#333", borderColor: "#666", color: "#666", cursor: "not-allowed" });
+          btn.innerHTML = '<i class="fas fa-dice-d6" style="margin-right:8px"></i>SELECT TARGET FIRST';
+        }
+      };
+
+      updateCostWarning();
+      updateRollButton();
+
+      el.querySelectorAll(".tag-choice").forEach(btn => {
+        btn.addEventListener("click", (ev) => {
+          selectedTags = parseInt(ev.currentTarget.dataset.tags);
+          el.querySelectorAll(".tag-choice").forEach(b => {
+            b.style.background = "#1a0a20";
+            b.style.boxShadow = "none";
+          });
+          ev.currentTarget.style.background = "#2a1a30";
+          ev.currentTarget.style.boxShadow = "0 0 10px #ffd000";
+          const target = el.querySelector("#gear-roll-target");
+          if (target) target.textContent = selectedTags;
+          updateRollButton();
+        });
+      });
+
+      el.querySelector("#gear-roll-mod")?.addEventListener("change", updateCostWarning);
+
+      el.querySelector("#gear-roll-execute")?.addEventListener("click", async () => {
+        if (selectedTags <= 0) {
+          ui.notifications.warn("Please select a target first!");
+          return;
+        }
+        const modifier = parseInt(el.querySelector("#gear-roll-mod")?.value) || 0;
+        const leverage = parseInt(el.querySelector("#gear-roll-leverage")?.value) || 0;
+        await this._executeGearRoll(selectedTags, modifier, leverage);
+        gearRollDialogApp.close();
+      });
     });
-    new Dialog({
-      title: "GEAR ROLL",
+
+    await foundry.applications.api.DialogV2.wait({
+      window: { title: "GEAR ROLL" },
       content: `
         <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:12px;border-radius:8px;font-family:'Orbitron',sans-serif">
           <div style="color:#e0e0e0;text-align:center;margin-bottom:8px;font-size:0.9em">
             Gear Rolls Remaining: <span style="color:#00f5ff;font-weight:bold">${currentRolls}</span>
           </div>
-          
+
           <div style="color:#888;font-size:0.85em;text-align:center;margin-bottom:6px">
             Choose target tags (roll target):
           </div>
           <div style="display:flex;justify-content:center;gap:6px;margin-bottom:10px">
             ${tagsButtonsHtml}
           </div>
-          
+
           <div style="color:#00f5ff;font-weight:bold;margin-bottom:8px;text-align:center;font-size:0.9em">
             Selected Target: <span id="gear-roll-target" style="font-size:1.2em">-</span>
           </div>
-          
+
           <div style="background:#1a0505;border:1px solid #ff3366;border-radius:4px;padding:6px;margin-bottom:8px">
             <div style="color:#ff3366;font-size:0.8em;text-align:center">
               <i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>
               <strong>WARNING:</strong> Each +1 modifier uses 1 extra gear roll!
             </div>
           </div>
-          
+
           <div id="gear-roll-cost-warning" style="background:#1a1a0d;border:1px solid #ffd000;border-radius:4px;padding:6px;margin-bottom:8px">
             <div style="color:#ffd000;font-size:0.85em;text-align:center">
               <i class="fas fa-info-circle" style="margin-right:4px"></i>
               Total Cost: <span id="total-cost">1</span> gear roll(s)
             </div>
           </div>
-          
+
           <div style="display:flex;justify-content:center;align-items:flex-start;gap:20px;margin-bottom:10px">
             <div style="text-align:center">
               <label style="color:#ff6666;font-size:0.8em;display:block;margin-bottom:4px;font-weight:bold">Modifier (costs rolls)</label>
@@ -1795,7 +1933,7 @@ for (let i = 0; i < traumas.length; i++) {
               <div style="color:#888;font-size:0.65em;margin-top:2px">Available: ${currentStash}</div>
             </div>
           </div>
-          
+
           <div style="text-align:center;margin-top:10px">
             <button type="button" id="gear-roll-execute" disabled style="padding:8px 24px;background:#333;border:2px solid #666;border-radius:6px;color:#666;cursor:not-allowed;font-family:'Orbitron',sans-serif;font-weight:bold;font-size:0.9em">
               <i class="fas fa-dice-d6" style="margin-right:6px"></i>SELECT TARGET FIRST
@@ -1803,80 +1941,11 @@ for (let i = 0; i < traumas.length; i++) {
           </div>
         </div>
       `,
-      buttons: {
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
-        }
-      },
-      render: (html) => {
-        let selectedTags = 0;
-        const maxModifier = currentRolls - 1; // Reserve 1 for the base roll
-        
-        const updateCostWarning = () => {
-          const mod = Math.abs(parseInt(html.find("#gear-roll-mod").val()) || 0);
-          const totalCost = 1 + mod;
-          const currentRollsNow = parseInt(this.actor.system.gearRolls?.value) || 0;
-          
-          // Always show cost warning (show initial cost of 1)
-          html.find("#total-cost").text(totalCost);
-          
-          if (totalCost > currentRollsNow) {
-            html.find("#gear-roll-cost-warning").css({ "border-color": "#ff3366", "background": "#1a0505" });
-            html.find("#total-cost").css("color", "#ff3366");
-          } else {
-            html.find("#gear-roll-cost-warning").css({ "border-color": "#ffd000", "background": "#1a1a0d" });
-            html.find("#total-cost").css("color", "#ffd000");
-          }
-          
-          // Modifier is now an editable text field, no button state updates needed
-        };
-        
-        const updateRollButton = () => {
-          const btn = html.find("#gear-roll-execute");
-          if (selectedTags > 0) {
-            btn.prop("disabled", false);
-            btn.css({ "background": "#0a1a10", "border-color": "#00ff88", "color": "#00ff88", "cursor": "pointer" });
-            btn.html('<i class="fas fa-dice-d6" style="margin-right:8px"></i>ROLL');
-          } else {
-            btn.prop("disabled", true);
-            btn.css({ "background": "#333", "border-color": "#666", "color": "#666", "cursor": "not-allowed" });
-            btn.html('<i class="fas fa-dice-d6" style="margin-right:8px"></i>SELECT TARGET FIRST');
-          }
-        };
-        
-        // Initialize button states
-        updateCostWarning();
-        updateRollButton();
-        
-        // Tag choice buttons
-        html.find(".tag-choice").click((ev) => {
-          selectedTags = parseInt(ev.currentTarget.dataset.tags);
-          html.find(".tag-choice").css({ "background": "#1a0a20", "box-shadow": "none" });
-          $(ev.currentTarget).css({ "background": "#2a1a30", "box-shadow": "0 0 10px #ffd000" });
-          html.find("#gear-roll-target").text(selectedTags);
-          updateRollButton();
-        });
-        
-        // When modifier input changes, update the cost warning
-        html.find("#gear-roll-mod").change(() => {
-          updateCostWarning();
-        });
-        
-        // Execute roll button
-        html.find("#gear-roll-execute").click(async () => {
-          if (selectedTags <= 0) {
-            ui.notifications.warn("Please select a target first!");
-            return;
-          }
-          const modifier = parseInt(html.find("#gear-roll-mod").val()) || 0;
-          const leverage = parseInt(html.find("#gear-roll-leverage").val()) || 0;
-          await this._executeGearRoll(selectedTags, modifier, leverage);
-          html.closest(".app").find(".header-button.close").click();
-        });
-      },
-      default: "cancel"
-    }).render(true);
+      rejectClose: false,
+      buttons: [
+        { action: "cancel", icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+      ]
+    });
   }
 
   async _executeGearRoll(targetTags, modifier, leverageSpent) {
@@ -1908,18 +1977,9 @@ for (let i = 0; i < traumas.length; i++) {
     }
     
     // Roll the d6
-    const roll = await (new Roll("1d6")).evaluate({ allowInteractive: false });
+    const roll = await (new Roll("1d6")).evaluate();
     const dieResult = roll.dice[0].results[0].result;
     const totalResult = dieResult + modifier + leverageSpent;
-    
-    // Dice So Nice animation
-    if (game.dice3d) {
-      roll.dice.forEach(die => {
-        die.options.colorset = "nco-action";
-        die.options.material = "chrome";
-      });
-      await game.dice3d.showForRoll(roll, game.user, true);
-    }
     
     const success = totalResult >= targetTags;
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
@@ -1997,42 +2057,27 @@ for (let i = 0; i < traumas.length; i++) {
     const max = parseInt(this.actor.system.gearRolls?.max) || 4;
     
     // Confirmation dialog
-    const confirmed = await new Promise(resolve => {
-      Hooks.once("renderDialog", (_app, html) => {
-        html.find(".window-title").html('<i class="fas fa-redo" style="color:#00f5ff;margin-right:6px;text-shadow:0 0 10px #00f5ff"></i><span style="color:#00f5ff;text-shadow:0 0 10px #00f5ff;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">RESET GEAR ROLLS</span>');
-      });
-      new Dialog({
-        title: "RESET GEAR ROLLS",
-        content: `
-          <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
-            <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
-              Reset gear rolls for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
-            </div>
-            <div style="color:#888;text-align:center;font-size:0.9em">
-              Current: ${current}/${max} → Will reset to: ${max}/${max}
-            </div>
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: { title: "RESET GEAR ROLLS" },
+      content: `
+        <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
+          <div style="color:#e0e0e0;text-align:center;margin-bottom:10px">
+            Reset gear rolls for <span style="color:#00f5ff;font-weight:bold">${this.actor.name}</span>?
           </div>
-        `,
-        buttons: {
-          confirm: {
-            icon: '<i class="fas fa-redo"></i>',
-            label: "Reset",
-            callback: () => resolve(true)
-          },
-          cancel: {
-            icon: '<i class="fas fa-times"></i>',
-            label: "Cancel",
-            callback: () => resolve(false)
-          }
-        },
-        default: "cancel"
-      }).render(true);
+          <div style="color:#888;text-align:center;font-size:0.9em">
+            Current: ${current}/${max} → Will reset to: ${max}/${max}
+          </div>
+        </div>
+      `,
+      yes: { icon: '<i class="fas fa-redo"></i>', label: "Reset" },
+      no: { icon: '<i class="fas fa-times"></i>', label: "Cancel" },
+      rejectClose: false
     });
-    
+
     if (!confirmed) return;
     
     await this.actor.update({ "system.gearRolls.value": max });
-    
+
     // Send chat message
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
     const html = `
@@ -2053,37 +2098,45 @@ for (let i = 0; i < traumas.length; i++) {
 /*  Threat Sheet                                */
 /* -------------------------------------------- */
 
-class NCOThreatSheet extends ActorSheet {
-  
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["nco", "sheet", "actor", "threat"],
-      template: "systems/NCO/templates/threat-sheet.hbs",
-      width: 550,
-      height: 450,
-      resizable: false,
-      tabs: [],
-      scrollY: [".sheet-body"]
-    });
+class NCOThreatSheet extends foundry.applications.api.HandlebarsApplicationMixin(
+  foundry.applications.sheets.ActorSheetV2
+) {
+
+  static DEFAULT_OPTIONS = {
+    classes: ["nco", "sheet", "actor", "threat"],
+    position: { width: 550, height: 450 },
+    window: { resizable: false },
+    actions: {}
+  };
+
+  static PARTS = {
+    main: {
+      template: "systems/NCO/templates/threat-sheet.hbs"
+    }
+  };
+
+  get title() {
+    return this.actor.name;
   }
 
-  async getData(options) {
-    const context = await super.getData(options);
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
     const actorData = this.actor.toObject(false);
-    
+
+    context.actor = this.actor;
     context.system = actorData.system;
     context.flags = actorData.flags;
 
     return context;
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
+  _onRender(context, options) {
+    super._onRender(context, options);
     if (!this.isEditable) return;
 
     // Portrait click
-    html.find('.portrait-container').click(ev => {
-      const fp = new FilePicker({
+    this.element.querySelector('.portrait-container')?.addEventListener('click', ev => {
+      const fp = new foundry.applications.apps.FilePicker.implementation({
         type: "image",
         current: this.actor.img,
         callback: path => this.actor.update({ img: path })
@@ -2097,36 +2150,80 @@ class NCOThreatSheet extends ActorSheet {
 /*  Item Sheets                                 */
 /* -------------------------------------------- */
 
-class NCOGearSheet extends ItemSheet {
-  
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["nco", "sheet", "item", "gear"],
-      template: "systems/NCO/templates/gear-sheet.hbs",
-      width: 400,
-      height: 300,
-      resizable: false,
-      tabs: []
-    });
+class NCOGearSheet extends foundry.applications.api.HandlebarsApplicationMixin(
+  foundry.applications.sheets.ItemSheetV2
+) {
+
+  static DEFAULT_OPTIONS = {
+    classes: ["nco", "sheet", "item", "gear"],
+    position: { width: 400, height: 350 },
+    window: { resizable: false },
+    actions: {}
+  };
+
+  static PARTS = {
+    main: {
+      template: "systems/NCO/templates/gear-sheet.hbs"
+    }
+  };
+
+  get title() {
+    return this.item.name;
   }
 
-  async getData(options) {
-    const context = await super.getData(options);
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
     const itemData = this.item.toObject(false);
-    
+
+    context.item = this.item;
     context.system = itemData.system;
     context.flags = itemData.flags;
 
     return context;
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
+  async close(options) {
+    const form = this.element?.querySelector("form");
+    if (form && this.isEditable) {
+      const updateData = {};
+      form.querySelectorAll("input[type='text'][name], textarea[name]").forEach(el => {
+        updateData[el.name] = el.value;
+      });
+      if (Object.keys(updateData).length > 0) {
+        await this.item.update(updateData, { render: false });
+      }
+    }
+    return super.close(options);
+  }
+
+  _onRender(context, options) {
+    super._onRender(context, options);
+
+    // Update window title
+    const titleEl = this.element.querySelector(".window-title");
+    if (titleEl) titleEl.textContent = this.title;
+
+    // Prevent default form submission (Enter key)
+    this.element.querySelector("form")?.addEventListener("submit", e => e.preventDefault());
+
     if (!this.isEditable) return;
 
+    // Enter key blurs instead of submitting
+    this.element.querySelectorAll("input[type='text']").forEach(el => {
+      el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } });
+    });
+
+    // Save all fields on change
+    this.element.querySelectorAll("input[type='text'][name], textarea[name]").forEach(el => {
+      el.addEventListener("change", async (event) => {
+        const updateData = { [event.currentTarget.name]: event.currentTarget.value };
+        await this.item.update(updateData);
+      });
+    });
+
     // Icon click to change image
-    html.find('.icon-container').click(ev => {
-      const fp = new FilePicker({
+    this.element.querySelector('.icon-container')?.addEventListener('click', ev => {
+      const fp = new foundry.applications.apps.FilePicker.implementation({
         type: "image",
         current: this.item.img,
         callback: path => this.item.update({ img: path })
@@ -2136,23 +2233,32 @@ class NCOGearSheet extends ItemSheet {
   }
 }
 
-class NCOSpecialGearSheet extends ItemSheet {
-  
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["nco", "sheet", "item", "special-gear"],
-      template: "systems/NCO/templates/special-gear-sheet.hbs",
-      width: 450,
-      height: 480,
-      resizable: false,
-      tabs: []
-    });
+class NCOSpecialGearSheet extends foundry.applications.api.HandlebarsApplicationMixin(
+  foundry.applications.sheets.ItemSheetV2
+) {
+
+  static DEFAULT_OPTIONS = {
+    classes: ["nco", "sheet", "item", "special-gear"],
+    position: { width: 450, height: 520 },
+    window: { resizable: false },
+    actions: {}
+  };
+
+  static PARTS = {
+    main: {
+      template: "systems/NCO/templates/special-gear-sheet.hbs"
+    }
+  };
+
+  get title() {
+    return this.item.name;
   }
 
-  async getData(options) {
-    const context = await super.getData(options);
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
     const itemData = this.item.toObject(false);
-    
+
+    context.item = this.item;
     context.system = itemData.system;
     context.flags = itemData.flags;
 
@@ -2175,13 +2281,48 @@ class NCOSpecialGearSheet extends ItemSheet {
     return context;
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
+  async close(options) {
+    const form = this.element?.querySelector("form");
+    if (form && this.isEditable) {
+      const updateData = {};
+      form.querySelectorAll("input[type='text'][name], textarea[name]").forEach(el => {
+        updateData[el.name] = el.value;
+      });
+      if (Object.keys(updateData).length > 0) {
+        await this.item.update(updateData, { render: false });
+      }
+    }
+    return super.close(options);
+  }
+
+  _onRender(context, options) {
+    super._onRender(context, options);
+
+    // Update window title
+    const titleEl = this.element.querySelector(".window-title");
+    if (titleEl) titleEl.textContent = this.title;
+
+    // Prevent default form submission (Enter key)
+    this.element.querySelector("form")?.addEventListener("submit", e => e.preventDefault());
+
     if (!this.isEditable) return;
 
+    // Enter key blurs instead of submitting
+    this.element.querySelectorAll("input[type='text']").forEach(el => {
+      el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } });
+    });
+
+    // Save all fields on change
+    this.element.querySelectorAll("input[type='text'][name], textarea[name]").forEach(el => {
+      el.addEventListener("change", async (event) => {
+        const updateData = { [event.currentTarget.name]: event.currentTarget.value };
+        await this.item.update(updateData);
+      });
+    });
+
     // Icon click to change image
-    html.find('.icon-container').click(ev => {
-      const fp = new FilePicker({
+    this.element.querySelector('.icon-container')?.addEventListener('click', ev => {
+      const fp = new foundry.applications.apps.FilePicker.implementation({
         type: "image",
         current: this.item.img,
         callback: path => this.item.update({ img: path })
@@ -2268,28 +2409,8 @@ async function rollDice(actionDice = 1, dangerDice = 0, actor = null) {
   const speaker = ChatMessage.getSpeaker({ actor });
 
   // === Rolls ===
-  const rA = a ? await (new Roll(`${a}d6`)).evaluate({ allowInteractive: false }) : null;
-  const rD = d ? await (new Roll(`${d}d6`)).evaluate({ allowInteractive: false }) : null;
-
-  // Dice So Nice - Chrome dice with neon glow
-  if (game.dice3d) {
-    const shows = [];
-    if (rA) {
-      rA.dice.forEach(die => {
-        die.options.colorset = "nco-action";
-        die.options.material = "chrome";
-      });
-      shows.push(game.dice3d.showForRoll(rA, game.user, true));
-    }
-    if (rD) {
-      rD.dice.forEach(die => {
-        die.options.colorset = "nco-danger";
-        die.options.material = "chrome";
-      });
-      shows.push(game.dice3d.showForRoll(rD, game.user, true));
-    }
-    await Promise.all(shows);
-  }
+  const rA = a ? await (new Roll(`${a}d6`)).evaluate() : null;
+  const rD = d ? await (new Roll(`${d}d6`)).evaluate() : null;
 
   const getResults = r => r?.dice?.[0]?.results?.map(r => r.result) ?? [];
   const A = getResults(rA), D = getResults(rD);
@@ -2372,6 +2493,23 @@ const block = (title, chips) => `
 /*  Ready Hook                                  */
 /* -------------------------------------------- */
 
+// DSN 5.x calls foundry.utils.mergeObject(DEFAULT_OPTIONS/APPEARANCE, userFlag) in both
+// Dice3D.CONFIG() and Dice3D.APPEARANCE(). In Foundry v14, mergeObject throws when the
+// second argument is null. Both flags default to null for users who have never opened the
+// DSN settings dialog in this world, so DSN crashes before its box is ever initialised.
+// Foundry does NOT await async hook handlers, so setFlag() loses the race against DSN's
+// own ready hook. Patch both flags in-memory synchronously instead.
+Hooks.once("setup", function() {
+  if (game.modules.get("dice-so-nice")?.active) {
+    if (!game.user.flags["dice-so-nice"])
+      foundry.utils.setProperty(game.user, "flags.dice-so-nice", {});
+    if (!game.user.flags["dice-so-nice"]?.settings)
+      foundry.utils.setProperty(game.user, "flags.dice-so-nice.settings", {});
+    if (!game.user.flags["dice-so-nice"]?.appearance)
+      foundry.utils.setProperty(game.user, "flags.dice-so-nice.appearance", {});
+  }
+});
+
 Hooks.once("ready", async function() {
   console.log("NCO | Neon City Overdrive System Ready");
 });
@@ -2382,35 +2520,37 @@ Hooks.once("ready", async function() {
 
 // Override initiative roll to use manual input
 Hooks.on("renderCombatTracker", (app, html, data) => {
+  // Support both v13 (jQuery object) and v14 (HTMLElement)
+  const root = html instanceof HTMLElement ? html : html[0];
+  if (!root) return;
+
   // Find all initiative roll buttons and replace their click handlers
-  html.find(".combatant-control.roll").each(function() {
-    const btn = $(this);
+  root.querySelectorAll(".combatant-control.roll").forEach(btn => {
     const li = btn.closest(".combatant");
-    const combatantId = li.data("combatantId");
-    
-    // Remove existing click handler
-    btn.off("click");
-    
+    const combatantId = li?.dataset.combatantId;
+    if (!combatantId) return;
+
+    // Clone to remove existing event listeners, then swap in
+    const newBtn = btn.cloneNode(true);
+    btn.replaceWith(newBtn);
+
     // Add new click handler for manual initiative input
-    btn.on("click", async (event) => {
+    newBtn.addEventListener("click", async (event) => {
       event.preventDefault();
       event.stopPropagation();
-      
+
       const combat = game.combat;
       if (!combat) return;
-      
+
       const combatant = combat.combatants.get(combatantId);
       if (!combatant) return;
-      
+
       const actor = combatant.actor;
       const currentInit = combatant.initiative ?? (actor?.system?.initiative ?? (actor?.type === "character" ? 1 : 0));
-      
+
       // Show manual initiative input dialog
-      Hooks.once("renderDialog", (_app, html) => {
-        html.find(".window-title").html('<i class="fas fa-sort-numeric-down" style="color:#00f5ff;margin-right:6px;text-shadow:0 0 10px #00f5ff"></i><span style="color:#00f5ff;text-shadow:0 0 10px #00f5ff;font-weight:bold;font-family:Orbitron,sans-serif;font-size:1.1em">SET INITIATIVE</span>');
-      });
-      new Dialog({
-        title: "SET INITIATIVE",
+      await foundry.applications.api.DialogV2.wait({
+        window: { title: "SET INITIATIVE" },
         content: `
           <div style="background:linear-gradient(135deg,#0d0d1a 0%,#1a0a20 100%);padding:15px;border-radius:8px;font-family:'Orbitron',sans-serif">
             <div style="color:#e0e0e0;text-align:center;margin-bottom:15px">
@@ -2421,83 +2561,23 @@ Hooks.on("renderCombatTracker", (app, html, data) => {
             </div>
           </div>
         `,
-        buttons: {
-          set: {
+        rejectClose: false,
+        buttons: [
+          {
+            action: "set",
             icon: '<i class="fas fa-check"></i>',
             label: "Set",
-            callback: async (html) => {
-              const newInit = parseInt(html.find("#init-value").val()) || 0;
+            default: true,
+            callback: async (event, button) => {
+              const win = button.closest(".dialog-v2") ?? button.closest(".application");
+              const newInit = parseInt(win?.querySelector("#init-value")?.value) || 0;
               await combat.setInitiative(combatantId, newInit);
             }
           },
-          cancel: {
-            icon: '<i class="fas fa-times"></i>',
-            label: "Cancel"
-          }
-        },
-        default: "set"
-      }).render(true);
+          { action: "cancel", icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+        ]
+      });
     });
   });
 });
 
-/* -------------------------------------------- */
-/*  Dice So Nice Integration                    */
-/* -------------------------------------------- */
-
-Hooks.once("diceSoNiceReady", (dice3d) => {
-  console.log("NCO | Registering Dice So Nice customizations");
-
-  // Register custom colorsets for NCO - Action dice (white chrome, cyan numbers)
-  dice3d.addColorset({
-    name: "nco-action",
-    description: "NCO Action Dice",
-    category: "Neon City Overdrive",
-    foreground: "#00ffff",
-    background: "#f0f0f0",
-    outline: "#00cccc",
-    edge: "#e0e0e0",
-    material: "chrome",
-    font: "Orbitron",
-    visibility: "visible"
-  }, "no");
-
-  // Register custom colorsets for NCO - Danger dice (black chrome, red numbers)
-  dice3d.addColorset({
-    name: "nco-danger",
-    description: "NCO Danger Dice",
-    category: "Neon City Overdrive",
-    foreground: "#ff3366",
-    background: "#1a1a1a",
-    outline: "#cc0033",
-    edge: "#333333",
-    material: "chrome",
-    font: "Orbitron",
-    visibility: "visible"
-  }, "no");
-
-  // Register custom dice preset with Orbitron font
-  dice3d.addDicePreset({
-    type: "d6",
-    labels: ["1", "2", "3", "4", "5", "6"],
-    font: "Orbitron",
-    fontScale: 1.0,
-    system: "NCO"
-  }, "d6");
-
-  // Add glow effect via custom CSS
-  const glowStyle = document.createElement("style");
-  glowStyle.textContent = `
-    /* NCO Dice Glow Effect */
-    #dice-box-canvas {
-      filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.4)) drop-shadow(0 0 15px rgba(255, 51, 102, 0.3));
-    }
-    
-    .dice-so-nice-container {
-      filter: drop-shadow(0 0 5px rgba(0, 245, 255, 0.5));
-    }
-  `;
-  document.head.appendChild(glowStyle);
-  
-  console.log("NCO | Dice So Nice customizations registered");
-});

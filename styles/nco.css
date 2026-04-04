@@ -48,9 +48,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background: linear-gradient(90deg, var(--nco-purple) 0%, var(--nco-pink) 50%, var(--nco-cyan) 100%);
-  border-bottom: 3px solid var(--nco-cyan);
+  padding: 20px 25px;
+  background: linear-gradient(90deg, #0a0a0a 0%, #003333 25%, #00f5ff 50%, #003333 75%, #0a0a0a 100%);
+  border-bottom: 3px solid #00f5ff;
   gap: 15px;
 }
 
@@ -86,67 +86,76 @@
   flex-direction: column;
   gap: 5px;
   flex: 1;
+  min-width: 0;
 }
 
 .nco-sheet .character-name {
   font-family: 'Orbitron', sans-serif;
   font-size: 32px;
   font-weight: 900;
-  color: white;
+  color: #e0e0e0;
   background: transparent;
   border: none;
-  border-bottom: 2px solid rgba(255,255,255,0.5);
+  border-bottom: 2px solid rgba(0,245,255,0.4);
   width: 100%;
   max-width: 450px;
   padding: 5px 0;
   text-transform: uppercase;
   letter-spacing: 3px;
-  text-shadow: 0 0 10px rgba(0,0,0,0.5);
+  text-shadow: 0 0 8px #00f5ff;
 }
 
 .nco-sheet .character-name:focus {
   outline: none;
-  border-bottom-color: white;
+  border-bottom-color: #00f5ff;
 }
 
 .nco-sheet .character-name::placeholder {
-  color: rgba(255,255,255,0.5);
+  color: rgba(224,224,224,0.4);
 }
 
 .nco-sheet .character-bio {
   font-family: 'Rajdhani', sans-serif;
   font-size: 14px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  color: #e0e0e0;
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(255,255,255,0.3);
+  border-bottom: 1px solid rgba(0,245,255,0.3);
   width: 100%;
   max-width: 450px;
   padding: 3px 0;
   font-style: italic;
+  text-shadow: 0 0 6px #00f5ff;
 }
 
 .nco-sheet .character-bio:focus {
   outline: none;
-  border-bottom-color: rgba(255,255,255,0.6);
+  border-bottom-color: rgba(0,245,255,0.6);
 }
 
 .nco-sheet .character-bio::placeholder {
-  color: rgba(255,255,255,0.4);
+  color: rgba(224,224,224,0.35);
+}
+
+.nco-sheet .roll-section {
+  flex-shrink: 0;
 }
 
 .nco-sheet .roll-button {
   font-family: 'Orbitron', sans-serif;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 700;
   background: var(--nco-bg-dark);
   color: var(--nco-cyan);
   border: 2px solid var(--nco-cyan);
-  padding: 10px 25px;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 2px;
   transition: all 0.3s ease;
 }
 
@@ -157,7 +166,7 @@
 }
 
 .nco-sheet .roll-button i {
-  margin-right: 8px;
+  margin: 0;
 }
 
 /* ==========================================
@@ -167,8 +176,8 @@
   display: flex;
   flex: 1;
   overflow-y: auto;
-  padding: 15px;
-  gap: 20px;
+  padding: 20px 25px;
+  gap: 25px;
 }
 
 .nco-sheet .column-left {
@@ -202,8 +211,8 @@
 
 .nco-sheet .column-left > .section-title {
   font-size: 15px;
-  color: var(--nco-pink);
-  border-bottom: 2px solid var(--nco-pink);
+  color: var(--nco-cyan);
+  border-bottom: 2px solid var(--nco-cyan);
   margin-bottom: 12px;
 }
 

@@ -1,9 +1,9 @@
 # Neon City Overdrive - FoundryVTT System
 
-A FoundryVTT v13 compatible system for **Neon City Overdrive**, a rules-light, fast-playing tabletop roleplaying game of cinematic cyberpunk action.
+A FoundryVTT v12–v14 compatible system for **Neon City Overdrive**, a rules-light, fast-playing tabletop roleplaying game of cinematic cyberpunk action.
 
-![Foundry Version](https://img.shields.io/badge/Foundry-v13-informational)
-![Version](https://img.shields.io/badge/Version-1.1.0-blue)
+![Foundry Version](https://img.shields.io/badge/Foundry-v12--v14-informational)
+![Version](https://img.shields.io/badge/Version-1.3.0-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Features
@@ -37,7 +37,7 @@ A FoundryVTT v13 compatible system for **Neon City Overdrive**, a rules-light, f
 - Danger dice from conditions and traumas
 
 ### Visual Theme
-- Cyberpunk neon aesthetic (cyan, pink, purple)
+- Cyberpunk neon aesthetic (cyan, teal, black)
 - Orbitron and Rajdhani fonts
 - Styled chat messages for all actions
 - Custom pause screen
